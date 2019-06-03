@@ -11,7 +11,12 @@ virtualenv uav
 source uav/bin/activate
 ```
 
-The bash shell should now have (uav) before the user identification.
+The bash shell should now have (uav) before the user identification. This will look like
+```
+(uav) user@computer:~/dir1/dir2/dir3$
+```
+where ~/dir1/dir2/dir3 is the file path you chose to create the environment.
+
 To deactivate the environment (resume normal operation), type
 
 ```
