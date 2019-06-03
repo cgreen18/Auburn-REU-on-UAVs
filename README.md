@@ -18,5 +18,6 @@ Repository for the 2019 Auburn REU Team 1 to map an environment using 3D ToF on 
 
 **Brenden Stevens**
 >   Brenden Stevens is majoring in Electrical Engineering at the University of California, Los Angeles. Before transferring to UCLA from his community college in Visalia, CA, Brenden was the president in the leading science club involved with gathering speakers in STEM from around California to inspire young minds to continue pursuing science and engineering. He was also responsible for setting up weekly sports hang-outs where he and 20 others in the STEM department frequently played frisbee, basketball, and soccer. 
+
 >     In research, his past work involved testing and monitoring motor endurance and longevity for NASA’s X-57 all electric aircraft as well as signal latency calculations for CAN buses on the same aircraft. Brenden plans on pursuing graduate work in dynamics and controls with hopes of using machine learning and AI to aid his research. 
 
