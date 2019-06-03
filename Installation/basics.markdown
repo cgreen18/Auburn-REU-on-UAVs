@@ -22,7 +22,7 @@ sudo apt install python3
 #### Pip3
 Assure you have Pip3 installed with
 
-'''
+'''bash
 pip3 -version
 '''
 
