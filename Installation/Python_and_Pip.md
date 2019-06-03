@@ -36,3 +36,7 @@ where x are specific version numbers then type
 ```
 sudo apt install python3-pip
 ```
+
+### Virtual Environment
+**This section is not necessary**
+In order to contain certain dependencies and modules to this project alone (i.e. using Python 3 here but maintaining 
