@@ -1,38 +1,12 @@
-# Python & Pip install instructions
+# Instructions to set up the environment
 
-#### Python3
-Assure that you have Python 3 installed with
+### Date
+The whole environment works as of June 3rd, 2019
 
-'''
-python3 --version
-'''
+### Operating System
 
-If that does not return
-'''
-Python 3.x.x
-'''
-where x are specific version numbers then type
+The code was created and run on a Linux Debian based distro, Lubuntu 18.04LTS (nearly identical to the common Bionic Beaver Ubuntu.)
 
-'''
-sudo apt upgrade
-sudo apt update
-sudo apt install python3
-'''
-
-#### Pip3
-Assure you have Pip3 installed with
-
-'''
-pip3 -version
-'''
-
-If that does not return
-'''
-pip x.x.x from /usr/lib/python3/dist-packages (python 3.x)
-'''
-
-where x are specific version numbers then type
-
-'''
-sudo apt install python3-pip
-'''
+### Versions
+**Python3** Python 3.6.7
+**Pip3** pip 9.0.1
