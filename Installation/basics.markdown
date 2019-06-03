@@ -3,12 +3,12 @@
 #### Python3
 Assure that you have Python 3 installed with
 
-'''
+'''console
 python3 --version
 '''
 
 If that does not return
-'''
+'''shell
 Python 3.x.x
 '''
 where x are specific version numbers then type
