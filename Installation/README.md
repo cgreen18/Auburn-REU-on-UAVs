@@ -1,6 +1,6 @@
-#Python & Pip install instructions
+# Python & Pip install instructions
 
-####Python3
+#### Python3
 Assure that you have Python 3 installed with
 
 '''
@@ -19,7 +19,7 @@ sudo apt update
 sudo apt install python3
 '''
 
-####Pip3
+#### Pip3
 Assure you have Pip3 installed with
 
 '''
