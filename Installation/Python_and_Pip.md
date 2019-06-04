@@ -39,6 +39,7 @@ sudo apt install python3-pip
 
 ### Virtual Environment
 **This section is not necessary**
+
 In order to contain certain dependencies and modules to this project alone (i.e. using Python 3 here but maintaining Python on the rest of your computer), virtual environments will be used.
 
 Assure you have virtualenv installed with
