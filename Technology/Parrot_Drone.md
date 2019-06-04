@@ -5,7 +5,7 @@
 
 **Website:** https://www.parrot.com/us/drones/parrot-ardrone-20-elite-edition
 
-##### Important Aspects
+#### Important Aspects
 - Electronics
   - Processor: ARM Cortex A8 1 GHz 32-bit 
   - Memory: 1GB DDR2
@@ -38,5 +38,5 @@
 - Carrying Capacity (unofficial)
   - 150-200g
 
-##### Additional Comments
+#### Additional Comments
 This product is no longer sold; however, it was used because our lab had extras for use and the focus of this project was not the drone.
