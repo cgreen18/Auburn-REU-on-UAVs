@@ -7,5 +7,22 @@
 
 ### Important Aspects
 - Support
-  - Bands
+  - Protocol: IEEE 802.11b/g/n
+  - OS: Any
+  - Security: 64/128bit WEP, WPA, WPA2
+    - WPS compatible
+  - USB: 1.0 or 2.0 type A
   
+Specifications
+  - Speed:
+    - 11b: <= 11Mbps
+    - 11g: <= 54Mbps
+    - 11n: <= 150Mbps
+  - Band: 2.4-2.4835GHz
+  
+Physical
+  - Weight: 11g
+  - Dimensions: Slightly larger than USB port
+  
+#### Additional Comments
+The ODROID XU4 recommends a different adapter with 5.0GHz compatibility but our lab had this extra. It is used for basic WiFi connectivity, where speed is not important.
