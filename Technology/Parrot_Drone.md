@@ -22,7 +22,7 @@
 
 - Motors
   - 4 brushless DC motors
-    - 14.5 watt and 28500 rpm when hovering
+    - 14.5W and 28500 rpm when hovering
   
 - Battery
   - 3 element 1000 mA/H LiPo rechargable battery
