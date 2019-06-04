@@ -3,6 +3,6 @@
 
 **Datasheet/User Manual:** https://magazine.odroid.com/wp-content/uploads/odroid-xu4-user-manual.pdf
 
-**website:** https://www.hardkernel.com/shop/odroid-xu4-special-price/
+**Website:** https://www.hardkernel.com/shop/odroid-xu4-special-price/
 
-#### Important Aspects
+### Important Aspects
