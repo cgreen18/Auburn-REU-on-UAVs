@@ -1,5 +1,5 @@
 # Hardkernel ODROID-XU4
-![image](https://user-images.githubusercontent.com/35274689/58891794-c80b5f80-86b2-11e9-99ca-230a4d972248.png)
+![image](https://user-images.githubusercontent.com/35274689/58892007-1caeda80-86b3-11e9-85d7-6765d2994c2a.png)
 
 **Datasheet/User Manual:** https://magazine.odroid.com/wp-content/uploads/odroid-xu4-user-manual.pdf
 
