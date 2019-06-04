@@ -41,3 +41,10 @@ sudo ./royaleviewer.sh
 ```
 
 Executing ./royaleviewer.sh again will run the application. Simply turn on the camera using the "Start" button in the bottom right and assure the camera works!
+
+### Configure for Python
+[Activate your virtualenv](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/Installation/virtualenv.md) and install matplotlib and its dependencies by
+
+```
+pip3 install matplotlib
+```
