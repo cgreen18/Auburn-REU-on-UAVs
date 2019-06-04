@@ -1,9 +1,9 @@
 # Parrot AR.Drone 2.0
 ![image](https://user-images.githubusercontent.com/35274689/58888975-ce4b0d00-86ad-11e9-84e2-b8ab1bbdd0e3.png)
 
-*Datasheet (unofficial):* https://manualsbrain.com/en/manuals/780300/?page=2
+**Datasheet (unofficial):** https://manualsbrain.com/en/manuals/780300/?page=2
 
-*Website:* https://www.parrot.com/us/drones/parrot-ardrone-20-elite-edition
+**Website:** https://www.parrot.com/us/drones/parrot-ardrone-20-elite-edition
 
 ##### Important Aspects
 - Electronics
