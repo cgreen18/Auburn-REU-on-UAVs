@@ -16,6 +16,12 @@
   - OS: Linux supported
     - Ubuntu MATE commonly used
  
+- Networking
+  - LAN: Gigabit ethernet *see below*
+  - WiFi &/ Bluetooth: Requires [WiFi/BT adapter](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/Technology/Edimax_N150.md)
+    - Can support IEEE802.11ac/a/b/g/n
+    - The adapter used in this project only supports IEEE802.1b/g/n
+ 
 - Hardware 
   - Ports
     - Two (2) USB 3.0
