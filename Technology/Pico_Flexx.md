@@ -12,7 +12,8 @@
   - Viewing angle: 62 x 45 (degs.)
   - Framerate: <= 45fps
     - Throttles fps for lower processing power or bandwidth
-  -Range: 0.1-4m
+  - Range: 0.1-4m
+  - Illumination: 850nm, VCSEL
 
 - Physical
   - Weight: 8g
@@ -20,7 +21,9 @@
 
 - Software and Hardware
   - API: Royale SDK
-    - Linux based
+    - C/C++ based
+    - Supports various other softwares
+  - OS: Any
   - Cable Connection: USB
     - USB3.0 recommended for minimum bandwidth of 140 MBit/s
   
