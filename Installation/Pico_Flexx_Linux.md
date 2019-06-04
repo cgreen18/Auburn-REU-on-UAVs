@@ -8,6 +8,6 @@ Unzip the next file, in this case "20190430_royale_3.23.0.86.zip"
 ### Unpack Correct File
 Unzip the zipped folder that corresponds to your processor.
 In this case, that is "libroyale-3.23.0.86-LINUX-x86-64Bit"
-**Important** This must be unzipped into a path *without* spaces, i.e. /media/user/disk
-- Later in the install, the driver installer will have trouble navigating to a directory with spaces, i.e. /media/user/disk/this folder
+
+**Important** This must be unzipped into a path *without* spaces, i.e. /media/user/disk  .  Later in the install, the driver installer will have trouble navigating to a directory with spaces, i.e. /media/user/disk/this folder
 
