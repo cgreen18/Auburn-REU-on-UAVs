@@ -6,7 +6,7 @@
 **Website:** https://pmdtec.com/picofamily/flexx/
 - General FAQ: https://pmdtec.com/picofamily/faq/
 
-#### Important Aspects
+### Important Aspects
 - Image
   - Resolution: 224 x 171 pxls (38k)
   - Viewing angle: 62 x 45 (degs.)
