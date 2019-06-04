@@ -5,7 +5,7 @@
 
 **Website:** https://www.terabee.com/shop/3d-tof-cameras/terabee-3dcam/
 
-#### Important Aspects
+### Important Aspects
 - Image
   - Resolution: 80 x 60 pxls
   - Viewing Angle: 74 x 57 (degs.)
