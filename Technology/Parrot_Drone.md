@@ -5,7 +5,7 @@
 
 **Website:** https://www.parrot.com/us/drones/parrot-ardrone-20-elite-edition
 
-#### Important Aspects
+### Important Aspects
 - Electronics
   - Processor: ARM Cortex A8 1 GHz 32-bit 
   - Memory: 1GB DDR2
