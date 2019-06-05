@@ -1,5 +1,5 @@
 # Setting Up Pico Flexx in Linux
-Configured in Ubuntu 18.04LTS on an x86-64bit processor with the Royale SDK 3.23.0.86 as of June 4th, 2019.
+Configured in Ubuntu 16.04.6LTS on an x86-64bit processor with the Royale SDK 3.23.0.86 as of June 5th, 2019.
 
 ### Download and Unzip
 Simply download the full SDK (not android) labeled "libroyale.zip" and unpack into your desired directory.
