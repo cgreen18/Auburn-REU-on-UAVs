@@ -26,3 +26,8 @@ deactivate
 *to delete this environment, deactivate the virtualenv and simply remove the created directory through a "sudo rm -rf uav"
 
 ### Installing required dependencies/modules
+Matplotlib (and its dependency numpy) is required. Use pip to install and it will install the necessary dependencies. Type
+
+```
+pip install matplotlib
+```
