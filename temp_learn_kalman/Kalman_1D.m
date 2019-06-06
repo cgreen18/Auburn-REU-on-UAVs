@@ -3,9 +3,7 @@ clear; clc; close all;
 figure
 set(gcf, 'color', 'k')
 
-kmax = 10; 
 %indirectly measured values
-%z = [0.39 0.50 0.48 0.29 0.25 0.32 0.34 0.48 0.41 0.45 0.39 0.50 0.48 0.29 0.25 0.32 0.34 0.48 0.41 0.45 0.39 0.50 0.48 0.29 0.25 0.32 0.34 0.48 0.41 0.45 0.39 0.50 0.48 0.29 0.25 0.32 0.34 0.48 0.41 0.45]; 
 rng('shuffle','twister')
 z = (.5-.39).*rand(1000,1) + 0.39; 
 %initial state
@@ -18,13 +16,15 @@ P0 = 1;
 A = 1; H = 1; 
 %also assuming process noise covariance Q = 0 and measurement noise
 %covariance 
-R = 0.1; 
+R = 0.1
 Q = 0; 
 output = KalmanFilter(X0,P0, z, A, H, R, Q);
 plot(1:length(z),output,'Linewidth',3)
 set(gca,'color','k')
 set(gca,'ycolor','r')
 set(gca,'xcolor','r')
+
+
 %% k = 1 First discrete time step
 %Time update
 X1 = A.*X0
