@@ -1,13 +1,16 @@
 # Instructions to set up the environment
 
 ### Date
-The whole environment works as of June 3rd, 2019
+The whole environment was tested as of June 10th, 2019. Does not work yet.
 
 ### Operating System
 
-The code was created and run on a Linux Debian based distro, **Ubuntu 16.04.6LTS**.  It will **not** work on Ubuntu 18.04 because the Royale SDK requires libpython3.5, which is unavailable on the Ubuntu 18.04 repositories.
+ARM based Linux, [Ubuntu MATE 16.04](https://wiki.odroid.com/odroid-xu4/os_images/linux/ubuntu/ubuntu) for the ODROID
 
+### Hardware
 
+[ODROID XU4](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/Technology/ODROID_XU4.md).
+32 bit ARM processor
 
 ### Versions
 **Python:** Python 3.6.7
