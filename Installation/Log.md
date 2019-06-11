@@ -34,6 +34,16 @@ Python 3.5.2
 
 Environment is based on Python3
 
+
+```
+pip install numpy
+pip install matplotlib
+sudo apt install libfreetype6-dev
+pip install matplotlib
+```
+
+
+
 ```
 deactivate
 
