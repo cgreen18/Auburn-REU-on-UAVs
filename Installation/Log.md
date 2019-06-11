@@ -20,6 +20,7 @@ pip install virtualenv
 
 cd ~
 echo -e '\nexport PATH="/home/$USER/.local/bin:$PATH"' >> .bashrc
+source .bashrc
 
 virtualenv uav
 source uav/bin/activate
