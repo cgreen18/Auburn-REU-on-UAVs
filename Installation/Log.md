@@ -11,6 +11,7 @@ Python 3.5.2
 ```
 sudo apt install python3-pip
 sudo apt install python-pip
+sudo apt install git-core
 ```
 
 
