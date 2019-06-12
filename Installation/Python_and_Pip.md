@@ -1,17 +1,10 @@
 # Python & Pip install instructions
+Continuation of the setup instructions from [ODROID_Configuration](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/Installation/ODROID_Configuration.md). These instructions will assume you are starting fresh.
+
+As always, update the repositories
 
 ### Python3
-Assure that you have Python 3 installed with
-
-```
-python3 --version
-```
-
-If that does not return
-```
-Python 3.x.x
-```
-where x are specific version numbers then type
+Ubuntu MATE 16.04 comes installed with Python3.5 but the Pico Flexx requires Python3.6 (and an incredible mess of dependencies/libraries). Install Python3
 
 ```
 sudo apt upgrade
