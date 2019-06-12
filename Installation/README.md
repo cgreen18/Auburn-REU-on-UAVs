@@ -12,6 +12,8 @@ The whole environment was tested as of June 12th, 2019.
 [ODROID XU4](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/Technology/ODROID_XU4.md)
 
 ### Versions
-**Python:** Python 3.6.8
+**Python:** 3.6.8
 
-**Pip:** pip 19.1.1
+**Pip:** 19.1.1
+
+**Virtualenv:** 16.6.0
