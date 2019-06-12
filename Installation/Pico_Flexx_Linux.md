@@ -1,18 +1,18 @@
 # Setting Up Pico Flexx in Linux
-Configured in Ubuntu 16.04.6LTS on an x86-64bit processor with the Royale SDK 3.23.0.86 as of June 5th, 2019.
+Configured in Ubuntu MATE 16.04.2 on an ARM 32bit processor with the Royale SDK 3.23.0.86
 
 ### Download and Unzip
-Simply download the full SDK (not android) labeled "libroyale.zip" and unpack into your desired directory.
+As outlined in the guide that comes with the Pico Flexx, navigate to the [software page of the PMD website](https://pmdtec.com/picofamily/software/) and request the software to your email. Go through the link and enter the password given with your Pico Flexx. Simply download the full SDK (not android) labeled "libroyale.zip" and unpack into your desired directory.
 Unzip the next file, in this case "20190430_royale_3.23.0.86.zip"
 
 ### Unpack Correct Folder
-Unzip the zipped folder that corresponds to your processor.
-In this case, that is "libroyale-3.23.0.86-LINUX-x86-64Bit"
+Unzip the zipped folder that corresponds to your processor. The ODROID has an arm-32bit.
+In this case, that is "libroyale-3.23.0.86-LINUX-arm-32Bit.zip"
 
-**Important** This must be unzipped into a path *without* spaces, i.e. /media/user/disk  .  Later in the install, the driver installer will have trouble navigating to a directory with spaces, i.e. /media/user/disk/this folder
+**Important** This must be unzipped into a path *without* spaces, i.e. /media/user/disk will work.  Later in the install, the driver installer will have trouble navigating to a directory with spaces, i.e. /media/user/disk/this folder will not work
 
 ### Add Driver Rules
-Navigate to driver/udev
+Navigate to driver/udev within the newly unpacked libroyale-3.23.0.86-LINUX-arm-32Bit
 
 ```
 cd driver/udev
@@ -28,8 +28,9 @@ sudo cp 10-royale-ubuntu.rules /etc/udev/rules.d
 
 If you have the camera plugged in, unplug it and reinsert.
 
-### Configure Royale SDK Viewer
-The viewer is the simplest way to assure the camera works. It will run the Pico Flexx in a preset environment.
+### Royale SDK Viewer
+**Does not apply to the arm 32 bit package**
+For a x86-64bit processor, the method below is the simplest way to assure the camera works. It will run the Pico Flexx in a preset environment.
 
 Return to the "libroyale-3.23.0.86-LINUX-x86-64Bit" directory. If currently in /driver/udev folder simply "cd ../.." out.
 
@@ -41,10 +42,3 @@ sudo ./royaleviewer.sh
 ```
 
 Executing ./royaleviewer.sh again will run the application. Simply turn on the camera using the "Start" button in the bottom right and assure the camera works!
-
-### Configure for Python
-[Activate your virtualenv](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/Installation/virtualenv.md) and install matplotlib and its dependencies by
-
-```
-pip3 install matplotlib
-```
