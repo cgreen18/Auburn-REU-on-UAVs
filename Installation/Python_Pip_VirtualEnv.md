@@ -1,4 +1,4 @@
-# Python & Pip install instructions
+# Python, pip, and virtualenv install instructions
 Continuation of the setup instructions from [ODROID_Configuration](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/Installation/ODROID_Configuration.md). These instructions will assume you are starting fresh.
 
 As always, update the repositories
