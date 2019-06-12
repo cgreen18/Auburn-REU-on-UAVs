@@ -43,9 +43,15 @@ sudo apt install libfreetype6-dev
 pip install matplotlib
 ```
 
-
-
 ```
 deactivate
 
 ```
+
+
+```
+virtualenv --python=/usr/bin/python2.7 ~/Desktop/REU/uav2.7
+source ~/Desktop/REU/uav2.7/bin/activate
+```
+
+Downloaded python 3.4 by instructions given in tutorials point.
