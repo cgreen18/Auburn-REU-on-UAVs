@@ -18,7 +18,7 @@ The whole environment was tested as of June 12th, 2019.
 
 **Virtualenv:** 16.6.0
 
-### Flow
+### Instructions Flow
 [ODROID_Configuration](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/Installation/ODROID_Configuration.md)
 =>
 [Python_and_Pip](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/Installation/Python_and_Pip.md)
