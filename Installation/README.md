@@ -1,7 +1,7 @@
 # Instructions to set up the environment
 
 ### Date
-The whole environment was tested as of June 10th, 2019. Does not work yet.
+The whole environment was tested as of June 12th, 2019.
 
 ### Operating System
 
