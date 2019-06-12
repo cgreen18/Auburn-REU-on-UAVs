@@ -52,4 +52,4 @@ deactivate
 ```
 
 ### Further Installation
-The Pico Flexx requires various libraries and dependencies that will be a mess. See the guide [Further_Installs](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/Installation/Further_Installs.md).
+The Pico Flexx requires various libraries and dependencies that will be a mess. First, probably download the Royale SDK kit as in the guide [Pico_Flexx_Linux](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/Installation/Pico_Flexx_Linux.md). Then, see the guide [Further_Installs](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/Installation/Further_Installs.md) for how to actually make everything work.
