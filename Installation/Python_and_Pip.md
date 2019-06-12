@@ -4,12 +4,16 @@ Continuation of the setup instructions from [ODROID_Configuration](https://githu
 As always, update the repositories
 
 ### Python3
-Ubuntu MATE 16.04 comes installed with Python3.5 but the Pico Flexx requires Python3.6 (and an incredible mess of dependencies/libraries). Install Python3
+Ubuntu MATE 16.04 comes installed with Python3.5 but the Pico Flexx requires Python3.6 (and an incredible mess of dependencies/libraries). Install Python3 through J Fernyhough's PPA
 
 ```
-sudo apt upgrade
-sudo apt update
-sudo apt install python3
+sudo apt sudo add-apt-repository ppa:jonathonf/python-3.6
+```
+He says that only backporting Python3.6 (i.e. deleting Python3.5) may not work. Press <kbd>ENTER</kbd>
+
+```
+sudo apt-get update
+sudo apt-get install python3.6
 ```
 
 ### Pip3
