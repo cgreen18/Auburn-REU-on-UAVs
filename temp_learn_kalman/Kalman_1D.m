@@ -25,7 +25,7 @@ set(gca,'ycolor','r')
 set(gca,'xcolor','r')
 
 
-%% k = 1 First discrete time step
+%% k = 1 First discrete time step, this was for testing purposes
 %Time update
 X1 = A.*X0
 P1 = A.*P0.*A'
