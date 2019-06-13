@@ -1,4 +1,4 @@
-# Instructions to set up the environment
+# Instructions to Set Up the Environment
 
 ### Purpose
 This folder/repository is for repeatability for outsiders, my partner, and me. This project was done for the 2019 REU at Auburn University and is therefore an academic project that should be repeatable. Sometimes the hardest part in Computer Engineering is getting on the same page in terms of software and this folder should lay the groundwork for the rest of the project in terms of consistency.
