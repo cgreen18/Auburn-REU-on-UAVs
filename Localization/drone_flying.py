@@ -4,12 +4,18 @@ Author: Conor Green
 Description: User flies the drone. Has smooth and rough flying modes
 Usage: Run as main or through another program
 Version:
-1.0 - June 13 2019 - Rough Draft Complete
+1.0 - June 13 2019 - Rough Draft Complete (broken)
 '''
 ###TODO: Implement better or more efficient user input
 
+###TODO: Doesn't respond to commands!
+
+###TODO:Parse arguments with arg parser
+
 import ps_drone
+
 import pygame
+import time
 
 def main(**kwargs):
     options = {'smooth' : False}
@@ -48,7 +54,7 @@ def smooth_flying():
             end = True
             break
 
-        if keys[pygame.SPACE]:
+        if keys[pygame.K_SPACE]:
             if not landed:
                 landed = True
                 drone.land()
@@ -74,7 +80,7 @@ def smooth_flying():
         _ = keys[pygame.K_UP] - keys[pygame.K_DOWN]
         UD = 0.8*UD + 0.2*_
 
-        drone.move(LR,BF,DU,rot_LR)
+        drone.move(LR,FB,UD,rot_LR)
 
 
     drone.stop()
@@ -131,4 +137,4 @@ def initialize_drone():
     return drone
 
 if __name__ == '__main__':
-    main()
+    main(sys.)

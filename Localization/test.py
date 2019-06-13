@@ -9,9 +9,11 @@ time.sleep(1)
 #a = drone.State
 #print(a[0])
 
-pygame.init()
+#pygame.init()
 
-while True:
+
+
+while False:
 
     keys = pygame.key.get_pressed()
     screen = pygame.display.set_mode((640,480))
