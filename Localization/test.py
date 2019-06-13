@@ -17,7 +17,10 @@ while True:
     screen = pygame.display.set_mode((640,480))
 
     if keys[pygame.K_RIGHT] and keys[pygame.K_LEFT]:
+        print(keys[pygame.K_RIGHT])
         print('Both pressed')
+    if keys[pygame.K_DOWN]:
+        print(keys[pygame.K_RIGHT])
     if keys[pygame.K_UP]:
         print('break')
         break
