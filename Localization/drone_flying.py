@@ -1,6 +1,10 @@
 '''
 Title: drone_flying.py
 Author: Conor Green
+Description: User flies the drone. Has smooth and rough flying modes
+Usage: Run as main or through another program
+Version:
+1.0 - June 13 2019 - Rough Draft Complete
 '''
 ###TODO: Implement better or more efficient user input
 
