@@ -14,14 +14,22 @@ def main():
     end = False
     while not end:
         key = drone.getKey()
-        if key == " ":      drone.moveForward(0)
-        elif key == "w":	drone.moveForward()
-        elif key == "s":	drone.moveBackward()
-		elif key == "a":	drone.moveLeft()
-		elif key == "d":	drone.moveRight()
-		elif key == "q":	drone.turnLeft()
-		elif key == "e":	drone.turnRight()
-        elif key != "":     end = True
+        if key == " ":
+            drone.moveForward(0)
+        elif key == "w":
+            drone.moveForward()
+        elif key == "s":
+            drone.moveBackward()
+        elif key == "a":
+            drone.moveLeft()
+        elif key == "d":
+            drone.moveRight()
+        elif key == "q":
+            drone.turnLeft()
+        elif key == "e":
+            drone.turnRight()
+        elif key != "":
+            end = True
 
         time.sleep(.1)
 
