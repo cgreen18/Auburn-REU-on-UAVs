@@ -16,7 +16,7 @@ def main(**kwargs):
 
     if options['smooth']:
         smooth_flying()
-    else
+    else:
         rough_flying()
 
     print('Finished Flying')
