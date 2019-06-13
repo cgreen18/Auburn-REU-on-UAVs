@@ -19,8 +19,10 @@ def main(desired_data , **kwargs):
 
     drone = initialize_drone()
 
-    #Determine packets to recieve
+    #True = 15packets/s
+    #False = 200pk/s
     drone.useDemoMode(False)
+    #Determine packets to recieve
     drone.getNDpackage(desired_data)
 
     while req_take_off:
