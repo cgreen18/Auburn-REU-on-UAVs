@@ -48,6 +48,7 @@ def initialize_drone():
     drone = ps_drone.Drone()
     drone.startup()
     drone.reset()
+    
     #Wait for reset to complete
     while(drone.getBattery()[0] == -1): time.sleep(.01)
 
