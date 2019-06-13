@@ -40,4 +40,4 @@ sudo apt upgrade
 ```
 
 ### Continue...
-See the [Python_and_Pip](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/Installation/Python_and_Pip.md) instructions for the next installation steps. 
+See the [Python_Pip_VirtualEnv](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/Installation/Python_Pip_VirtualEnv.md) instructions for the next installation steps. 
