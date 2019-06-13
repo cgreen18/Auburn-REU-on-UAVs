@@ -36,11 +36,23 @@ def smooth_flying():
     rot_LR = 0
     UD = 0
 
+    landed = False
+
     while not end:
         keys = pygame.key.get_pressed()
-        if keys[K_ESCAPE]:
+        if keys[pygame.K_ESCAPE]:
             end = True
             break
+
+        if keys[pygame.SPACE]:
+            if not landed:
+                landed = True
+                drone.land()
+                time.sleep(.2)
+            else:
+                landed = False
+                drone.takeoff()
+                time.sleep(.2)
 
         #Left - Right
         _ = keys[pygame.K_d] - keys[pygame.K_a]
