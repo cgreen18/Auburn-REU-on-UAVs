@@ -45,4 +45,4 @@ Navigate to the libroyale python directory "~/blah/blah/libroyale-3.23.0.86-LINU
 ```
 python sample_retrieve_data.py
 ```
-If you do not immediately get the libpython error then you have successfully connected that library! You will still run into a simple matplotlib import error. See the [Further_Installs]() guide to import them (not a simple pip install.)
+If you do not immediately get the libpython error then you have successfully connected that library! You will still run into a simple matplotlib import error. See the [Further_Installs](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/Installation/Further_Installs.md) guide to import them (not a simple pip install.)
