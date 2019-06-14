@@ -12,7 +12,7 @@ import manual_flight
 
 def main():
 
-    timeout = time.time() + 60
+    timeout = time.time() + 60*3
 
     drone = initialize_drone()
 
