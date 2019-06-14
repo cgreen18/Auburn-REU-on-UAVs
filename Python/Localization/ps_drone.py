@@ -40,7 +40,7 @@ class Drone(object):
 ######################################=-
 	###### Bootup and base configuration
 	def __init__(self):
-		self.__Version = 		"2.1.3"
+		self.__Version = 		"2.1.4"
 		self.__lock = 			threading.Lock()	# To prevent semaphores
 		self.__startTime = 		time.time()
 		self.__speed = 			0.2					# Default drone moving speed in percent.
@@ -114,15 +114,16 @@ class Drone(object):
 			sys.exit(9)
 
 		# Internal variables
-		self.__CmdCounter = 3											# as there are two raw commands, send next steps
-		self.__calltime = 	0											# to get some time-values to debug
+		self.__CmdCounter = 3												# as there are two raw commands, send next steps
+		self.__calltime = 	0												# to get some time-values to debug
 
 		#send the first four initial-commands to the drone
-		self.__sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)	# Open network connection
-		self.__sock.setblocking(0)										# Network should not block
-		self.__sendrawmsg("\r")											# Wakes up command port
+		self.__sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)		# Open network connection
+		self.__sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)	# Allow to reuse the address
+		self.__sock.setblocking(0)											# Network should not block
+		self.__sendrawmsg("\r")												# Wakes up command port
 		time.sleep(0.01)
-		self.__sendrawmsg("AT*PMODE=1,2\rAT*MISC=2,2,20,2000,3000\r")	# Initialising drone as sniffed from datastream demo-tool to AR.Drone
+		self.__sendrawmsg("AT*PMODE=1,2\rAT*MISC=2,2,20,2000,3000\r")		# Initialising drone as sniffed from datastream demo-tool to AR.Drone
 
 		##### Initialising timed thread(s) for drone communication
 		# Opening NavData- and Video- Processes
@@ -903,7 +904,8 @@ class Drone(object):
 		self.__net_pipes=[]
 		self.__net_pipes.append(self.__NavData_pipe)	
 		self.__net_pipes.append(self.__Video_pipe)
-		self.__Config_pipe = socket.socket(socket.AF_INET, socket.SOCK_STREAM)	#TCP
+		self.__Config_pipe = socket.socket(socket.AF_INET, socket.SOCK_STREAM)		#TCP
+		self.__Config_pipe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)	# Allow to reuse the address
 		self.__Config_pipe.setblocking(0)
 		self.__Config_pipe.connect_ex((self.DroneIP, self.CTLPort))
 		self.__net_pipes.append(self.__Config_pipe)
@@ -914,43 +916,48 @@ class Drone(object):
 			in_pipe, dummy1, dummy2 = select.select(self.__net_pipes, [], [], 0.1)	# When something is in a pipe...
 			for ip in in_pipe:														# ...go and get it
 				if ip == self.__NavData_pipe:		### Receiving sensor-values from NavData-process
-					self.__NavData, self.__State, self.__NavDataCount, self.__NavDataTimeStamp, self.__NavDataDecodingTime, self.__NoNavData = self.__NavData_pipe.recv()
+					try:		self.__NavData, self.__State, self.__NavDataCount, self.__NavDataTimeStamp, self.__NavDataDecodingTime, self.__NoNavData = self.__NavData_pipe.recv()
+					except:		pass
 				if ip == self.__vdecode_pipe:		### Receiving imagedata and feedback from videodecode-process
-					cmd, VideoImageCount, VideoImage, VideoDecodeTime = self.__vdecode_pipe.recv()	# Imagedata
-					if self.showCommands and cmd!="Image" :	print "** vDec -> Com :",cmd	
-					if cmd == "suicided":				self.__Video_pipe.send("vd died")		# videodecode-process died
-					if cmd == "foundCodec":				self.__Video_pipe.send("foundCodec")	# the codec of the videostream has been found, do not flood anymore
-					if cmd == "VideoUp":				self.__VideoReady = True				# Imagedata is available
-					if cmd == "keypressed":				self.__vKey = VideoImage				# Pressed key on window
-					if cmd == "reset":					self.__Video_pipe.send(cmd)				# proxy to videodecode-process
-					if cmd == "Image":															# Imagedata !
-						self.__VideoImageCount =		VideoImageCount
-						self.__VideoImage =				VideoImage
-						self.__VideoDecodeTime =		VideoDecodeTime
-						self.__VideoDecodeTimeStamp =	time.time()-self.__startTime
+					try:
+						cmd, VideoImageCount, VideoImage, VideoDecodeTime = self.__vdecode_pipe.recv()	# Imagedata
+						if self.showCommands and cmd!="Image" :	print "** vDec -> Com :",cmd	
+						if cmd == "suicided":				self.__Video_pipe.send("vd died")		# videodecode-process died
+						if cmd == "foundCodec":				self.__Video_pipe.send("foundCodec")	# the codec of the videostream has been found, do not flood anymore
+						if cmd == "VideoUp":				self.__VideoReady = True				# Imagedata is available
+						if cmd == "keypressed":				self.__vKey = VideoImage				# Pressed key on window
+						if cmd == "reset":					self.__Video_pipe.send(cmd)				# proxy to videodecode-process
+						if cmd == "Image":															# Imagedata !
+							self.__VideoImageCount =		VideoImageCount
+							self.__VideoImage =				VideoImage
+							self.__VideoDecodeTime =		VideoDecodeTime
+							self.__VideoDecodeTimeStamp =	time.time()-self.__startTime
+					except:		pass
 				if ip == self.__Video_pipe:		### Receiving feedback from videostream-process
-					cmd = self.__Video_pipe.recv()
-					if self.showCommands and cmd != "":	print "** Vid -> Com : ",cmd
-					if cmd == "vDecProc":											# videodecode-process should start
-						if not self.__vDecodeRunning:
-							self.__vDecodeProcess = multiprocessing.Process( target=vDecode, args=(self.__VidPipePath,self.__vdecodeChild_pipe,os.getpid()))
-							self.__vDecodeProcess.start()
-							self.__net_pipes.append(self.__vdecode_pipe)
-							self.__vDecodeRunning = True
+					try:
+						cmd = self.__Video_pipe.recv()
+						if self.showCommands and cmd != "":	print "** Vid -> Com : ",cmd
+						if cmd == "vDecProc":											# videodecode-process should start
+							if not self.__vDecodeRunning:
+								self.__vDecodeProcess = multiprocessing.Process( target=vDecode, args=(self.__VidPipePath,self.__vdecodeChild_pipe,os.getpid()))
+								self.__vDecodeProcess.start()
+								self.__net_pipes.append(self.__vdecode_pipe)
+								self.__vDecodeRunning = True
 
-						self.__Video_pipe.send("vDecProcON")
-#					else:						self.__vdecode_pipe.send(cmd)		# If / elif / else is somehow not working here...whyever
-					if cmd == "VideoDown":		self.__VideoReady=False				# videodecode-process stopped
-					if cmd == "saveVideo":		self.__SaveVideo=True				# no preprocessing of the video
-					if cmd == "unsaveVideo":	self.__SaveVideo=False				# preprocessing activated again
-					if cmd == "debug":			self.__vdecode_pipe.send(cmd)		# proxy to videodecode-process
-					if cmd == "showCommands":	self.__vdecode_pipe.send(cmd)		# proxy to videodecode-process
-					if cmd == "hideCommands":	self.__vdecode_pipe.send(cmd)		# proxy to videodecode-process
-					if cmd == "show":			self.__vdecode_pipe.send(cmd)		# proxy to videodecode-process
-					if cmd == "hide":			self.__vdecode_pipe.send(cmd)		# proxy to videodecode-process
-					if cmd == "vDecProcKill":
-						self.__vdecode_pipe.send("die!")	# videodecode-process should switch off
-						vDecodeRunning = False
+							self.__Video_pipe.send("vDecProcON")
+	#					else:						self.__vdecode_pipe.send(cmd)		# If / elif / else is somehow not working here...whyever
+						if cmd == "VideoDown":		self.__VideoReady=False				# videodecode-process stopped
+						if cmd == "saveVideo":		self.__SaveVideo=True				# no preprocessing of the video
+						if cmd == "unsaveVideo":	self.__SaveVideo=False				# preprocessing activated again
+						if cmd == "debug":			self.__vdecode_pipe.send(cmd)		# proxy to videodecode-process
+						if cmd == "showCommands":	self.__vdecode_pipe.send(cmd)		# proxy to videodecode-process
+						if cmd == "hideCommands":	self.__vdecode_pipe.send(cmd)		# proxy to videodecode-process
+						if cmd == "show":			self.__vdecode_pipe.send(cmd)		# proxy to videodecode-process
+						if cmd == "hide":			self.__vdecode_pipe.send(cmd)		# proxy to videodecode-process
+						if cmd == "vDecProcKill":
+							self.__vdecode_pipe.send("die!")	# videodecode-process should switch off
+							vDecodeRunning = False
+					except:		pass
 				if ip==self.__Config_pipe and not self.__networksuicide:	### Receiving drone-configuration
 					try:
 						if self.__networksuicide:	  break								# Does not stop sometimes, so the loop will be forced to stop
@@ -1225,6 +1232,7 @@ def mainloopV(DroneIP, VideoPort, VidPipePath, parent_pipe, parentPID):
 					searchCodecTime		= 0
 					if not vstream_pipe:
 						vstream_pipe = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+						vstream_pipe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)	# Allow to reuse the address
 						vstream_pipe.setblocking(0)
 						vstream_pipe.connect_ex((DroneIP,VideoPort))
 						pipes.append(vstream_pipe)
@@ -1961,6 +1969,7 @@ def mainloopND(DroneIP,NavDataPort,parent_pipe,parentPID):
 	pipes.append(parent_pipe)
 
 	navdata_pipe = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	navdata_pipe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)	# Allow to reuse the address
 	navdata_pipe.setblocking(0)
 	navdata_pipe.bind(('', NavDataPort))
 	pipes.append(navdata_pipe)

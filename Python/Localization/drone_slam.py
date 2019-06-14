@@ -40,13 +40,13 @@ def main(desired_data , **kwargs):
     drone.getNDpackage(desired_data)
 
     #Wait for takeoff
-    while req_take_off:
+    while options['req_take_off']:
         if drone.State == 1:
-            req_take_off = False
+            options['req_take_off'] = False
             break
         time.sleep(.5)
 
-    flight_data = gather_data_set_time(options['time_lim'])
+    flight_data = gather_data_set_time(drone , options['time_lim'])
 
 
     return (flight_data , delta_t)
@@ -55,14 +55,14 @@ def main(desired_data , **kwargs):
 Gathers data as specified by the arguments in main for a specified amount of time
 Returns: List of time slices of data (data is dictionary of lists ----not numpy arrays anymore)
 '''
-def gather_data_set_time(time_lim):
+def gather_data_set_time(drone , time_lim):
     t_end = time.time() + time_lim
 
     flight_data = []
     last_NDC = drone.NavDataCount
 
     while time.time() < t_end:
-        ( _data_slice , last_NDC ) = get_nav_frame(last_NDC)
+        ( _data_slice , last_NDC ) = get_nav_frame(drone, last_NDC)
         flight_data.append(_data_slice)
 
     return flight_data
@@ -76,7 +76,7 @@ Return: Dictionary of numpy arrays and last navdatacount
 
 #TODO: Finish list of VISION later
 
-def get_nav_frame(last_NDC , *kwargs):
+def get_nav_frame(drone , last_NDC , *kwargs):
 
     options = {'slim' : True}
     options.update(kwargs)
@@ -89,8 +89,8 @@ def get_nav_frame(last_NDC , *kwargs):
                 'wind_speed' : [0 , 1] , 'kalman_pressure':[1] , 'zimmu_3000':[] , \
                 'raw_measures' : range(0,4) , 'phys_measures' : [2 , 3] , 'references' : range(0,5) , \
                 'rc_references' : range(0,5) , 'gyros_offsets' : [0] , 'euler_angles' : [0 ,1] , \
-                'watchdog' : [] , 'trims' : range(0,4) , 'pwm' : range(0,12)
-
+                'watchdog' : [] , 'trims' : range(0,4) , 'pwm' : range(0,12) , \
+                'state' : []
                 }
     ################################
     #TODO: Finish list of VISION later
@@ -105,11 +105,14 @@ def get_nav_frame(last_NDC , *kwargs):
 
     data = {}
 
-    if slim:
+    if options['slim']:
         for _d_param in drone.NavData:
+
+            data[_d_param] = []
+
             #for important element, copy that
-            _important_elems = important[_d_param]
-            data[_d_param] = drone.NavData[_d_param][_important_elems]
+            for _important_elem in important[_d_param]:
+                data[_d_param].append(drone.NavData[_d_param][_important_elem])
             #data[_d_param] = np.array(drone.NavData[_d_param][_important_elems])
 
     else:
