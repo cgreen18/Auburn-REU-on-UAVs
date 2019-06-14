@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 import drone_slam
 
 def main():
-    ( flight_data , delta_t ) = drone_slam.main(['demo'] , time_lim = 1)
+    ( flight_data , delta_t ) = drone_slam.main(['demo'] , time_lim = 5)
 
     pos = np.zeros((3,1))
     #temp
