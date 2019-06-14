@@ -18,8 +18,6 @@ import numpy as np
 Initializes drone and deals with optional parameters. Gathers data and returns it
 Return: flight_data - list of dictionaries of numpy arrays
 '''
-'''
-'''
 def main(desired_data , **kwargs):
     options = {'req_take_off' : False , 'demo' : True , 'time_lim' : 60}
     options.update(kwargs)
