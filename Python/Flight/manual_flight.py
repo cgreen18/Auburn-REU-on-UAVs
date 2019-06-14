@@ -1,5 +1,5 @@
 '''
-Title: drone_flying.py
+Title: manual_flight.py
 Author: Conor Green
 Description: User flies the drone. Has smooth and rough flying modes
 Usage: Run as main or through another program
