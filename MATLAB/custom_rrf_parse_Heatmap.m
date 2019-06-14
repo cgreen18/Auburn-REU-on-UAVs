@@ -1,11 +1,15 @@
 clear; clc
-% retrieve all frames from an .rrf file as fast as possible
+%This script will retrieve all frames from an .rrf file as fast as possible
+%and show a few different visualizations of the point cloud
+
 
 % retrieve royale version information
 royaleVersion = royale.getVersion();
 fprintf('* royale version: %s\n',royaleVersion);
 
-FileName = 'rrf_output2.rrf';
+%Change this to the file name of the .rrf file in your workspace that you
+%wish to read
+FileName = 'rrf_sample_output.rrf';
 
 
 % open recorded file
@@ -24,11 +28,8 @@ N_Frames=cameraDevice.frameCount();
 % start capture mode
 cameraDevice.startCapture();
 %initialize array that will hold all of the frames 
-data = cell(1,N_Frames);
+data = cell(1,N_Frames); 
 
-[X, Y] = meshgrid(1:171, 1:224); 
-XS = reshape(X, [1, 38304]); YS = reshape(Y, [1,38304]); 
-% X = X./1200; Y= Y./1200; 
 
 %% Get the data out of the rrf file, Warning: These code blocks must be run sequentially
 
@@ -36,7 +37,10 @@ for ii = 1:N_Frames
     % retrieve data from camera
     data{ii} = cameraDevice.getData();
 end 
-%% Use this to view an individual frame
+%% Use this to view an individual frame,
+% modify frame choice based on how many frames you have in the variable
+% N_Frames
+
 figure('units','normalized','outerposition',[0 0 1 1])
 set(gcf, 'color', 'k')
 frameChoice = 50; 
@@ -49,6 +53,8 @@ set(gca, 'xcolor', 'b'); set(gca, 'ycolor', 'b')
 set(gca, 'zcolor', 'b');
 view(90, 70)
 %% plot 3D movie
+%play through the frames in Data
+
 h = figure('units','normalized','outerposition',[0 0 1 1]);
 %beautify
 set(gcf, 'color', 'k')
@@ -77,6 +83,9 @@ cameraDevice.stopCapture();
 fprintf('* ...done!\n');
 
 %% colored scatter plotting
+% Here we want to "linearize" the matricies so that they can be scatter
+% plotted by MATLAB. This way, we can then linearly map a heatmap
+
 clc
 figure('units','normalized','outerposition',[0 0 1 1])
 set(gcf, 'color', 'k')
@@ -95,6 +104,8 @@ axis vis3d; rotate3d
 set(gca, 'color', 'k'); 
 set(gca, 'xcolor', 'b'); set(gca, 'ycolor', 'b')
 set(gca, 'zcolor', 'b');
+
+%adjust this to change the view programmatically, (azimuth, elevation)
 view(90, 70)
 
 %% Scatter 3d Movie
@@ -122,19 +133,22 @@ for ii = 1:80
     set(gca, 'color', 'k'); 
     set(gca, 'xcolor', 'b'); set(gca, 'ycolor', 'b')
     set(gca, 'zcolor', 'b');
-    view(90, 40)
+    %adjust this to change the view programmatically, (azimuth, elevation)
+    view(90, 55)
     drawnow
-    filename = "flexx_heatmap_animation.gif";
     
-    frame = getframe(h); 
-    im = frame2im(frame); 
-    [imind,cm] = rgb2ind(im,256); 
-    % Write to the GIF File 
-    if ii == 1 
-      imwrite(imind,cm,filename,'gif', 'Loopcount',inf); 
-    elseif mod(ii,2) == 0 
-      imwrite(imind,cm,filename,'gif','WriteMode','append'); 
-    end 
+    %save to gif, remember CTRL + T to uncomment selection
+%     filename = "flexx_heatmap_animation.gif";
+%     
+%     frame = getframe(h); 
+%     im = frame2im(frame); 
+%     [imind,cm] = rgb2ind(im,256); 
+%     % Write to the GIF File 
+%     if ii == 1 
+%       imwrite(imind,cm,filename,'gif', 'Loopcount',inf); 
+%     elseif mod(ii,2) == 0 
+%       imwrite(imind,cm,filename,'gif','WriteMode','append'); 
+%     end 
     
     
 end
