@@ -18,6 +18,7 @@ import pygame
 import time
 
 def main(**kwargs):
+
     options = {'smooth' : False}
     options.update(kwargs)
 
@@ -34,6 +35,10 @@ def main(**kwargs):
     return
 
 def smooth_flying():
+
+    #broken
+    return
+
     pygame.init()
     screen = pygame.display.set_mode((640,480))
 

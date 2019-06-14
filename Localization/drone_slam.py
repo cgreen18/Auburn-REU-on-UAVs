@@ -6,6 +6,7 @@ Usage: Run through another program
 Version:
 1.0 - June 13 2019 - Structure created
 1.1 - June 14 2019 - Gathering data fleshed out more. Organized return data well
+1.2 - June 14 2019 - Changed data type of data dictionaries to lists from np arrays because it's hard to convert from the list of NavData
 '''
 
 #Imports
@@ -17,6 +18,7 @@ import numpy as np
 '''
 Initializes drone and deals with optional parameters. Gathers data and returns it
 Return: flight_data - list of dictionaries of numpy arrays
+        and the delta_t
 '''
 def main(desired_data , **kwargs):
     options = {'req_take_off' : False , 'demo' : True , 'time_lim' : 60}
@@ -28,6 +30,11 @@ def main(desired_data , **kwargs):
     #True = 15packets/s
     #False = 200pk/s
     drone.useDemoMode(options['demo'])
+
+    if options['demo']:
+        delta_t = 1/ 15
+    else:
+        delta_t = 1/200
 
     #Determine packets to recieve
     drone.getNDpackage(desired_data)
@@ -42,20 +49,20 @@ def main(desired_data , **kwargs):
     flight_data = gather_data_set_time(options['time_lim'])
 
 
-    return flight_data
+    return (flight_data , delta_t)
 
 '''
 Gathers data as specified by the arguments in main for a specified amount of time
-Returns: List of time slices of data (data is dictionary of numpy arrays)
+Returns: List of time slices of data (data is dictionary of lists ----not numpy arrays anymore)
 '''
 def gather_data_set_time(time_lim):
     t_end = time.time() + time_lim
 
     flight_data = []
-    _last_NDC = drone.NavDataCount
+    last_NDC = drone.NavDataCount
 
     while time.time() < t_end:
-        ( _data_slice , _last_NDC ) = get_nav_frame(_last_NDC)
+        ( _data_slice , last_NDC ) = get_nav_frame(last_NDC)
         flight_data.append(_data_slice)
 
     return flight_data
@@ -102,11 +109,13 @@ def get_nav_frame(last_NDC , *kwargs):
         for _d_param in drone.NavData:
             #for important element, copy that
             _important_elems = important[_d_param]
-            data[_d_param] = np.array(drone.NavData[_d_param][_important_elems])
+            data[_d_param] = drone.NavData[_d_param][_important_elems]
+            #data[_d_param] = np.array(drone.NavData[_d_param][_important_elems])
 
     else:
         for _d_param in drone.NavData:
-            data[_d_param] = np.array(drone.NavData[_d_param])
+            data[_d_param] = drone.NavData[_d_param]
+            #data[_d_param] = np.array(drone.NavData[_d_param])
 
 
 

@@ -8,3 +8,20 @@ Version:
 '''
 
 import ps_drone
+import time
+
+import numpy
+
+drone = ps_drone.Drone()
+drone.startup()
+drone.reset()
+while(drone.getBattery()[0] == -1): time.sleep(.01)
+drone.useDemoMode(True)
+#parameters
+drone.getNDpackage(["magneto"])
+
+my_NDC = drone.NavDataCount
+
+for i in range(0,1000):
+    print("\nPrinting data point: $d" % i)
+    print()
