@@ -1,7 +1,7 @@
 # Instructions to Set Up the Environment
 
 ### Purpose
-  This project was done for the 2019 REU at Auburn University and is therefore an academic project that should be repeatable and this github facilitates that effort. Sometimes the hardest part in Computer Engineering is getting on the same page in terms of software and this folder on installations should lay the groundwork for the rest of the project in terms of consistency.
+  This project was done for the 2019 REU at Auburn University and is therefore an academic project that should be repeatable and this github facilitates that effort. Sometimes the hardest part in computer engineering is getting on the same page in terms of software and this folder on installations should lay the groundwork for the rest of the project in terms of consistency.
 
 ### Instructions Flow
 [ODROID_Configuration](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/Installation/ODROID_Configuration.md)
