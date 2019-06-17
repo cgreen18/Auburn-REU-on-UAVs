@@ -46,9 +46,11 @@ class Chief:
             sys.exit()
 
         return
+    '''
+    ----------- Flight section ----------
+    '''
 
-
-    def manual_flight(**kwargs):
+    def manual_flight(self , **kwargs):
         options = {'time_lim':1*60}
         options.update(kwargs)
 
@@ -120,6 +122,51 @@ class Chief:
 
         return
 
+
+    def get_key_and_respond(self):
+        key = self.drone.getKey()
+        if key == "p":
+            end = True
+
+        elif key == "i":
+            self.drone.takeoff()
+            while self.drone.NavData["demo"][0][2]:
+                time.sleep(0.1)
+        elif key == "k":
+            self.drone.land()
+            while self.drone.NavData["demo"][0][3]:
+                time.sleep(0.1)
+
+        elif key == " ":
+            gliding = not gliding
+
+        elif key == "w":
+            self.drone.moveForward()
+        elif key == "s":
+            self.drone.moveBackward()
+
+        elif key == "a":
+            self.drone.moveLeft()
+        elif key == "d":
+            self.drone.moveRight()
+
+        elif key == "q":
+            self.drone.turnLeft()
+        elif key == "e":
+            self.drone.turnRight()
+
+        elif key == "o":
+            self.drone.moveUp()
+        elif key == "l":
+            self.drone.moveDown()
+
+        elif key == "":
+            if gliding:
+                self.drone.moveForward(0)
+            else:
+                self.drone.stop()
+
+        return
 
     '''
     ----------- Navdata section ----------
