@@ -35,7 +35,6 @@ def main(**kwargs):
     if drone.getBattery()[1] == "empty":
         return
 
-
     print('Initialized')
 
     if options['smooth']:
@@ -112,10 +111,6 @@ def rough_flying(drone):
 
     timeout = time.time() + 30
 
-    drone.takeoff()
-    while drone.NavData["demo"][0][2]:
-        time.sleep(0.1)
-
     gliding = False
     end = False
     while not end and time.time() < timeout:
@@ -124,10 +119,12 @@ def rough_flying(drone):
             end = True
         elif key == "i":
             drone.takeoff()
-            time.sleep(2)
+            while drone.NavData["demo"][0][2]:
+                time.sleep(0.1)
         elif key == "k":
             drone.land()
-            time.sleep(3)
+            while drone.NavData["demo"][0][3]:
+                time.sleep(0.1)
         elif key == " ":
             gliding = not gliding
         elif key == "w":
