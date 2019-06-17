@@ -41,11 +41,84 @@ class Chief:
         #Wait for reset to complete
         while(drone.getBattery()[0] == -1): time.sleep(.01)
 
+        print "Battery: "+str(drone.getBattery()[0])+"%  "+str(drone.getBattery()[1])	# Gives a battery-status
+        if drone.getBattery()[1] == "empty":
+            sys.exit()
+
         return
 
 
-    def fly():
-        pass
+    def manual_flight(**kwargs):
+        options = {'time_lim':1*60}
+        options.update(kwargs)
+
+        timeout = time.time() + time_lim
+
+        #initialize loop variables
+        gliding = False
+        end = False
+
+        while not end and time.time() < timeout:
+            key = self.drone.getKey()
+            if key == "p":
+                end = True
+
+            elif key == "i":
+                self.drone.takeoff()
+                while self.drone.NavData["demo"][0][2]:
+                    time.sleep(0.1)
+            elif key == "k":
+                self.drone.land()
+                while self.drone.NavData["demo"][0][3]:
+                    time.sleep(0.1)
+
+            elif key == " ":
+                gliding = not gliding
+
+            elif key == "w":
+                self.drone.moveForward()
+                time.sleep(.05)
+            elif key == "s":
+                self.drone.moveBackward()
+                time.sleep(.05)
+
+            elif key == "a":
+                self.drone.moveLeft()
+                time.sleep(.05)
+            elif key == "d":
+                self.drone.moveRight()
+                time.sleep(.05)
+
+            elif key == "q":
+                self.drone.turnLeft()
+                time.sleep(.05)
+            elif key == "e":
+                self.drone.turnRight()
+                time.sleep(.05)
+
+            elif key == "o":
+                self.drone.moveUp()
+                time.sleep(.05)
+            elif key == "l":
+                self.drone.moveDown()
+                time.sleep(.05)
+
+            elif key == "":
+                if gliding:
+                    self.drone.moveForward(0)
+                else:
+                    self.drone.stop()
+
+
+            time.sleep(.1)
+
+
+        self.drone.stop()
+        self.drone.land()
+
+        time.sleep(1)
+
+        return
 
 
     '''
