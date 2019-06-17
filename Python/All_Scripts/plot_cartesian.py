@@ -1,11 +1,10 @@
 '''
-Title: plot_pos_cartesian.py
+Title: plot_cartesian.py
 Author: Conor Green
-Description: Plots the position over time as the integral of XYZ velocity
-Usage: Call as main, no parameters
+Description: Plots the position over time as the integral of XYZ velocity. Separate from any drone scripts: it asks chief_drone for navdata as numpy arrays and simply plots them.
+Usage: Call as main
 Version:
-1.0 - June 14 2019 - Created structure
-1.1 - June 14 2019 - Finished rought draft. Untested
+1.0 - June 14 2019 - Copy/pasted from plot_pos_cartesian (old script) and modified to adhere to new class structure of chief_drone
 '''
 
 import time
@@ -16,14 +15,21 @@ import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 
-import drone_slam
+import Chief_Drone
 
-def main(drone , time_limit):
+def main():
 
-    time.sleep(15)
+    print("Wihin plot_cart")
+
+    chief = Chief_Drone.Chief()
 
 
-    ( flight_data , delta_t ) = drone_slam.main(drone, ['demo'] , time_lim = time_limit)
+    print("Getting navdata")
+    print(type(['demo']))
+
+    ( flight_data , delta_t ) = chief.get_navdata(['demo'])
+
+    print("finished navdata gathering")
 
     pos = np.zeros((3,1))
     #temp
@@ -61,11 +67,11 @@ def plot_3D(position):
 
     plt.hold(True)
 
-    plt.show(block = False)
+    plt.show(block = True)
     plt.draw()
     plt.pause(.001)
 
-    time.sleep(10)
+    time.sleep(5)
 
     return
 

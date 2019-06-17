@@ -12,15 +12,27 @@ Version:
 
 ###TODO:Parse arguments with arg parser
 
-import ps_drone
+
+
+import ps_drone_updated
+
 
 import pygame
 import time
 
-def main(drone , **kwargs):
+def main(**kwargs):
 
     options = {'smooth' : False}
     options.update(kwargs)
+
+    drone = ps_drone_updated.Drone()
+    drone.startup()
+    drone.reset()
+
+    while(drone.getBattery()[0] == -1): time.sleep(.01)
+
+    print "Battery: "+str(drone.getBattery()[0])+"%  "+str(drone.getBattery()[1])	# Gives a battery-status
+    if drone.getBattery()[1] == "empty":   sys.exit()
 
     print('Initialized')
 
@@ -96,31 +108,56 @@ def smooth_flying(drone):
 
 def rough_flying(drone):
 
-    timeout = time.time() + 10
+    timeout = time.time() + 30
 
     drone.takeoff()
+    while drone.NavData["demo"][0][2]:
+        time.sleep(0.1)
 
+    gliding = False
     end = False
     while not end and time.time() < timeout:
         key = drone.getKey()
-        if key == " ":
-            drone.moveForward(0)
+        if key == "p":
+            end = True
+        elif key == "i":
+            drone.takeoff()
+            time.sleep(2)
+        elif key == "k":
+            drone.land()
+            time.sleep(3)
+        elif key == " ":
+            gliding = not gliding
         elif key == "w":
             drone.moveForward()
+            time.sleep(.05)
         elif key == "s":
             drone.moveBackward()
+            time.sleep(.05)
         elif key == "a":
             drone.moveLeft()
+            time.sleep(.05)
         elif key == "d":
             drone.moveRight()
+            time.sleep(.05)
         elif key == "q":
             drone.turnLeft()
+            time.sleep(.05)
         elif key == "e":
             drone.turnRight()
+            time.sleep(.05)
+        elif key == "o":
+            drone.moveUp()
+            time.sleep(.05)
+        elif key == "l":
+            drone.moveDown()
+            time.sleep(.05)
         elif key == "":
-            drone.stop()
-        elif key != "":
-            end = True
+            if gliding:
+                drone.moveForward(0)
+            else:
+                drone.stop()
+
 
         time.sleep(.1)
 
@@ -131,6 +168,7 @@ def rough_flying(drone):
     time.sleep(1)
 
     return
+
 
 if __name__ == '__main__':
     main()

@@ -21,7 +21,8 @@ Return: flight_data - list of dictionaries of numpy arrays
         and the delta_t
 '''
 def main(drone , desired_data , **kwargs):
-    options = {'req_take_off' : False , 'demo' : True , 'time_lim' : 60}
+    print("within drone_slam")
+    options = {'req_take_off' : False , 'demo' : True , 'time_lim' : 15}
     options.update(kwargs)
 
     #Determines packet rate
@@ -39,12 +40,15 @@ def main(drone , desired_data , **kwargs):
 
     #Wait for takeoff
     while options['req_take_off']:
+        print("stuck here?")
         if drone.State == 1:
             options['req_take_off'] = False
             break
         time.sleep(.5)
 
+    print("about to gather_flight)data")
     flight_data = gather_data_set_time(drone , options['time_lim'])
+    print("Have gathered data")
 
 
     return (flight_data , delta_t)
@@ -56,11 +60,23 @@ Returns: List of time slices of data (data is dictionary of lists ----not numpy 
 def gather_data_set_time(drone , time_lim):
     t_end = time.time() + time_lim
 
+    print(t_end)
+
     flight_data = []
-    last_NDC = drone.NavDataCount
+    last_NDC = drone.NavDataCount -1
 
     while time.time() < t_end:
-        ( _data_slice , last_NDC ) = get_nav_frame(drone, last_NDC)
+        print(time.time())
+
+        while drone.NavDataCount == last_NDC:
+            print(drone.NavDataCount)
+            #if drone.getKey():
+            #	end = True
+            time.sleep(.00045)
+
+        last_NDC = drone.NavDataCount
+
+        _data_slice = get_nav_frame(drone)
         flight_data.append(_data_slice)
 
     return flight_data
@@ -74,8 +90,10 @@ Return: Dictionary of numpy arrays and last navdatacount
 
 #TODO: Finish list of VISION later
 
-def get_nav_frame(drone , last_NDC , *kwargs):
+def get_nav_frame(drone , *kwargs):
 
+    print("Within navframe")
+    print(drone.NavDataCount)
     options = {'slim' : True}
     options.update(kwargs)
 
@@ -94,10 +112,7 @@ def get_nav_frame(drone , last_NDC , *kwargs):
     #TODO: Finish list of VISION later
 
 
-    while drone.NavDataCount == last_NDC:
-        #if drone.getKey():
-        #	end = True
-        time.sleep(.002)
+
 
     last_NDC = drone.NavDataCount
 
@@ -118,9 +133,12 @@ def get_nav_frame(drone , last_NDC , *kwargs):
             data[_d_param] = drone.NavData[_d_param]
             #data[_d_param] = np.array(drone.NavData[_d_param])
 
+    print("\n++++++++++++++++++++++++++++++++++++")
+    print(data)
+    print(last_NDC)
+    print("------------------------------------\n")
 
-
-    return (data , last_NDC)
+    return data
 
 
 if __name__ == '__main__':

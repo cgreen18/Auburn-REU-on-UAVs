@@ -1,40 +1,27 @@
 '''
 Title: principal_drone.py
 Author: Conor Green
+Description: Runs everything
+Usage: Call as main to thread all the processes
+Public Methods:
+Version:
+1.0 - ~June 14 2019 - Created
+1.1 - June 17 2019 - Completely chagned to work with new class structure of drone
 '''
 
 import ps_drone
 import time
-import multiprocessing
+#import multiprocessing
+#import threading
 
 import plot_pos_cartesian
 import manual_flight
 
 def main():
 
-    timeout = time.time() + 60
 
-    drone = initialize_drone()
-
-    navdat = multiprocessing.Process(target = plot_pos_cartesian.main , args = (drone,10))
-    navdat.daemon = False
-
-    flying = multiprocessing.Process(target = manual_flight.rough_flying , args = (drone,))
-    flying.daemon = False
-
-    navdat.start()
-    flying.start()
-
-    navdat.join()
-    flying.join()
-
-    if(time.time() > timeout):
-        drone.stop()
-        drone.land()
-        return
 
     return
-
 '''
 Initialize instance of Drone class and start/reset drone.
 Returns: drone (object)
