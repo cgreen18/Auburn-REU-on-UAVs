@@ -39,19 +39,22 @@ class Chief:
         self.drone.reset()
 
         #Wait for reset to complete
-        while(drone.getBattery()[0] == -1): time.sleep(.01)
+        while(self.drone.getBattery()[0] == -1):
+            time.sleep(.01)
 
-        print "Battery: "+str(drone.getBattery()[0])+"%  "+str(drone.getBattery()[1])	# Gives a battery-status
-        if drone.getBattery()[1] == "empty":
+        print "Battery: "+str(self.drone.getBattery()[0])+"%  "+str(self.drone.getBattery()[1])	# Gives a battery-status
+        if self.drone.getBattery()[1] == "empty":
             sys.exit()
 
         self.last_NDC = self.drone.NavDataCount
+
+        self.fly_options = {'gliding' : False}
 
         return
 
     def main(self , **kwargs):
 
-        options = {'time_lim' : 30 , 'demo' : True , 'desired_data' : ['demo']}
+        options = {'time_lim' : 10 , 'demo' : True , 'desired_data' : ['demo']}
         options.update(kwargs)
 
         #Determines packet rate
@@ -66,7 +69,7 @@ class Chief:
 
 
         #Determine which packets to recieve
-        self.drone.getNDpackage(desired_data)
+        self.drone.getNDpackage(options['desired_data'])
 
 
         flight_data = self.fly_and_track(options['time_lim'])
@@ -77,15 +80,13 @@ class Chief:
         return
 
     def fly_and_track(self , time_lim):
-
-
-
         flight_data = []
 
         timeout = time.time() + time_lim
 
         end = False
 
+        print("Ready to fly")
         while not end and time.time() < timeout:
             if self.drone.NavDataCount != self.last_NDC:
                 self.last_NDC = self.drone.NavDataCount
@@ -95,6 +96,11 @@ class Chief:
             end  = self.get_key_and_respond()
 
             time.sleep(.02)
+
+        self.drone.land()
+        while self.drone.NavData["demo"][0][3]:
+            time.sleep(0.1)
+
 
         return flight_data
 
@@ -189,7 +195,7 @@ class Chief:
                 time.sleep(0.1)
 
         elif key == " ":
-            gliding = not gliding
+            self.fly_options['gliding'] = not self.fly_options['gliding']
 
         elif key == "w":
             self.drone.moveForward()
@@ -212,7 +218,7 @@ class Chief:
             self.drone.moveDown()
 
         elif key == "":
-            if gliding:
+            if self.fly_options['gliding']:
                 self.drone.moveForward(0)
             else:
                 self.drone.stop()
@@ -338,4 +344,5 @@ class Chief:
 
 if __name__ == '__main__':
     drone_obj = Chief()
+    print("Initialized")
     drone_obj.main()

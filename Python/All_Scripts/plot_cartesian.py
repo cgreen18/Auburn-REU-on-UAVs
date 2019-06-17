@@ -15,21 +15,7 @@ import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 
-import Chief_Drone
-
-def main():
-
-    print("Wihin plot_cart")
-
-    chief = Chief_Drone.Chief()
-
-
-    print("Getting navdata")
-    print(type(['demo']))
-
-    ( flight_data , delta_t ) = chief.get_navdata(['demo'])
-
-    print("finished navdata gathering")
+def main(flight_data , delta_t):
 
     pos = np.zeros((3,1))
     #temp
@@ -71,7 +57,7 @@ def plot_3D(position):
     plt.draw()
     plt.pause(.001)
 
-    time.sleep(5)
+    time.sleep()
 
     return
 
