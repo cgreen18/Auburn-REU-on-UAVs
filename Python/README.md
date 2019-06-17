@@ -1,16 +1,16 @@
 # Python Scripts to Control Quadcopter
 The scripts in this file will perform all the operations for the project. The files will be organized into folders for organization and readability.
 
-###### All Scripts
+**All Scripts**
 Place to put the scripts that import others (i.e. a principal script importing a flight script.)
 
-###### Localization
+**Localization**
 Holds scripts to query, process, and display navigational data
 
-###### Flight
+**Flight**
 Holds scripts to fly the drone. Only manual control is available at the moment.
 
-###### Principal
+**Principal**
 Holds scripts to call scripts in Localization and Flight. It will serve as the main user interface.
 
 # Ps Drone
