@@ -19,7 +19,7 @@ import numpy as np
 import ps_drone
 
 #Imports from this project
-#
+import plot_cartesian
 
 ### TODOs: see __init__
 ###
@@ -34,9 +34,9 @@ class Chief:
         self.__Version = "2.7.15"
 
         #Connect to drone
-        self.drone = drone = ps_drone.Drone()
-        drone.startup()
-        drone.reset()
+        self.drone = ps_drone.Drone()
+        self.drone.startup()
+        self.drone.reset()
 
         #Wait for reset to complete
         while(drone.getBattery()[0] == -1): time.sleep(.01)
@@ -45,15 +45,62 @@ class Chief:
         if drone.getBattery()[1] == "empty":
             sys.exit()
 
+        self.last_NDC = self.drone.NavDataCount
+
         return
+
+    def main(self , **kwargs):
+
+        options = {'time_lim' : 30 , 'demo' : True , 'desired_data' : ['demo']}
+        options.update(kwargs)
+
+        #Determines packet rate
+        #True = 15packets/s
+        #False = 200pk/s
+        self.drone.useDemoMode(options['demo'])
+        #and use that to determine the delta time between each packet/frame
+        if options['demo']:
+            delta_t = 1/ 15
+        else:
+            delta_t = 1/200
+
+
+        #Determine which packets to recieve
+        self.drone.getNDpackage(desired_data)
+
+
+        flight_data = self.fly_and_track(options['time_lim'])
+
+        plot_cartesian.main(flight_data , delta_t)
+
+
+        return
+
+    def fly_and_track(self , time_lim):
+
+
+
+        flight_data = []
+
+        timeout = time.time() + time_lim
+
+        end = False
+
+        while not end and time.time() < timeout:
+            if self.drone.NavDataCount != self.last_NDC:
+                self.last_NDC = self.drone.NavDataCount
+                _data_slice = self.get_nav_frame()
+                flight_data.append(_data_slice)
+
+            end  = self.get_key_and_respond()
+
+            time.sleep(.02)
+
+        return flight_data
+
     '''
     ----------- Flight section ----------
     '''
-
-    def main(self):
-        self.manual_flight()
-        return
-
     def manual_flight(self , **kwargs):
         options = {'time_lim':1*60}
         options.update(kwargs)
@@ -130,7 +177,7 @@ class Chief:
     def get_key_and_respond(self):
         key = self.drone.getKey()
         if key == "p":
-            end = True
+            return True
 
         elif key == "i":
             self.drone.takeoff()
@@ -170,7 +217,7 @@ class Chief:
             else:
                 self.drone.stop()
 
-        return
+        return False
 
     '''
     ----------- Navdata section ----------
@@ -247,9 +294,6 @@ class Chief:
     #TODO: Finish list of VISION later
 
     def get_nav_frame(self , *kwargs):
-
-        print("Within navframe")
-        print(self.drone.NavDataCount)
         options = {'slim' : True}
         options.update(kwargs)
 
@@ -288,11 +332,6 @@ class Chief:
             for _d_param in self.drone.NavData:
                 data[_d_param] = self.drone.NavData[_d_param]
                 #data[_d_param] = np.array(drone.NavData[_d_param])
-
-        print("\n++++++++++++++++++++++++++++++++++++")
-        print(data)
-        print(last_NDC)
-        print("------------------------------------\n")
 
         return data
 

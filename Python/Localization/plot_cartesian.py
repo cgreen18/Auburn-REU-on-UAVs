@@ -17,15 +17,7 @@ import matplotlib.pyplot as plt
 
 import chief_drone
 
-def main():
-
-    print("Wihin plot_cart")
-
-    chief = Chief_Drone()
-
-    ( flight_data , delta_t ) = chief.get_navdata_background( ['demo'])
-
-    print("finished navdata gathering")
+def main(flight_data , delta_t):
 
     pos = np.zeros((3,1))
     #temp
