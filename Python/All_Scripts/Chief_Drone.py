@@ -50,11 +50,15 @@ class Chief:
     ----------- Flight section ----------
     '''
 
+    def main(self):
+        self.manual_flight()
+        return
+
     def manual_flight(self , **kwargs):
         options = {'time_lim':1*60}
         options.update(kwargs)
 
-        timeout = time.time() + time_lim
+        timeout = time.time() + options['time_lim']
 
         #initialize loop variables
         gliding = False
@@ -291,3 +295,8 @@ class Chief:
         print("------------------------------------\n")
 
         return data
+
+
+if __name__ == '__main__':
+    drone_obj = Chief()
+    drone_obj.main()

@@ -22,7 +22,7 @@ import time
 
 def main(**kwargs):
 
-    options = {'smooth' : False}
+    options = {'smooth' : False , 'time_lim' : 30}
     options.update(kwargs)
 
     drone = ps_drone.Drone()
@@ -38,15 +38,15 @@ def main(**kwargs):
     print('Initialized')
 
     if options['smooth']:
-        smooth_flying(drone)
+        smooth_flying(drone , options['time_lim'])
     else:
-        rough_flying(drone)
+        rough_flying(drone , options['time_lim'])
 
     print('Finished Flying')
 
     return
 
-def smooth_flying(drone):
+def smooth_flying(drone , time_lim):
 
     #broken
     return
@@ -107,9 +107,9 @@ def smooth_flying(drone):
 
     return
 
-def rough_flying(drone):
+def rough_flying(drone , time_lim):
 
-    timeout = time.time() + 30
+    timeout = time.time() + time_lim
 
     gliding = False
     end = False
