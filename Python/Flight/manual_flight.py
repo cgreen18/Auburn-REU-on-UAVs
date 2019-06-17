@@ -14,7 +14,7 @@ Version:
 
 
 
-import ps_drone_updated
+import ps_drone
 
 
 import pygame
@@ -25,14 +25,16 @@ def main(**kwargs):
     options = {'smooth' : False}
     options.update(kwargs)
 
-    drone = ps_drone_updated.Drone()
+    drone = ps_drone.Drone()
     drone.startup()
     drone.reset()
 
     while(drone.getBattery()[0] == -1): time.sleep(.01)
 
     print "Battery: "+str(drone.getBattery()[0])+"%  "+str(drone.getBattery()[1])	# Gives a battery-status
-    if drone.getBattery()[1] == "empty":   sys.exit()
+    if drone.getBattery()[1] == "empty":
+        return
+
 
     print('Initialized')
 
