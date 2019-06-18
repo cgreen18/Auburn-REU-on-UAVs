@@ -74,9 +74,9 @@ class Chief:
         self.drone.getNDpackage(options['desired_data'])
 
 
-        euler_angles = self.gather_data_set_time(options['time_lim'])
+        flight_data = self.gather_data_set_time(options['time_lim'])
 
-        plot_euler_angles.main(euler_angles)
+        plot_euler_angles.main(flight_data , sleeptime = .1)
 
 
         return
@@ -271,16 +271,16 @@ class Chief:
     def gather_data_set_time(self , time_lim):
         t_end = time.time() + time_lim
 
-        print(t_end)
+        #print(t_end)
 
         flight_data = []
         last_NDC = self.drone.NavDataCount -1
 
         while time.time() < t_end:
-            print(time.time())
+            #print(time.time())
 
             while self.drone.NavDataCount == last_NDC:
-                print(self.drone.NavDataCount)
+                #print(self.drone.NavDataCount)
                 #if drone.getKey():
                 #	end = True
                 time.sleep(.00045)

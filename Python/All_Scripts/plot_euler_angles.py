@@ -12,8 +12,30 @@ import time
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
+from transforms3d import taitbryan
 
-def main(euler_angles , delta_t):
+def main(flight_data , **kwargs):
+    options = {'sleeptime' : .5}
+    options.update(kwargs)
+
+    euler_angles = parse_flight_data(flight_data)
+
+    rotation_matricies = handle_angle_data(euler_angles)
+
+    plot_3D(rotation_matricies , options['sleeptime'])
+
+    return
+
+def parse_flight_data(flight_data):
+    euler_angles = []
+
+    for dict in flight_data:
+        angle_data_t_slice = dict['demo'][2]
+        euler_angles.append(angle_data_t_slice)
+
+    return euler_angles
+
+def handle_angle_data(euler_angles ):
     #euler angles = [ [pitch_t0 , roll_t0 , yaw_t0] , [pitch_t1 , roll_t1 , yaw_t1] ...] in degrees
 
     list_of_rot_mats = []
@@ -27,13 +49,9 @@ def main(euler_angles , delta_t):
 
         list_of_rot_mats.append(_rotmat)
 
-    plot_3D(list_of_rot_mats)
+    return list_of_rot_mats
 
-    return
-
-
-
-def plot_3D():
+def plot_3D(rot_mats , sleeptime):
     fig = plt.figure()
     ax = Axes3D(fig)
 
@@ -54,9 +72,9 @@ def plot_3D():
         plt.show(block=False)
         plt.draw()
         plt.pause(.001)
-        time.sleep(1)
+        time.sleep(sleeptime)
 
     return
 
-    if __name__ == '__main__':
-        pass
+if __name__ == '__main__':
+    pass

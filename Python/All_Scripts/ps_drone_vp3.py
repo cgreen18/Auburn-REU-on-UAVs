@@ -665,7 +665,7 @@ class Drone(object):
 		except:		pass
 		if self.showCommands:
 			if msg.count("COMWDG") < 1:	print(msg)
-		self.__sock.sendto(msg, (self.DroneIP, self.CmdPort))
+		self.__sock.sendto(msg.encode(), (self.DroneIP, self.CmdPort))
 		self.__keepalive = threading.Timer(0.1, self.__heartbeat)
 		self.__keepalive.start()
 
@@ -961,7 +961,7 @@ class Drone(object):
 				if ip==self.__Config_pipe and not self.__networksuicide:	### Receiving drone-configuration
 					try:
 						if self.__networksuicide:	  break								# Does not stop sometimes, so the loop will be forced to stop
-						cfgdata = cfgdata+self.__Config_pipe.recv(65535)				# Data comes in two or three packages
+						cfgdata = cfgdata+self.__Config_pipe.recv(65535).decode()				# Data comes in two or three packages
 						if cfgdata.count("\x00"):										# Last byte of sent config-file, everything was received
 							if self.__networksuicide:	break
 							configdata = (cfgdata.split("\n"))							# Split the huge package into a configuration-list
@@ -1940,7 +1940,11 @@ def getNavdata(packet,choice):
 ###	Threads					###=-
 ###############################=-
 def reconnect(navdata_pipe, commitsuicideND, DroneIP,NavDataPort):
-	if not commitsuicideND:		navdata_pipe.sendto("\x01\x00\x00\x00", (DroneIP, NavDataPort))
+    if not commitsuicideND:
+        _msg = "\x01\x00\x00\x00"
+        _msg = _msg.encode()
+        navdata_pipe.sendto(_msg, (DroneIP, NavDataPort))
+
 
 def watchdogND(parentPID):
 	global commitsuicideND
