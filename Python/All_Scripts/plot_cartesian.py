@@ -39,13 +39,12 @@ def main(velocity_data , delta_t):
     return
 
 def plot_3D(positions):
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
 
     X = positions[0,:]
     Y = positions[1,:]
     Z = positions[2,:]
-
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
 
     ax.scatter(X,Y,Z,c='r',marker='o')
 
@@ -55,7 +54,7 @@ def plot_3D(positions):
     plt.draw()
     plt.pause(.001)
 
-    time.sleep()
+    time.sleep(1)
 
     return
 
