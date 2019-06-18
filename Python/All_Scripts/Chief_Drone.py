@@ -16,10 +16,11 @@ import time
 import numpy as np
 
 #Philip's backbone import
-import ps_drone
+import ps_drone_vp3
 
 #Imports from this project
 import plot_cartesian
+import plot_euler_angles
 
 ### TODOs: see __init__
 ###
@@ -34,7 +35,7 @@ class Chief:
         self.__Version = "2.7.15"
 
         #Connect to drone
-        self.drone = ps_drone.Drone()
+        self.drone = ps_drone_vp3.Drone()
         self.drone.startup()
         self.drone.reset()
 
@@ -42,8 +43,9 @@ class Chief:
         while(self.drone.getBattery()[0] == -1):
             time.sleep(.01)
 
-        print "Battery: "+str(self.drone.getBattery()[0])+"%  "+str(self.drone.getBattery()[1])	# Gives a battery-status
-        if self.drone.getBattery()[1] == "empty":
+        print("Battery: " + str(self.drone.getBattery()[0]) + "% \  "+str(self.drone.getBattery()[1]))	# Gives a battery-status
+
+        if self.drone.getBattery()[1] == "empty" :
             sys.exit()
 
         self.last_NDC = self.drone.NavDataCount
@@ -72,9 +74,9 @@ class Chief:
         self.drone.getNDpackage(options['desired_data'])
 
 
-        flight_data = self.fly_and_track(options['time_lim'])
+        euler_angles = self.gather_data_set_time(options['time_lim'])
 
-        plot_cartesian.main(flight_data , delta_t)
+        plot_euler_angles.main(euler_angles)
 
 
         return
@@ -290,8 +292,6 @@ class Chief:
 
         return flight_data
 
-
-
     #Queries drone for navdata after waiting for new data and packages them nicely.
     #Has slim parameter to only take values deemed important
     #Return: Dictionary of numpy arrays and last navdatacount
@@ -299,7 +299,7 @@ class Chief:
 
     #TODO: Finish list of VISION later
 
-    def get_nav_frame(self , *kwargs):
+    def get_nav_frame(self , **kwargs):
         options = {'slim' : True}
         options.update(kwargs)
 
