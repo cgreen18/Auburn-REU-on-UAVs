@@ -8,7 +8,7 @@ Place to put the scripts that import others (i.e. a principal script importing a
 Holds scripts to query, process, and display navigational data
 
 ![Drone Reality](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/Python/20190618_175119.gif)
-![Drone Animated](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/Python/drone_attitude_animated.gif)
+![Drone Animated](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/Python/drone_animated_2.gif)
 
 **Flight**:
 Holds scripts to fly the drone. Only manual control is available at the moment.
