@@ -9,7 +9,7 @@ fprintf('* royale version: %s\n',royaleVersion);
 
 %Change this to the file name of the .rrf file in your workspace that you
 %wish to read
-FileName = 'rrf_output19_35FPS.rrf';
+FileName = 'rrf_output13_rotate90_5FPS.rrf';
 
 
 % open recorded file
@@ -37,7 +37,7 @@ for ii = 1:N_Frames
     % retrieve data from camera
     data{ii} = cameraDevice.getData();
 end 
-
+disp('Data stored.')
 %% Render Point Cloud In this Block
 %instantiate
 clc
@@ -82,60 +82,86 @@ for ii = 2:N_Frames
 end 
 toc
 disp('Ready to play')
-%% play visualization
+%% Dramatic View of one frame
+clc
+my_frame = 20; 
+% x_temp = cloud_array{20}.Location(:,1);
+% y_temp = cloud_array{20}.Location(:,2);
+% z_temp = cloud_array{20}.Location(:,3); 
+% temp_array = pointCloud([x_temp'; z_temp'; y_temp']');
+figure('units','normalized','outerposition',[0 0 1 1]);
+
+%remember pcshow takes in a pointCloud type
+% ptCloudScene.Intensity = [];
+pcshow(ptCloudScene,'VerticalAxis','Y', 'VerticalAxisDir', 'Down')
+    set(gcf, 'color', 'k')
+    set(gca, 'color', 'k');
+    xlabel('x');ylabel('y');zlabel('z')
+    set(gca, 'xcolor', 'r'); set(gca, 'ycolor', 'r')
+    set(gca, 'zcolor', 'r');
+	ax = gca; 
+%     view([0 0])
+    
+%     campos('perspective')
+    camtarget([-.17 0.22 1.7])
+    campos([-.17 0.22 0])
+    camroll(-13)
+    axis vis3d
+    axis off
+    
+    %try semi-circle radius sweep
+    r = 3; 
+for ii = -1200:1:2000
+    campos([1*cosd(ii/10) -0.42*cosd(ii/100) 1.3])
+    pause(.01)
+end 
+%% play visualization of entire movie
 player = pcplayer([minX maxX],[minY maxY],[minZ maxZ],'VerticalAxis','Y', 'VerticalAxisDir', 'Down');
 clc
 % camva(player.Axes, 1)
 player.Axes.Color = 'k';
 % camproj(player.Axes,'perspective')
-camva(player.Axes, 5)
+camva(player.Axes, 4.5)
 % VA = camva(player.Axes);
 % player.Axes.Parent
-view(player.Axes, [0 -50])
+view(player.Axes, [0 -60])
 
 
-%%%%%%% Legacy 
-% set(gca,'visible','off')
+%%%%%% Legacy 
+
 % for ii = 1:N_Frames
 %     view(player,cloud_array{ii});
 %     set(player.Axes.Parent, 'color', 'k')
 % %     set(player.Axes, 'axis','off')
 %     
 %     pause(.05)
-%     if ii >= N_Frames
-%         ii = 1;
-%     end 
 % end 
+view(player.Axes, [0 -65])
 
-
-start = 10;
-ii=start;
-filename = 'brenden_conor_Pico_gif.gif';
+% start = 10;
+ii = 1; 
+% filename = 'brenden_conor_Pico_gif.gif';
 while ~0
     view(player,cloud_array{ii});
     set(player.Axes.Parent, 'color', 'k')
 %     set(player.Axes, 'axis','off')
-    
-     pause(.001)
-%     if ii >= N_Frames
-%         ii = 1;
-%     end 
-    ii = ii +1; 
-        %save to gif, remember CTRL + T to uncomment selection
-%     filename = "flexx_heatmap_animation.gif";
-%     
-    frame = getframe(player.Axes); 
-    im = frame2im(frame); 
-    [imind,cm] = rgb2ind(im,256); 
-    % Write to the GIF File 
-    if ii == start + 1 
-      imwrite(imind,cm,filename,'gif', 'Loopcount',inf); 
-    elseif mod(ii,5) == 0 
-      imwrite(imind,cm,filename,'gif','WriteMode','append'); 
+%     view(player.Axes, [0 -65 - ii/10])
+     pause(.05)
+     %replay
+    if ii >= N_Frames
+        ii = 1;
     end 
+    ii = ii +1; 
+ 
+%     
+   
 end
+%% Merge for known rotations
 
-%% Merge
+
+%% Merge Full (Not working properly yet)
+% NOTE: Works when rotated perfectly around camera y-axis, see
+% rrf_output13_rotate90_5FPS.rrf for best results
 clc
 % THIS CODE IS FROM THE MATLAB DOCS, COMPUTER VISION: MERGE BY ICP REGISTER
 % This only stitches rotational translations, not linear 
@@ -205,13 +231,15 @@ axis vis3d
 %% Test block
 
 clc
-pcshow(cloud_array{20},'VerticalAxis','Y', 'VerticalAxisDir', 'Down')
-set(gcf, 'color', 'k')
-set(gca, 'color', 'k'); 
-set(gca, 'xcolor', 'b'); set(gca, 'ycolor', 'b')
-set(gca, 'zcolor', 'b');
-view([0 -70])
-axis vis3d
+player = pcplayer([minX maxX],[minY maxY],[minZ maxZ],'VerticalAxis','Y', 'VerticalAxisDir', 'Down');
+player.Axes.Color = 'k';
+% camproj(player.Axes,'perspective')
+camva(player.Axes, 4)
+view(player,cloud_array{20});
+view(player.Axes, [0 -65])
+
+
+
 %% Functions  
 
 
