@@ -17,8 +17,6 @@ from transforms3d import taitbryan
 
 def main(flight_data , **kwargs):
 
-    #time.sleep(10)
-
     options = {'sleeptime' : .5 , 'guess_reference' : False , 'real_time' : False , 'dt' :  0.005}
     options.update(kwargs)
 
