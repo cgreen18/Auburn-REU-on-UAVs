@@ -10,12 +10,10 @@ Version:
 import time
 
 import numpy as np
-#from scipy.integrate import
-
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 
-def main(flight_data , delta_t):
+def main(velocity_data , delta_t):
 
     pos = np.zeros((3,1))
     #temp
@@ -23,9 +21,9 @@ def main(flight_data , delta_t):
 
     #print(flight_data)
 
-    for dictionary in flight_data:
+    for _dict in velocity_data:
 
-        vel_data_t_slice = dictionary['demo'][4]
+        vel_data_t_slice = _dict['demo'][4]
 
         delta_pos = calc_delta_pos(vel_data_t_slice , delta_t)
         indx_last_t_slice = pos.shape[1] -1
@@ -40,11 +38,11 @@ def main(flight_data , delta_t):
 
     return
 
-def plot_3D(position):
+def plot_3D(positions):
 
-    X = position[0,:]
-    Y = position[1,:]
-    Z = position[2,:]
+    X = positions[0,:]
+    Y = positions[1,:]
+    Z = positions[2,:]
 
     fig = plt.figure()
     ax = fig.gca(projection='3d')
@@ -71,4 +69,4 @@ def calc_delta_pos(vels , delta_t):
     return vels_np*delta_t
 
 if __name__ == '__main__':
-    main()
+    pass
