@@ -7,6 +7,7 @@ Public Methods:
     get_navdata - Queries the drone for navdata for a set period of time. See method for kwargs arguments
 Version:
 1.0 - June 17 2019 - Initial creation. Copy/pasted methods from previous scripts
+1.1 - June 18 2019 - Changed main
 '''
 
 #Standard lib imports
@@ -24,8 +25,10 @@ import plot_euler_angles
 
 ### TODOs: see __init__
 ###
+### fly_and_track
 ###
-###
+### time stamp
+### Global time stamp?
 
 class Chief:
 

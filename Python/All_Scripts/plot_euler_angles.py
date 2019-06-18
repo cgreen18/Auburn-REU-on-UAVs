@@ -83,7 +83,7 @@ def plot_3D(rot_mats , sleeptime , delta_t):
             #ax.view_init(0,90)
 
             for i in range(0,3):
-                ax.quiver(0,0,0,rot_mat_t_slice[0] , rot_mat_t_slice[1] , rot_mat_t_slice[2] , length = 1)
+                ax.quiver(0,0,0, rot_mat_t_slice[0] , rot_mat_t_slice[1] , rot_mat_t_slice[2] , length = 1)
 
 
             plt.show(block=False)
