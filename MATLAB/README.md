@@ -1,9 +1,9 @@
 # MATLAB Scripts
-These MATLAB scripts are to easily test and visualize the data to aid debugging. All matlab was done by Brenden
+The post-processing portion of the project will be done on MATLAB considering the propietary libraries for point clouds. The LiDAR and navigational data will be stored on a removable device on the drone and utilized on a personal computer later to create the comprehensive 3D model. Here are current attemps at stiching together frames.
 
 ### Current Frame Stitching Progress
 
-![Point Cloud Video](<img src="https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/MATLAB/brenden_conor_2.gif" width ="480" height = "480" >)
+![Point Cloud Video]("https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/MATLAB/brenden_conor_2.gif")
 
 
 ### Previous Attempt
