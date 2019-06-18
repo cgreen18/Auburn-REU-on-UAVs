@@ -76,7 +76,7 @@ class Chief:
 
         flight_data = self.gather_data_set_time(options['time_lim'])
 
-        plot_euler_angles.main(flight_data , sleeptime = .1)
+        plot_euler_angles.main(flight_data , sleeptime = .1 , guess_reference = True)
 
 
         return

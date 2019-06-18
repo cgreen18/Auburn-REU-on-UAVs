@@ -15,10 +15,10 @@ import matplotlib.pyplot as plt
 from transforms3d import taitbryan
 
 def main(flight_data , **kwargs):
-    options = {'sleeptime' : .5}
+    options = {'sleeptime' : .5 , 'guess_reference' : False}
     options.update(kwargs)
 
-    euler_angles = parse_flight_data(flight_data)
+    euler_angles = parse_flight_data(flight_data , options['guess_reference'])
 
     rotation_matricies = handle_angle_data(euler_angles)
 
@@ -26,12 +26,23 @@ def main(flight_data , **kwargs):
 
     return
 
-def parse_flight_data(flight_data):
+def parse_flight_data(flight_data , guesstimate):
     euler_angles = []
+
+    if guesstimate:
+        _dict = flight_data[0]
+        offset = _dict['demo'][2]
+    else:
+        offset = [0,0,0]
 
     for dict in flight_data:
         angle_data_t_slice = dict['demo'][2]
-        euler_angles.append(angle_data_t_slice)
+        if not guesstimate:
+            euler_angles.append(angle_data_t_slice)
+        else:
+            for i in range(0,3):
+                angle_data_t_slice[i] = angle_data_t_slice[i] - offset[i]
+            euler_angles.append(angle_data_t_slice)
 
     return euler_angles
 
