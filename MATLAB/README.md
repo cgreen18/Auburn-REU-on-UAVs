@@ -4,3 +4,5 @@ The post-processing portion of the project will be done on MATLAB considering th
 ### Current Frame Stitching Progress
 
 ![Point Cloud Video](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/MATLAB/brenden_conor_2.gif)
+
+![Environment Stitching](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/MATLAB/office_stitch1.gif)
