@@ -5,6 +5,7 @@ Description: Script to plot euler angles given in main parameters in an animatio
 Usage: Called through main of Chief_Drone
 Version:
 1.0 - June 18 2019 - Created
+1.1 - June 18 2019 - Tested and works
 '''
 
 import time
