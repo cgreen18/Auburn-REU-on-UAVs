@@ -5,4 +5,8 @@ The post-processing portion of the project will be done on MATLAB considering th
 
 ![Point Cloud Video](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/MATLAB/brenden_conor_2.gif)
 
+###### Close up video of Brenden and Conor
+
 ![Environment Stitching](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/MATLAB/office_stitch1.gif)
+
+###### Bird's eye view of the local area as captured from the ground
