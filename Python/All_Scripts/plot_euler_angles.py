@@ -16,14 +16,17 @@ import matplotlib.pyplot as plt
 from transforms3d import taitbryan
 
 def main(flight_data , **kwargs):
-    options = {'sleeptime' : .5 , 'guess_reference' : False}
+
+    #time.sleep(10)
+
+    options = {'sleeptime' : .5 , 'guess_reference' : False , 'real_time' : False , 'dt' :  0.005}
     options.update(kwargs)
 
     euler_angles = parse_flight_data(flight_data , options['guess_reference'])
 
     rotation_matricies = handle_angle_data(euler_angles)
 
-    plot_3D(rotation_matricies , options['sleeptime'])
+    plot_3D(rotation_matricies , options['sleeptime'] , options['dt'])
 
     return
 
@@ -53,8 +56,10 @@ def handle_angle_data(euler_angles ):
     list_of_rot_mats = []
 
     for t_slice in euler_angles:
-        pitch = np.deg2rad(t_slice[0])
-        roll = np.deg2rad(t_slice[1])
+
+        #Negatives added upon testing to assure it looked right
+        pitch = np.deg2rad(-t_slice[0])
+        roll = np.deg2rad(-t_slice[1])
         yaw = np.deg2rad(t_slice[2])
 
         _rotmat = taitbryan.euler2mat(yaw,pitch,roll)
@@ -63,28 +68,32 @@ def handle_angle_data(euler_angles ):
 
     return list_of_rot_mats
 
-def plot_3D(rot_mats , sleeptime):
+def plot_3D(rot_mats , sleeptime , delta_t):
     fig = plt.figure()
+    time.sleep(2)
     ax = Axes3D(fig)
 
     basis = np.array([[1,0,0] , [0,1,0] , [0,0,1]])
     basis = np.transpose(basis)
+    last_t = time.time()
+    for i in range(0,20):
+        for rot_mat_t_slice in rot_mats:
+            plt.cla()
+            ax.set_xlim([-1.5 , 1.5])
+            ax.set_ylim([1.5 , -1.5])
+            ax.set_zlim([-1.5 , 1.5])
+            #ax.view_init(0,90)
 
-    for rot_mat_t_slice in rot_mats:
-        plt.cla()
-        ax.set_xlim([-1.5 , 1.5])
-        ax.set_ylim([-1.5 , 1.5])
-        ax.set_zlim([-1.5 , 1.5])
-        #ax.view_init(0,90)
-
-        for i in range(0,3):
-            ax.quiver(0,0,0,rot_mat_t_slice[0] , rot_mat_t_slice[1] , rot_mat_t_slice[2] , length = 1)
+            for i in range(0,3):
+                ax.quiver(0,0,0,rot_mat_t_slice[0] , rot_mat_t_slice[1] , rot_mat_t_slice[2] , length = 1)
 
 
-        plt.show(block=False)
-        plt.draw()
-        plt.pause(.001)
-        time.sleep(sleeptime)
+            plt.show(block=False)
+            plt.draw()
+            plt.pause(.001)
+            while time.time() < last_t + delta_t:
+                time.sleep(.0001)
+            last_t = time.time()
 
     return
 
