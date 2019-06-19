@@ -8,6 +8,7 @@ Public Methods:
 Version:
 1.0 - June 17 2019 - Initial creation. Copy/pasted methods from previous scripts
 1.1 - June 18 2019 - Changed main
+1.2 - June 18 2019 - Commented
 '''
 
 #Standard lib imports
@@ -34,6 +35,10 @@ class Chief:
 
 
     ## TODO: Update for python3 and change version
+
+
+    # Initializes drone attribute and defines last_NDC and flying options
+    # return: -
     def __init__(self):
         self.__Version = "2.7.15"
 
@@ -57,6 +62,8 @@ class Chief:
 
         return
 
+    # Testing function
+    # return: -
     def main(self , **kwargs):
 
         options = {'time_lim' : 10 , 'demo' : True , 'desired_data' : ['demo']}
@@ -84,6 +91,21 @@ class Chief:
 
         return
 
+
+    ## TODO: Have run method set ND packages and if Demo mode etc.
+    ##
+
+
+    # Configures the drone.
+    # return: -
+    def run(self , **kwargs):
+
+        return
+
+    # # TODO: Fix this! it's broken
+
+    # Handles manual flight and packages navdata concurrently
+    # return: flight_data - list of time slices of dictionaries of navdata
     def fly_and_track(self , time_lim):
         flight_data = []
 
@@ -112,6 +134,9 @@ class Chief:
     '''
     ----------- Flight section ----------
     '''
+
+    # Allows the user to manually fly for a specified time.
+    # return: -
     def manual_flight(self , **kwargs):
         options = {'time_lim':1*60}
         options.update(kwargs)
@@ -185,6 +210,8 @@ class Chief:
         return
 
 
+    # Subsection of flight. Simply gets user's key and responds accordingly
+    # return: True/False if loop should end
     def get_key_and_respond(self):
         key = self.drone.getKey()
         if key == "p":
@@ -233,8 +260,10 @@ class Chief:
     '''
     ----------- Navdata section ----------
     '''
-    #Return: flight_data - list of dictionaries of numpy arrays
-    #        and the delta_t
+
+    # Gets navdata according to arguments and returns nicely packaged data. Can be run from outside this script
+    # return: flight_data - list of time slices of dictionaries of navdata
+    #         delta_t - change in time between navdata elements
     def get_navdata(self , desired_data , **kwargs):
         options = {'req_take_off' : False , 'demo' : True , 'time_lim' : 4}
         options.update(kwargs)
@@ -269,8 +298,8 @@ class Chief:
         return (flight_data , delta_t)
 
 
-    ###Gathers data as specified by the arguments in main for a specified amount of time
-    ###Returns: List of time slices of data (data is dictionary of lists ----not numpy arrays anymore)
+    #Gathers data as specified by the arguments in main for a specified amount of time
+    #return: flight_data - list of time slices of dictionaries of navdata
     def gather_data_set_time(self , time_lim):
         t_end = time.time() + time_lim
 
@@ -295,13 +324,11 @@ class Chief:
 
         return flight_data
 
-    #Queries drone for navdata after waiting for new data and packages them nicely.
-    #Has slim parameter to only take values deemed important
-    #Return: Dictionary of numpy arrays and last navdatacount
-
-
     #TODO: Finish list of VISION later
 
+    #Queries drone for navdata after waiting for new data and packages them nicely.
+    #Has slim parameter to only take values deemed important. Updates last NDC
+    #return: data-  Dictionary of numpy arrays
     def get_nav_frame(self , **kwargs):
         options = {'slim' : True}
         options.update(kwargs)
@@ -346,6 +373,10 @@ class Chief:
 
 
 if __name__ == '__main__':
+    #pass
+
+    #Temporary testing
+
     drone_obj = Chief()
     print("Initialized")
     drone_obj.main()
