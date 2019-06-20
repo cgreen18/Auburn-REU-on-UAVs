@@ -22,8 +22,10 @@ import numpy as np
 import ps_drone_vp3
 
 #Imports from this project
+import Drone_Thread
 import plot_cartesian
 import plot_euler_angles
+
 
 ### TODOs: see __init__
 ###
