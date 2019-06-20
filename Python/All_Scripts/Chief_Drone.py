@@ -82,7 +82,7 @@ class Chief:
         #Defaults
         self.options = {'time_lim' : 15 , 'demo' : True , 'desired_data' : ['demo']}
 
-        self.delta_t = .005
+        self.delta_t = 1/15
 
         return
 
@@ -91,9 +91,12 @@ class Chief:
 
         self.thread_fly_and_track(self.options['time_lim'])
 
-        self.special_print()
+        #self.gather_data_set_time(10)
 
-        #plot_cartesian.main(self.flight_data)
+        #name = "attitude_2_data.txt"
+        #self.special_print(name)
+
+        plot_cartesian.main(self.flight_data , dt = self.delta_t)
 
         #plot_euler_angles.main(self.flight_data)
 
@@ -360,8 +363,12 @@ class Chief:
 
         last_NDC = self.drone.NavDataCount -1
 
+        skip = False
+
         while time.time() < t_end:
             #print(time.time())
+
+
 
             while self.drone.NavDataCount == last_NDC:
                 #print(self.drone.NavDataCount)
@@ -371,9 +378,13 @@ class Chief:
 
             last_NDC = self.drone.NavDataCount
 
-            _data_slice = self.get_nav_frame()
-            self.flight_data.append(_data_slice)
-            self.parallel_time_stamp.append(time.time())
+            if not skip:
+                _data_slice = self.get_nav_frame()
+                self.flight_data.append(_data_slice)
+                self.parallel_time_stamp.append(time.time())
+                skip = not skip
+            if skip:
+                skip = not skip
 
         return
 
@@ -405,9 +416,9 @@ class Chief:
 
         return data
 
-    def special_print(self):
+    def special_print(self , name):
 
-        with open("attitude_data.txt" , "w") as file:
+        with open(name , "w") as file:
 
             num_pts = len(self.flight_data)
 
@@ -438,4 +449,4 @@ if __name__ == '__main__':
 
     drone_obj = Chief()
     print("Initialized")
-    drone_obj.run(time_lim = 2)
+    drone_obj.run(time_lim = 10)

@@ -18,37 +18,56 @@ import matplotlib.pyplot as plt
 #Handles kwargs and runs three main working functions: parse_flight_data , handle_vel_data, and plot_3D
 def main(flight_data , **kwargs):
 
-    options = {'sleeptime' : .5 , 'guess_reference' : False , 'real_time' : False , 'dt' :  0.005}
+    options = {'sleeptime' : .5 , 'guess_reference' : False , 'real_time' : False , 'dt' :  1/200}
     options.update(kwargs)
 
-    vel_data = parse_flight_data(flight_data )
+    (vel_data , alt_data) = parse_flight_data(flight_data )
 
-    pos_data = handle_vel_data(vel_data , options['dt'] , options['guess_reference'])
+    pos_vel_data = handle_vel_data(vel_data , options['dt'] , options['guess_reference'])
+
+    pos_alt_data = handle_alt_data(alt_data)
+
+    pos_data = average_z_height(pos_vel_data , pos_alt_data)
 
     plot_3D(pos_data )
 
     return
 
-#Parses flight_data into velocity data
-#return: velocities
+def handle_alt_data(alt_list):
+
+    alt_data = np.array(alt_list)
+
+    _temp_alt = np.array(alt_list[0])
+
+    alt_data = np.append( _temp_alt , alt_data , axis=1 ).reshape(1,-1)
+
+    return alt_data
+
+#Parses flight_data into velocity and altitude data
+#return: velocities and altitudes
 def parse_flight_data(flight_data ):
 
     velocity_data = []
+    altitude_data = []
 
     for dict in flight_data:
+        alt_data_t_slice = dict['demo'][3]
+
+        altitude_data.append(alt_data_t_slice)
+
         vel_data_t_slice = dict['demo'][4]
 
         velocity_data.append(vel_data_t_slice)
 
-    return velocity_data
+    return (velocity_data , altitude_data)
 
 
-#Turns velocity data into position data. Adjusts for original position if guesstimate option is True
+#Turns velocity data into position data. Adjusts for original position if guesstimate option is True.
 #return: positions
 def handle_vel_data(velocities , dt , guesstimate):
 
     if guesstimate:
-        pos = calc_delta_pos(velocities[0] , dt)
+        pos = np.array(calc_delta_pos(velocities[0] , dt)).reshape(3,1)
     else:
         pos = np.zeros((3,1))
 
@@ -62,6 +81,21 @@ def handle_vel_data(velocities , dt , guesstimate):
         pos = np.append( pos , new_pos , axis=1 )
 
     return pos
+
+def average_z_height(vel_pos , alt):
+
+    num_pts = len(alt)
+
+    # mm -> cm
+    vel_pos = vel_pos / 1000
+
+    pos_data = vel_pos[0:2 , :]
+
+    avg = np.mean(np.array([vel_pos[2,:] , alt]) , axis=0)
+    avg = avg.reshape(1,-1)
+    pos_data = np.append(pos_data , avg , axis=0)
+
+    return pos_data
 
 
 # Plots XYZ positions in static 3D figure. Exit figure to end script.
