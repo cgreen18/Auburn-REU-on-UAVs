@@ -190,31 +190,31 @@ class Chief:
 
             elif key == "w":
                 self.drone.moveForward()
-                time.sleep(.05)
+                time.sleep(.01)
             elif key == "s":
                 self.drone.moveBackward()
-                time.sleep(.05)
+                time.sleep(.01)
 
             elif key == "a":
                 self.drone.moveLeft()
-                time.sleep(.05)
+                time.sleep(.01)
             elif key == "d":
                 self.drone.moveRight()
-                time.sleep(.05)
+                time.sleep(.01)
 
             elif key == "q":
                 self.drone.turnLeft()
-                time.sleep(.05)
+                time.sleep(.01)
             elif key == "e":
                 self.drone.turnRight()
-                time.sleep(.05)
+                time.sleep(.01)
 
             elif key == "o":
                 self.drone.moveUp()
-                time.sleep(.05)
+                time.sleep(.01)
             elif key == "l":
                 self.drone.moveDown()
-                time.sleep(.05)
+                time.sleep(.01)
 
             elif key == "":
                 if gliding:
@@ -255,23 +255,31 @@ class Chief:
 
         elif key == "w":
             self.drone.moveForward()
+            time.sleep(.01)
         elif key == "s":
             self.drone.moveBackward()
+            time.sleep(.01)
 
         elif key == "a":
             self.drone.moveLeft()
+            time.sleep(.01)
         elif key == "d":
             self.drone.moveRight()
+            time.sleep(.01)
 
         elif key == "q":
             self.drone.turnLeft()
+            time.sleep(.01)
         elif key == "e":
             self.drone.turnRight()
+            time.sleep(.01)
 
         elif key == "o":
             self.drone.moveUp()
+            time.sleep(.01)
         elif key == "l":
             self.drone.moveDown()
+            time.sleep(.01)
 
         elif key == "":
             if self.fly_options['gliding']:
