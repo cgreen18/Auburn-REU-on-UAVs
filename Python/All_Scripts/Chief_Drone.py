@@ -266,6 +266,11 @@ class Chief:
 
         return False
 
+    def emergency_landing():
+        self.drone.land()
+
+        return
+
     '''
     ----------- Navdata section ----------
     '''
