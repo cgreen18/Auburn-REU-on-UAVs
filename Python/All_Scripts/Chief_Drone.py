@@ -83,7 +83,7 @@ class Chief:
 
 
         #Defaults
-        options = {'time_lim' : 15 , 'demo' : True , 'desired_data' : ['demo']}
+        self.options = {'time_lim' : 15 , 'demo' : True , 'desired_data' : ['demo']}
 
         self.delta_t = .005
 
@@ -118,7 +118,7 @@ class Chief:
 
 
         #Determine which packets to recieve
-        self.drone.getNDpackage(options['desired_data'])
+        self.drone.getNDpackage(self.options['desired_data'])
 
         self.main()
 
@@ -353,8 +353,7 @@ class Chief:
         return (flight_data , delta_t)
 
 
-    #Gathers data as specified by the arguments in main for a specified amount of time
-    #return: flight_data - list of time slices of dictionaries of navdata
+    #Gathers data as specified by the arguments in main for a specified amount of time. Updates self.flight_data to the flight data!
     def gather_data_set_time(self , time_lim):
         t_end = time.time() + time_lim
 
@@ -414,4 +413,4 @@ if __name__ == '__main__':
 
     drone_obj = Chief()
     print("Initialized")
-    drone_obj.run(time_lim = 30)
+    drone_obj.run(time_lim = 15)

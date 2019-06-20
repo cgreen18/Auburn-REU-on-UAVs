@@ -41,7 +41,7 @@ class Drone_Thread(threading.Thread):
 
         #Safety landing
         self.chief.drone.land()
-        while self.drone.NavData["demo"][0][3]:
+        while self.chief.drone.NavData["demo"][0][3]:
             time.sleep(0.1)
 
         return
@@ -49,8 +49,6 @@ class Drone_Thread(threading.Thread):
     def get_navdata(self, time_lim):
 
         self.chief.gather_data_set_time(time_lim)
-
-        self.chief.flight_data = flight_data
 
         return
 
