@@ -104,7 +104,19 @@ class Chief:
 
         flight_data = []
 
-        timeout = time.time() + time_lim
+        flight_thread = Drone_Thread(self.drone , name='flight_thread')
+        navdata_thread = Drone_Thread(self.drone , name='navdata_thread')
+
+        threads = [flight_thread , navdata_thread]
+
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+
+        ### TODO: Get data from flight_thread
+
+
 
 
 

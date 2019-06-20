@@ -31,7 +31,11 @@ class Drone_Thread(threading.Thread):
 
         flight_data = self.drone.gather_data_set_time(time_lim)
 
-        return flight_data
+        print("Printing flight data")
+        print(flight_data)
+
+        return
+        #return flight_data
 
 
 if __name__ == '__main__':
