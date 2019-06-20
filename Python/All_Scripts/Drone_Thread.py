@@ -35,6 +35,7 @@ class Drone_Thread(threading.Thread):
 
         while not end and time.time() < timeout:
             end = self.drone.get_key_and_respond()
+            time.sleep(.01)
 
         return
 
