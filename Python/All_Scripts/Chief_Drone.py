@@ -89,6 +89,9 @@ class Chief:
 
         flight_data = self.fly_and_track(options['time_lim'])
 
+        print(flight_data)
+
+        plot_euler_angles.main(flight_data)
 
         return
 
