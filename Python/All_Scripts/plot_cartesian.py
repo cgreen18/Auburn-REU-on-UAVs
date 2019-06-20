@@ -37,7 +37,6 @@ def parse_flight_data(flight_data ):
 
     for dict in flight_data:
         vel_data_t_slice = dict['demo'][4]
-        vel_data_t_slice = vel_data_t_slice
 
         velocity_data.append(vel_data_t_slice)
 
@@ -94,7 +93,7 @@ if __name__ == '__main__':
     t_1 = {'demo' : [0 , 0 , [10,10,10] , 0 , [0,0,0] ]}
     t_2 = {'demo':[0 , 0 , [20,20,20] , 0 , [100 , 50 , 0]]}
     t_3 = {'demo' :  [0 , 0 , [30,30,30] , 0 , [100 , 50 , 100]]}
-    flight_data = [t_1, t_2 , t_3]
+    flight_data = [t_1 , t_2 , t_3]
 
     main(flight_data , sleeptime = 3 , dt = 1)
 

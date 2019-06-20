@@ -2,9 +2,7 @@
 Title: Chief_Drone.py
 Author: Conor Green and Brenden Stevens
 Description: Class to maintain the same drone object (from ps_drone). Holds methods to get navdata and fly
-Usage: Call from principal_drone to multiprocess navdata and flying
-Public Methods:
-    get_navdata - Queries the drone for navdata for a set period of time. See method for kwargs arguments
+Usage: Call from principal_drone (or main at the moment) to multiprocess navdata and flying
 Version:
 1.0 - June 17 2019 - Initial creation. Copy/pasted methods from previous scripts
 1.1 - June 18 2019 - Changed main
@@ -403,6 +401,23 @@ class Chief:
 
         return data
 
+    def special_print():
+
+        with open("position_data.txt" , "w") as file:
+
+            for dict in self.flight_data:
+                vel_t_slice = dict['demo'][4]
+
+                string = str(time.time()) + ":"
+                for elem in vel_t_slice:
+                    string += str(elem) + ","
+
+                string += "\n"
+                file.write(string)
+
+            file.close()
+
+        return
 
 if __name__ == '__main__':
     #pass
@@ -411,4 +426,4 @@ if __name__ == '__main__':
 
     drone_obj = Chief()
     print("Initialized")
-    drone_obj.run(time_lim = 15)
+    drone_obj.run(time_lim = 60)
