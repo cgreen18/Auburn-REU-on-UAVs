@@ -48,13 +48,12 @@ def parse_flight_data(flight_data ):
 
 def handle_vel_data(velocities , dt , guesstimate):
 
-    pos = np.zeros((3,1))
+
     #temp
     if guesstimate:
-        _dict = flight_data[0]
-        offset = _dict['demo'][4]
+        pos =
     else:
-        offset = [0,0,0]
+        pos = np.zeros((3,1))
 
     #print(flight_data)
 
