@@ -9,6 +9,7 @@ Version:
 1.0 - June 17 2019 - Initial creation. Copy/pasted methods from previous scripts
 1.1 - June 18 2019 - Changed main
 1.2 - June 18 2019 - Commented
+1.3 - June 20 2019 - Added fly and track that utilizes threading (custom thread class - Drone_Thread)
 '''
 
 #Standard lib imports
