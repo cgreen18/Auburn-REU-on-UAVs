@@ -30,8 +30,6 @@ import plot_euler_angles
 
 ### TODOs: see __init__
 ###
-### fly_and_track
-###
 ### time stamp
 ### Global time stamp?
 
