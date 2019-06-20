@@ -24,7 +24,7 @@ def main(flight_data , **kwargs):
 
     rotation_matricies = handle_angle_data(euler_angles)
 
-    plot_3D(rotation_matricies , options['real_time'], options['sleeptime'] , options['dt'])
+    #plot_3D(rotation_matricies , options['real_time'], options['sleeptime'] , options['dt'])
 
     return
 
@@ -39,6 +39,9 @@ def parse_flight_data(flight_data , guesstimate):
 
     for dict in flight_data:
         angle_data_t_slice = dict['demo'][2]
+
+        print(angle_data_t_slice)
+
         if not guesstimate:
             euler_angles.append(angle_data_t_slice)
         else:
@@ -54,7 +57,6 @@ def handle_angle_data(euler_angles ):
     list_of_rot_mats = []
 
     for t_slice in euler_angles:
-
         #Negatives added upon testing to assure it looked right
         pitch = np.deg2rad(-t_slice[0])
         roll = np.deg2rad(-t_slice[1])
@@ -74,7 +76,10 @@ def plot_3D(rot_mats , real_time , sleeptime , delta_t):
     basis = np.array([[1,0,0] , [0,1,0] , [0,0,1]])
     basis = np.transpose(basis)
     last_t = time.time()
-    for i in range(0,20):
+
+    num_repeats = 20
+
+    for i in range(0,num_repeats):
         for rot_mat_t_slice in rot_mats:
             plt.cla()
             ax.set_xlim([-1.5 , 1.5])
@@ -94,9 +99,17 @@ def plot_3D(rot_mats , real_time , sleeptime , delta_t):
                     time.sleep(.0001)
                 last_t = time.time()
             else:
-                time.sleep(.1)
+                time.sleep(sleeptime)
 
     return
 
 if __name__ == '__main__':
-    pass
+    #Test data
+    t_1 = {'demo' : [0 , 0 , [10,10,10] , 0 , [0,0,0] ]}
+    t_2 = {'demo':[0 , 0 , [20,20,20] , 0 , [100 , 50 , 0]]}
+    t_3 = {'demo' :  [0 , 0 , [30,30,30] , 0 , [100 , 50 , 100]]}
+    flight_data = [t_1, t_2 , t_3]
+
+    main(flight_data , sleeptime = 3)
+
+    #pass

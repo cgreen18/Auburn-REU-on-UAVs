@@ -118,7 +118,7 @@ class Chief:
 
         #print(flight_data)
 
-        plot_euler_angles.main(self.flight_data)
+        #plot_euler_angles.main(self.flight_data)
 
         #plot_cartesian.main()
 

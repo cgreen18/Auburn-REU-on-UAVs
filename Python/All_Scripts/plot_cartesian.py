@@ -22,9 +22,11 @@ def main(flight_data , **kwargs):
 
     pos_data = handle_vel_data(vel_data , options['dt'] , options['guess_reference'])
 
+
+    print("------posdata-------")
     print(pos_data)
 
-    plot_3D(pos_data )
+    plot_3D(pos_data , options['sleeptime'] )
 
     return
 
@@ -35,9 +37,9 @@ def parse_flight_data(flight_data ):
 
     for dict in flight_data:
         vel_data_t_slice = dict['demo'][4]
+        vel_data_t_slice = vel_data_t_slice
 
-
-        vel_data_t_slice.append(vel_data_t_slice)
+        velocity_data.append(vel_data_t_slice)
 
     return velocity_data
 
@@ -66,7 +68,7 @@ def handle_vel_data(velocities , dt , guesstimate):
 
     return pos
 
-def plot_3D(positions):
+def plot_3D(positions , sleeptime):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
 
@@ -80,7 +82,7 @@ def plot_3D(positions):
     plt.draw()
     plt.pause(.001)
 
-    time.sleep(5)
+    time.sleep(sleeptime)
 
     return
 
@@ -95,4 +97,12 @@ def calc_delta_pos(vels , delta_t):
     return vels_np*delta_t
 
 if __name__ == '__main__':
-    pass
+    #Test data
+    t_1 = {'demo' : [0 , 0 , [10,10,10] , 0 , [0,0,0] ]}
+    t_2 = {'demo':[0 , 0 , [20,20,20] , 0 , [100 , 50 , 0]]}
+    t_3 = {'demo' :  [0 , 0 , [30,30,30] , 0 , [100 , 50 , 100]]}
+    flight_data = [t_1, t_2 , t_3]
+
+    main(flight_data , sleeptime = 3 , dt = 1)
+
+    #pass
