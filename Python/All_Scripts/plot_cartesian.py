@@ -31,12 +31,6 @@ def parse_flight_data(flight_data ):
 
     velocity_data = []
 
-    if guesstimate:
-        _dict = flight_data[0]
-        offset = _dict['demo'][4]
-    else:
-        offset = [0,0,0]
-
     for dict in flight_data:
         vel_data_t_slice = _dict['demo'][4]
 
