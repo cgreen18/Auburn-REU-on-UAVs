@@ -108,9 +108,9 @@ class Chief:
 
         self.thread_fly_and_track(options['time_lim'])
 
-        print(self.flight_data)
+        #print(self.flight_data)
 
-        time.sleep(2)
+        #time.sleep(2)
 
         plot_cartesian.main(self.flight_data)
 
@@ -432,4 +432,4 @@ if __name__ == '__main__':
 
     drone_obj = Chief()
     print("Initialized")
-    drone_obj.main()
+    drone_obj.main(time_lim = 30)

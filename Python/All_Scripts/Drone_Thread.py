@@ -37,6 +37,11 @@ class Drone_Thread(threading.Thread):
             end = self.chief.get_key_and_respond()
             time.sleep(.01)
 
+        self.chief.drone.land()
+        while self.drone.NavData["demo"][0][3]:
+            time.sleep(0.1)
+
+
         return
 
     def get_navdata(self, time_lim):

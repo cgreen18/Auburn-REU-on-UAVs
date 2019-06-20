@@ -1,10 +1,12 @@
 '''
 Title: plot_cartesian.py
 Author: Conor Green
-Description: Plots the position over time as the integral of XYZ velocity. Separate from any drone scripts: it asks chief_drone for navdata as numpy arrays and simply plots them.
-Usage: Call as main
+Description: Plots the flight path (position) through dead reckoning estimation of XYZ velocity. Separate from any drone scripts; it does not import any drone scripts. Twin of plot_euler_angles script.
+Usage: Call from Chief_Drone with flight_data parameter or call from command line and use test data.
 Version:
 1.0 - June 14 2019 - Copy/pasted from plot_pos_cartesian (old script) and modified to adhere to new class structure of chief_drone
+1.1 - June 20 2019 - Split up work into three functions
+1.2 - June 20 2019 - Finished!
 '''
 
 import time
@@ -13,6 +15,7 @@ import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 
+#Handles kwargs and runs three main working functions: parse_flight_data , handle_vel_data, and plot_3D
 def main(flight_data , **kwargs):
 
     options = {'sleeptime' : .5 , 'guess_reference' : False , 'real_time' : False , 'dt' :  0.005}
@@ -22,15 +25,12 @@ def main(flight_data , **kwargs):
 
     pos_data = handle_vel_data(vel_data , options['dt'] , options['guess_reference'])
 
-
-    print("------posdata-------")
-    print(pos_data)
-
-    plot_3D(pos_data , options['sleeptime'] )
+    plot_3D(pos_data )
 
     return
 
-
+#Parses flight_data into velocity data
+#return: velocities
 def parse_flight_data(flight_data ):
 
     velocity_data = []
@@ -44,15 +44,14 @@ def parse_flight_data(flight_data ):
     return velocity_data
 
 
+#Turns velocity data into position data. Adjusts for original position if guesstimate option is True
+#return: positions
 def handle_vel_data(velocities , dt , guesstimate):
 
-    #temp
     if guesstimate:
         pos = calc_delta_pos(velocities[0] , dt)
     else:
         pos = np.zeros((3,1))
-
-    #print(flight_data)
 
     for vel in velocities:
 
@@ -63,12 +62,11 @@ def handle_vel_data(velocities , dt , guesstimate):
 
         pos = np.append( pos , new_pos , axis=1 )
 
-
-    #now pos.shape is (3 , num_t_slices) of type np.array
-
     return pos
 
-def plot_3D(positions , sleeptime):
+
+# Plots XYZ positions in static 3D figure. Exit figure to end script.
+def plot_3D(positions):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
 
@@ -78,20 +76,15 @@ def plot_3D(positions , sleeptime):
 
     ax.scatter(X,Y,Z,c='r',marker='o')
 
-    plt.show(block = True)
     plt.draw()
+    plt.show(block = True)
     plt.pause(.001)
-
-    time.sleep(sleeptime)
 
     return
 
 
-'''
-Converts velocity list to numpy arr and does simple math.
-Uses dead reckoning logic
-Return: change in XYZ positions
-'''
+# Converts velocity list to numpy arr and does simple math. Uses dead reckoning logic
+# Return: change in XYZ positions
 def calc_delta_pos(vels , delta_t):
     vels_np = np.array(vels).reshape((3,1))
     return vels_np*delta_t

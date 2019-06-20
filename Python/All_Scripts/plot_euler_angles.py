@@ -1,11 +1,12 @@
 '''
 Title: plot_euler_angles.py
 Author: Conor Green
-Description: Script to plot euler angles given in main parameters in an animation
-Usage: Called through main of Chief_Drone
+Description: Script to plot euler angles over time. Separate from any drone scripts; it does not import any drone scripts. Twin of plot_cartesian script.
+Usage: Call from Chief_Drone with flight_data parameter or call from command line and use test data.
 Version:
 1.0 - June 18 2019 - Created
 1.1 - June 18 2019 - Tested and works
+1.2 - June 20 2019 - Finished!
 '''
 
 import time
@@ -15,6 +16,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from transforms3d import taitbryan
 
+#Handles kwargs and runs three main working functions: parse_flight_data , handle_angle_data, and plot_3D
 def main(flight_data , **kwargs):
 
     options = {'sleeptime' : .5 , 'guess_reference' : False , 'real_time' : False , 'dt' :  0.005 , 'num_repeats' : 3}
@@ -28,6 +30,8 @@ def main(flight_data , **kwargs):
 
     return
 
+#Parses flight_data into euler angle data. Adjusts for original orientation if guesstimate parameter is True
+#return: euler angles
 def parse_flight_data(flight_data , guesstimate):
     euler_angles = []
 
@@ -51,6 +55,8 @@ def parse_flight_data(flight_data , guesstimate):
 
     return euler_angles
 
+#Turns euler angle data into rotational matricies.
+#return: positions
 def handle_angle_data(euler_angles ):
     #euler angles = [ [pitch_t0 , roll_t0 , yaw_t0] , [pitch_t1 , roll_t1 , yaw_t1] ...] in degrees
 
@@ -68,6 +74,7 @@ def handle_angle_data(euler_angles ):
 
     return list_of_rot_mats
 
+#Plots the orientation over time in dynamic figure. Repeats by num_repeats parameter. Script ends after that many repetitions.
 def plot_3D(rot_mats , real_time , sleeptime , delta_t , num_repeats):
     fig = plt.figure()
     time.sleep(2)
