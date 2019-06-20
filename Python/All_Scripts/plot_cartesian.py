@@ -18,16 +18,16 @@ def main(flight_data , **kwargs):
     options = {'sleeptime' : .5 , 'guess_reference' : False , 'real_time' : False , 'dt' :  0.005}
     options.update(kwargs)
 
-    vel_data = parse_flight_data(flight_data , options['guess_reference'])
+    vel_data = parse_flight_data(flight_data )
 
-    pos_data = handle_vel_data(vel_data)
+    pos_data = handle_vel_data(vel_data , options['dt'] , options['guess_reference'])
 
     plot_3D(pos_data , options['real_time'] , options['sleeptime'] , options['dt'])
 
     return
 
 
-def parse_flight_data(flight_data , guesstimate):
+def parse_flight_data(flight_data ):
 
     velocity_data = []
 
@@ -40,27 +40,25 @@ def parse_flight_data(flight_data , guesstimate):
     for dict in flight_data:
         vel_data_t_slice = _dict['demo'][4]
 
-        if not guesstimate:
-            vel_data_t_slice.append(angle_data_t_slice)
-        else:
-            for i in range(0,3):
-                vel_data_t_slice[i] = vel_data_t_slice[i] - offset[i]
-            velocity_data.append(angle_data_t_slice)
+
+        vel_data_t_slice.append(angle_data_t_slice)
 
     return velocity_data
 
 
-
+def handle_vel_data(velocities , dt , guesstimate):
 
     pos = np.zeros((3,1))
     #temp
-    offset = [0,0,0]
+    if guesstimate:
+        _dict = flight_data[0]
+        offset = _dict['demo'][4]
+    else:
+        offset = [0,0,0]
 
     #print(flight_data)
 
-    for _dict in velocity_data:
-
-        vel_data_t_slice = _dict['demo'][4]
+    for vel in velocities:
 
         delta_pos = calc_delta_pos(vel_data_t_slice , delta_t)
         indx_last_t_slice = pos.shape[1] -1

@@ -101,12 +101,13 @@ class Chief:
         #Determine which packets to recieve
         self.drone.getNDpackage(options['desired_data'])
 
+        self.thread_fly_and_track(options['time_lim'])
 
-        flight_data = self.fly_and_track(options['time_lim'])
+        #flight_data = self.fly_and_track(options['time_lim'])
 
-        print(flight_data)
+        #print(flight_data)
 
-        plot_euler_angles.main(flight_data)
+        #plot_euler_angles.main(flight_data)
 
         #plot_cartesian.main()
 
