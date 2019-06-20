@@ -161,6 +161,8 @@ class Chief:
 
         print("Ready to fly")
         while not end and time.time() < timeout:
+            end  = self.get_key_and_respond()
+
             if self.drone.NavDataCount != self.last_NDC and not skip:
                 skip = True
                 self.last_NDC = self.drone.NavDataCount
@@ -171,9 +173,7 @@ class Chief:
                 skip = False
                 self.last_NDC = self.drone.NavDataCount
 
-            end  = self.get_key_and_respond()
-
-            time.sleep(.00001)
+            time.sleep(0.00001)
 
         self.drone.land()
         while self.drone.NavData["demo"][0][3]:
