@@ -78,6 +78,8 @@ class Chief:
         ################################
         #TODO: Finish list of VISION later
 
+        self.flight_data
+
         return
 
     # Testing function
@@ -103,6 +105,8 @@ class Chief:
 
         self.thread_fly_and_track(options['time_lim'])
 
+        plot_cartesian.main(self.flight_data)
+
         #flight_data = self.fly_and_track(options['time_lim'])
 
         #print(flight_data)
@@ -126,8 +130,6 @@ class Chief:
 
     def thread_fly_and_track(self , time_lim):
 
-        flight_data = []
-
         flight_thread = Drone_Thread.Drone_Thread(self , 'fly' , time_lim , name='flight_thread')
         navdata_thread = Drone_Thread.Drone_Thread(self , 'navdata' , time_lim , name='navdata_thread')
 
@@ -144,7 +146,7 @@ class Chief:
 
 
 
-        return flight_data
+        return
 
 
     # # TODO: Fix this! it's broken

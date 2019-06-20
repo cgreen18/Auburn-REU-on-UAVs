@@ -13,9 +13,9 @@ import Chief_Drone
 
 class Drone_Thread(threading.Thread):
 
-    def __init__(self , drone , which , time_lim , *args , **kwargs):
+    def __init__(self , chief_drone , which , time_lim , *args , **kwargs):
         super(Drone_Thread , self).__init__(*args , **kwargs)
-        self.drone = drone
+        self.chief = chief_drone
         self.which = which
         self.time_lim = time_lim
 
@@ -33,17 +33,19 @@ class Drone_Thread(threading.Thread):
         end = False
 
         while not end and time.time() < timeout:
-            end = self.drone.get_key_and_respond()
+            end = self.chief.get_key_and_respond()
             time.sleep(.01)
 
         return
 
     def get_navdata(self, time_lim):
 
-        flight_data = self.drone.gather_data_set_time(time_lim)
+        flight_data = self.chief.gather_data_set_time(time_lim)
 
         print("Printing flight data")
         print(flight_data)
+
+        self.chief.flight_data = flight_data
 
         return
         #return flight_data
