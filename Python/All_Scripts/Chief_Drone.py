@@ -69,7 +69,7 @@ class Chief:
     # return: -
     def main(self , **kwargs):
 
-        options = {'time_lim' : 10 , 'demo' : True , 'desired_data' : ['demo']}
+        options = {'time_lim' : 15 , 'demo' : True , 'desired_data' : ['demo']}
         options.update(kwargs)
 
         #Determines packet rate
@@ -92,6 +92,8 @@ class Chief:
         print(flight_data)
 
         plot_euler_angles.main(flight_data)
+
+
 
         return
 

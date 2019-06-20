@@ -24,7 +24,7 @@ def main(flight_data , **kwargs):
 
     rotation_matricies = handle_angle_data(euler_angles)
 
-    plot_3D(rotation_matricies , options['sleeptime'] , options['dt'])
+    plot_3D(rotation_matricies , options['real_time'], options['sleeptime'] , options['dt'])
 
     return
 
@@ -66,7 +66,7 @@ def handle_angle_data(euler_angles ):
 
     return list_of_rot_mats
 
-def plot_3D(rot_mats , sleeptime , delta_t):
+def plot_3D(rot_mats , real_time , sleeptime , delta_t):
     fig = plt.figure()
     time.sleep(2)
     ax = Axes3D(fig)
@@ -89,9 +89,12 @@ def plot_3D(rot_mats , sleeptime , delta_t):
             plt.show(block=False)
             plt.draw()
             plt.pause(.001)
-            while time.time() < last_t + delta_t:
-                time.sleep(.0001)
-            last_t = time.time()
+            if real_time:
+                while time.time() < last_t + delta_t:
+                    time.sleep(.0001)
+                last_t = time.time()
+            else:
+                time.sleep(.1)
 
     return
 
