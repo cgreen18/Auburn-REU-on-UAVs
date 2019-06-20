@@ -13,7 +13,17 @@ import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 
-def main(velocity_data , delta_t):
+def main(flight_data , **kwargs):
+
+    options = {'sleeptime' : .5 , 'guess_reference' : False , 'real_time' : False , 'dt' :  0.005}
+    options.update(kwargs)
+
+    vel_data = parse_flight_data(flight_data , options['guess_reference'])
+
+    return
+
+
+
 
     pos = np.zeros((3,1))
     #temp
