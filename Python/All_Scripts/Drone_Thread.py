@@ -17,6 +17,14 @@ class Drone_Thread(threading.Thread):
         super(Drone_Thread , self).__init__(*args , **kwargs)
         self.drone = drone
 
+    def run(self , which , time_lim):
+        if which == 'fly':
+            self.fly(time_lim)
+        elif which == 'navdata':
+            self.get_navdata(time_lim)
+
+        return
+
     def fly(self , time_lim):
         timeout = time.time() + time_lim
 
