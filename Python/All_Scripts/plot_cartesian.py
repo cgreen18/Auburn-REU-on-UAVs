@@ -48,10 +48,9 @@ def parse_flight_data(flight_data ):
 
 def handle_vel_data(velocities , dt , guesstimate):
 
-
     #temp
     if guesstimate:
-        pos =
+        pos = calc_delta_pos(velocities[0] , dt)
     else:
         pos = np.zeros((3,1))
 
@@ -59,7 +58,7 @@ def handle_vel_data(velocities , dt , guesstimate):
 
     for vel in velocities:
 
-        delta_pos = calc_delta_pos(vel_data_t_slice , delta_t)
+        delta_pos = calc_delta_pos(vel , dt)
         indx_last_t_slice = pos.shape[1] -1
 
         new_pos = pos[:,indx_last_t_slice].reshape(3,1) + delta_pos
@@ -68,9 +67,8 @@ def handle_vel_data(velocities , dt , guesstimate):
 
 
     #now pos.shape is (3 , num_t_slices) of type np.array
-    plot_3D(pos)
 
-    return
+    return pos
 
 def plot_3D(positions):
     fig = plt.figure()
@@ -88,7 +86,7 @@ def plot_3D(positions):
     plt.draw()
     plt.pause(.001)
 
-    time.sleep(1)
+    time.sleep(5)
 
     return
 
