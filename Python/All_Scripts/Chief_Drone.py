@@ -75,6 +75,7 @@ class Chief:
         #TODO: Finish list of VISION later
 
         self.flight_data = []
+        self.parallel_time_stamp = []
 
 
 
@@ -370,6 +371,7 @@ class Chief:
 
             _data_slice = self.get_nav_frame()
             self.flight_data.append(_data_slice)
+            self.parallel_time_stamp.append(time.time())
 
         return
 
@@ -405,10 +407,16 @@ class Chief:
 
         with open("position_data.txt" , "w") as file:
 
-            for dict in self.flight_data:
+            num_pts = len(self.flight_data)
+
+            for i in range(0,num_pts)
+                dict = self.flight_data[i]
+
                 vel_t_slice = dict['demo'][4]
 
-                string = str(time.time()) + ":"
+                t_stamp = parallel_time_stamp[i]
+
+                string = str(t_stamp) + ":"
                 for elem in vel_t_slice:
                     string += str(elem) + ","
 
