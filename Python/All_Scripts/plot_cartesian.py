@@ -20,7 +20,34 @@ def main(flight_data , **kwargs):
 
     vel_data = parse_flight_data(flight_data , options['guess_reference'])
 
+    pos_data = handle_vel_data(vel_data)
+
+    plot_3D(pos_data , options['real_time'] , options['sleeptime'] , options['dt'])
+
     return
+
+
+def parse_flight_data(flight_data , guesstimate):
+
+    velocity_data = []
+
+    if guesstimate:
+        _dict = flight_data[0]
+        offset = _dict['demo'][4]
+    else:
+        offset = [0,0,0]
+
+    for dict in flight_data:
+        vel_data_t_slice = _dict['demo'][4]
+
+        if not guesstimate:
+            vel_data_t_slice.append(angle_data_t_slice)
+        else:
+            for i in range(0,3):
+                vel_data_t_slice[i] = vel_data_t_slice[i] - offset[i]
+            velocity_data.append(angle_data_t_slice)
+
+    return velocity_data
 
 
 
@@ -70,7 +97,8 @@ def plot_3D(positions):
 
 
 '''
-Converts velocity list to numpy arr and does simple math
+Converts velocity list to numpy arr and does simple math.
+Uses dead reckoning logic
 Return: change in XYZ positions
 '''
 def calc_delta_pos(vels , delta_t):

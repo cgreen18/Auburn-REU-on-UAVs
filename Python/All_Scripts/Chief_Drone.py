@@ -137,6 +137,8 @@ class Chief:
     # Handles manual flight and packages navdata concurrently
     # return: flight_data - list of time slices of dictionaries of navdata
     def fly_and_track(self , time_lim):
+        skip = False
+
         flight_data = []
 
         timeout = time.time() + time_lim
@@ -145,10 +147,15 @@ class Chief:
 
         print("Ready to fly")
         while not end and time.time() < timeout:
-            if self.drone.NavDataCount != self.last_NDC:
+            if self.drone.NavDataCount != self.last_NDC and not skip:
+                skip = True
                 self.last_NDC = self.drone.NavDataCount
                 _data_slice = self.get_nav_frame()
                 flight_data.append(_data_slice)
+
+            if self.drone.NavDataCount != self.last_NDC and skip:
+                skip = False
+                self.last_NDC = self.drone.NavDataCount
 
             end  = self.get_key_and_respond()
 
