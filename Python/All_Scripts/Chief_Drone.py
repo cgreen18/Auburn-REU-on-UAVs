@@ -43,7 +43,7 @@ class Chief:
     # Initializes drone attribute and defines last_NDC and flying options
     # return: -
     def __init__(self):
-        self.__Version = "2.7.15"
+        self.__Version = "3.6.8"
 
         #Connect to drone
         self.drone = ps_drone_vp3.Drone()
