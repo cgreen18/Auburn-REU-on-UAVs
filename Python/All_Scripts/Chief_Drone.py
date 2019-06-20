@@ -91,9 +91,11 @@ class Chief:
 
         self.thread_fly_and_track(self.options['time_lim'])
 
-        plot_cartesian.main(self.flight_data)
+        self.special_print()
 
-        plot_euler_angles.main(self.flight_data)
+        #plot_cartesian.main(self.flight_data)
+
+        #plot_euler_angles.main(self.flight_data)
 
         return
 
@@ -403,23 +405,25 @@ class Chief:
 
         return data
 
-    def special_print():
+    def special_print(self):
 
-        with open("position_data.txt" , "w") as file:
+        with open("attitude_data.txt" , "w") as file:
 
             num_pts = len(self.flight_data)
 
-            for i in range(0,num_pts)
+            for i in range(0,num_pts):
                 dict = self.flight_data[i]
 
                 vel_t_slice = dict['demo'][4]
+                eul_t_slice = dict['demo'][2]
 
-                t_stamp = parallel_time_stamp[i]
+                t_stamp = self.parallel_time_stamp[i]
 
                 string = str(t_stamp) + ":"
-                for elem in vel_t_slice:
-                    string += str(elem) + ","
+                for elem in eul_t_slice:
+                    string += str(elem) + ":"
 
+                string = string[:-1]
                 string += "\n"
                 file.write(string)
 
@@ -434,4 +438,4 @@ if __name__ == '__main__':
 
     drone_obj = Chief()
     print("Initialized")
-    drone_obj.run(time_lim = 60)
+    drone_obj.run(time_lim = 2)
