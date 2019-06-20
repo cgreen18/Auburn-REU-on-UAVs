@@ -128,12 +128,12 @@ class Chief:
 
         flight_data = []
 
-        drone = self.drone
+        chief_drone = self
 
-        print(drone)
+        print(self)
 
-        flight_thread = Drone_Thread.Drone_Thread(drone , 'fly' , time_lim , name='flight_thread')
-        navdata_thread = Drone_Thread.Drone_Thread(drone , 'navdata' , time_lim , name='navdata_thread')
+        flight_thread = Drone_Thread.Drone_Thread(chief_drone , 'fly' , time_lim , name='flight_thread')
+        navdata_thread = Drone_Thread.Drone_Thread(chief_drone , 'navdata' , time_lim , name='navdata_thread')
 
         threads = [flight_thread , navdata_thread]
 
