@@ -78,7 +78,7 @@ class Chief:
         ################################
         #TODO: Finish list of VISION later
 
-        self.flight_data
+        self.flight_data = []
 
         return
 
@@ -151,12 +151,10 @@ class Chief:
 
     # # TODO: Fix this! it's broken
 
-    # Handles manual flight and packages navdata concurrently
-    # return: flight_data - list of time slices of dictionaries of navdata
+    # Handles manual flight and packages navdata concurrently. Updates self.flight_data
+    # return:
     def fly_and_track(self , time_lim):
         skip = False
-
-        flight_data = []
 
         timeout = time.time() + time_lim
 
@@ -170,7 +168,7 @@ class Chief:
                 skip = True
                 self.last_NDC = self.drone.NavDataCount
                 _data_slice = self.get_nav_frame()
-                flight_data.append(_data_slice)
+                self.flight_data.append(_data_slice)
 
             if self.drone.NavDataCount != self.last_NDC and skip:
                 skip = False
@@ -183,7 +181,7 @@ class Chief:
             time.sleep(0.1)
 
 
-        return flight_data
+        return
 
     '''
     ----------- Flight section ----------
@@ -358,7 +356,7 @@ class Chief:
             time.sleep(.5)
 
         print("about to gather_flight_data")
-        flight_data = self.gather_data_set_time(options['time_lim'])
+        self.gather_data_set_time(options['time_lim'])
         print("Have gathered data")
 
 
