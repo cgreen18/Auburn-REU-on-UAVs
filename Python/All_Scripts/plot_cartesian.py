@@ -22,7 +22,9 @@ def main(flight_data , **kwargs):
 
     pos_data = handle_vel_data(vel_data , options['dt'] , options['guess_reference'])
 
-    plot_3D(pos_data , options['real_time'] , options['sleeptime'] , options['dt'])
+    print(pos_data)
+
+    plot_3D(pos_data )
 
     return
 
@@ -35,7 +37,7 @@ def parse_flight_data(flight_data ):
         vel_data_t_slice = dict['demo'][4]
 
 
-        vel_data_t_slice.append(angle_data_t_slice)
+        vel_data_t_slice.append(vel_data_t_slice)
 
     return velocity_data
 
@@ -73,8 +75,6 @@ def plot_3D(positions):
     Z = positions[2,:]
 
     ax.scatter(X,Y,Z,c='r',marker='o')
-
-    plt.hold(True)
 
     plt.show(block = True)
     plt.draw()

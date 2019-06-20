@@ -22,7 +22,8 @@ class Drone_Thread(threading.Thread):
     def run(self ):
         if self.which == 'fly':
             self.fly(self.time_lim)
-        elif self.which == 'navdata':
+        else:
+            #self.which == 'navdata':
             self.get_navdata(self.time_lim)
 
         return
@@ -40,10 +41,7 @@ class Drone_Thread(threading.Thread):
 
     def get_navdata(self, time_lim):
 
-        flight_data = self.chief.gather_data_set_time(time_lim)
-
-        print("Printing flight data")
-        print(flight_data)
+        self.chief.gather_data_set_time(time_lim)
 
         self.chief.flight_data = flight_data
 

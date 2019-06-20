@@ -108,13 +108,17 @@ class Chief:
 
         self.thread_fly_and_track(options['time_lim'])
 
+        print(self.flight_data)
+
+        time.sleep(2)
+
         plot_cartesian.main(self.flight_data)
 
         #flight_data = self.fly_and_track(options['time_lim'])
 
         #print(flight_data)
 
-        #plot_euler_angles.main(flight_data)
+        plot_euler_angles.main(self.flight_data)
 
         #plot_cartesian.main()
 
@@ -134,6 +138,7 @@ class Chief:
     def thread_fly_and_track(self , time_lim):
 
         flight_thread = Drone_Thread.Drone_Thread(self , 'fly' , time_lim , name='flight_thread')
+
         navdata_thread = Drone_Thread.Drone_Thread(self , 'navdata' , time_lim , name='navdata_thread')
 
         threads = [flight_thread , navdata_thread]
