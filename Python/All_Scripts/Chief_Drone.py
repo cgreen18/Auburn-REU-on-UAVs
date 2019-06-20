@@ -1,6 +1,6 @@
 '''
 Title: Chief_Drone.py
-Author: Conor Green
+Author: Conor Green and Brenden Stevens
 Description: Class to maintain the same drone object (from ps_drone). Holds methods to get navdata and fly
 Usage: Call from principal_drone to multiprocess navdata and flying
 Public Methods:
@@ -99,6 +99,17 @@ class Chief:
     def run(self , **kwargs):
 
         return
+
+    def thread_fly_and_track(self , time_lim):
+
+        flight_data = []
+
+        timeout = time.time() + time_lim
+
+
+
+        return flight_data
+
 
     # # TODO: Fix this! it's broken
 
