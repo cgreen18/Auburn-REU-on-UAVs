@@ -16,7 +16,6 @@ class Drone_Thread(threading.Thread):
     def __init__(self , drone , which , time_lim , *args , **kwargs):
         super(Drone_Thread , self).__init__(*args , **kwargs)
         self.drone = drone
-        print(drone)
         self.which = which
         self.time_lim = time_lim
 
