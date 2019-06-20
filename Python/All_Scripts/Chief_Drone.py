@@ -84,9 +84,7 @@ class Chief:
         self.drone.getNDpackage(options['desired_data'])
 
 
-        flight_data = self.gather_data_set_time(options['time_lim'])
-
-        plot_euler_angles.main(flight_data , sleeptime = .05 , real_time = True , dt = delta_t)
+        flight_data = self.fly_and_track(options['time_lim'])
 
 
         return
@@ -122,7 +120,7 @@ class Chief:
 
             end  = self.get_key_and_respond()
 
-            time.sleep(.02)
+            time.sleep(.00001)
 
         self.drone.land()
         while self.drone.NavData["demo"][0][3]:
