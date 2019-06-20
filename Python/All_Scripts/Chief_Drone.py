@@ -80,24 +80,38 @@ class Chief:
 
         self.flight_data = []
 
-        #Default
+
+
+        #Defaults
+        options = {'time_lim' : 15 , 'demo' : True , 'desired_data' : ['demo']}
+
         self.delta_t = .005
 
         return
 
-    # Testing function
-    # return: -
-    def main(self , **kwargs):
+    #Main functionality of Chief_Drone: to fly AND track the navdata of the drone. Can add plotting functions here
+    def main(self):
 
-        options = {'time_lim' : 15 , 'demo' : True , 'desired_data' : ['demo']}
-        options.update(kwargs)
+        self.thread_fly_and_track(self.options['time_lim'])
+
+        plot_cartesian.main(self.flight_data)
+
+        plot_euler_angles.main(self.flight_data)
+
+        return
+
+
+    # Configures the drone and Chief_Drone object
+    # return: -
+    def run(self , **kwargs):
+        self.options.update(kwargs)
 
         #Determines packet rate
         #True = 15packets/s
         #False = 200pk/s
-        self.drone.useDemoMode(options['demo'])
+        self.drone.useDemoMode(self.options['demo'])
         #and use that to determine the delta time between each packet/frame
-        if options['demo']:
+        if self.options['demo']:
             self.delta_t = 1/ 15
         else:
             self.delta_t = 1/200
@@ -106,37 +120,13 @@ class Chief:
         #Determine which packets to recieve
         self.drone.getNDpackage(options['desired_data'])
 
-        self.thread_fly_and_track(options['time_lim'])
-
-        #print(self.flight_data)
-
-        #time.sleep(2)
-
-        plot_cartesian.main(self.flight_data)
-
-        #flight_data = self.fly_and_track(options['time_lim'])
-
-        #print(flight_data)
-
-        #plot_euler_angles.main(self.flight_data)
-
-        #plot_cartesian.main()
-
-        return
-
-
-    ## TODO: Have run method set ND packages and if Demo mode etc.
-    ##
-
-
-    # Configures the drone.
-    # return: -
-    def run(self , **kwargs):
+        self.main()
 
         return
 
     def thread_fly_and_track(self , time_lim):
 
+        #Initialize threads
         flight_thread = Drone_Thread.Drone_Thread(self , 'fly' , time_lim , name='flight_thread')
 
         navdata_thread = Drone_Thread.Drone_Thread(self , 'navdata' , time_lim , name='navdata_thread')
@@ -148,16 +138,8 @@ class Chief:
         for t in threads:
             t.join()
 
-        ### TODO: Get data from flight_thread
-
-
-
-
-
         return
 
-
-    # # TODO: Fix this! it's broken
 
     # Handles manual flight and packages navdata concurrently. Updates self.flight_data
     # return:
@@ -432,4 +414,4 @@ if __name__ == '__main__':
 
     drone_obj = Chief()
     print("Initialized")
-    drone_obj.main(time_lim = 30)
+    drone_obj.run(time_lim = 30)

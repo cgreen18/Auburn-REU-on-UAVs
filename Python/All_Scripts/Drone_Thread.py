@@ -5,6 +5,7 @@ Description: A custom threading class (inherits threading.Thread) that shares dr
 Usage: Instantiate and run through Chief_Drone.thread_fly_and_track()
 Version:
 1.0 - June 20 2019 - Created custom threading class
+1.1 - June 20 2019 - Finished!
 '''
 import threading
 import time
@@ -19,7 +20,8 @@ class Drone_Thread(threading.Thread):
         self.which = which
         self.time_lim = time_lim
 
-    def run(self ):
+    #overriding default function for threads. Splits each worker to do their function according to their 'which' tag
+    def run(self):
         if self.which == 'fly':
             self.fly(self.time_lim)
         else:
@@ -37,10 +39,10 @@ class Drone_Thread(threading.Thread):
             end = self.chief.get_key_and_respond()
             time.sleep(.01)
 
+        #Safety landing
         self.chief.drone.land()
         while self.drone.NavData["demo"][0][3]:
             time.sleep(0.1)
-
 
         return
 
@@ -51,7 +53,6 @@ class Drone_Thread(threading.Thread):
         self.chief.flight_data = flight_data
 
         return
-        #return flight_data
 
 
 if __name__ == '__main__':
