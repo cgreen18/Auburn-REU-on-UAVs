@@ -17,14 +17,14 @@ from transforms3d import taitbryan
 
 def main(flight_data , **kwargs):
 
-    options = {'sleeptime' : .5 , 'guess_reference' : False , 'real_time' : False , 'dt' :  0.005}
+    options = {'sleeptime' : .5 , 'guess_reference' : False , 'real_time' : False , 'dt' :  0.005 , 'num_repeats' : 3}
     options.update(kwargs)
 
     euler_angles = parse_flight_data(flight_data , options['guess_reference'])
 
     rotation_matricies = handle_angle_data(euler_angles)
 
-    #plot_3D(rotation_matricies , options['real_time'], options['sleeptime'] , options['dt'])
+    plot_3D(rotation_matricies , options['real_time'], options['sleeptime'] , options['dt'] , options['num_repeats'])
 
     return
 
@@ -68,7 +68,7 @@ def handle_angle_data(euler_angles ):
 
     return list_of_rot_mats
 
-def plot_3D(rot_mats , real_time , sleeptime , delta_t):
+def plot_3D(rot_mats , real_time , sleeptime , delta_t , num_repeats):
     fig = plt.figure()
     time.sleep(2)
     ax = Axes3D(fig)
@@ -76,8 +76,6 @@ def plot_3D(rot_mats , real_time , sleeptime , delta_t):
     basis = np.array([[1,0,0] , [0,1,0] , [0,0,1]])
     basis = np.transpose(basis)
     last_t = time.time()
-
-    num_repeats = 20
 
     for i in range(0,num_repeats):
         for rot_mat_t_slice in rot_mats:
