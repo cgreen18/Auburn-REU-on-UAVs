@@ -32,7 +32,7 @@ def parse_flight_data(flight_data ):
     velocity_data = []
 
     for dict in flight_data:
-        vel_data_t_slice = _dict['demo'][4]
+        vel_data_t_slice = dict['demo'][4]
 
 
         vel_data_t_slice.append(angle_data_t_slice)

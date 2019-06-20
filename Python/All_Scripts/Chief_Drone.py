@@ -80,6 +80,9 @@ class Chief:
 
         self.flight_data = []
 
+        #Default
+        self.delta_t = .005
+
         return
 
     # Testing function
@@ -95,9 +98,9 @@ class Chief:
         self.drone.useDemoMode(options['demo'])
         #and use that to determine the delta time between each packet/frame
         if options['demo']:
-            delta_t = 1/ 15
+            self.delta_t = 1/ 15
         else:
-            delta_t = 1/200
+            self.delta_t = 1/200
 
 
         #Determine which packets to recieve
@@ -370,7 +373,6 @@ class Chief:
 
         #print(t_end)
 
-        flight_data = []
         last_NDC = self.drone.NavDataCount -1
 
         while time.time() < t_end:
@@ -385,9 +387,9 @@ class Chief:
             last_NDC = self.drone.NavDataCount
 
             _data_slice = self.get_nav_frame()
-            flight_data.append(_data_slice)
+            self.flight_data.append(_data_slice)
 
-        return flight_data
+        return
 
     #TODO: Finish list of VISION later
 
