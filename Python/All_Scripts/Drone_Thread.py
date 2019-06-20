@@ -13,15 +13,17 @@ import Chief_Drone
 
 class Drone_Thread(threading.Thread):
 
-    def __init__(self , drone , *args , **kwargs):
+    def __init__(self , drone , which , time_lim , *args , **kwargs):
         super(Drone_Thread , self).__init__(*args , **kwargs)
         self.drone = drone
+        self.which = which
+        self.time_lim = time_lim
 
-    def run(self , which , time_lim):
-        if which == 'fly':
-            self.fly(time_lim)
-        elif which == 'navdata':
-            self.get_navdata(time_lim)
+    def run(self ):
+        if self.which == 'fly':
+            self.fly(self.time_lim)
+        elif self.which == 'navdata':
+            self.get_navdata(self.time_lim)
 
         return
 
