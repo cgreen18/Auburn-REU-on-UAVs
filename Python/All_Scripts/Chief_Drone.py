@@ -64,6 +64,20 @@ class Chief:
 
         self.fly_options = {'gliding' : False}
 
+         #For slim, important indicies of the parameter are given
+        #All of demo is important*   *maybe
+        #none of zimmu_3000 is important because it is unknown
+        self.important = {'demo': range(0,12) , 'time' : [0], 'wifi' : [0] , \
+                    'magneto': range(0,4) , 'altitude' : range(0,5) , 'pressure_raw': [0,1] , \
+                    'wind_speed' : [0 , 1] , 'kalman_pressure':[1] , 'zimmu_3000':[] , \
+                    'raw_measures' : range(0,4) , 'phys_measures' : [2 , 3] , 'references' : range(0,5) , \
+                    'rc_references' : range(0,5) , 'gyros_offsets' : [0] , 'euler_angles' : [0 ,1] , \
+                    'watchdog' : [] , 'trims' : range(0,4) , 'pwm' : range(0,12) , \
+                    'state' : []
+                    }
+        ################################
+        #TODO: Finish list of VISION later
+
         return
 
     # Testing function
@@ -383,25 +397,6 @@ class Chief:
         options = {'slim' : True}
         options.update(kwargs)
 
-        #For slim, important indicies of the parameter are given
-        #All of demo is important*   *maybe
-        #none of zimmu_3000 is important because it is unknown
-        important = {'demo': range(0,12) , 'time' : [0], 'wifi' : [0] , \
-                    'magneto': range(0,4) , 'altitude' : range(0,5) , 'pressure_raw': [0,1] , \
-                    'wind_speed' : [0 , 1] , 'kalman_pressure':[1] , 'zimmu_3000':[] , \
-                    'raw_measures' : range(0,4) , 'phys_measures' : [2 , 3] , 'references' : range(0,5) , \
-                    'rc_references' : range(0,5) , 'gyros_offsets' : [0] , 'euler_angles' : [0 ,1] , \
-                    'watchdog' : [] , 'trims' : range(0,4) , 'pwm' : range(0,12) , \
-                    'state' : []
-                    }
-        ################################
-        #TODO: Finish list of VISION later
-
-
-
-
-        last_NDC = self.drone.NavDataCount
-
         data = {}
 
         if options['slim']:
@@ -410,7 +405,7 @@ class Chief:
                 data[_d_param] = []
 
                 #for important element, copy that
-                for _important_elem in important[_d_param]:
+                for _important_elem in self.important[_d_param]:
                     data[_d_param].append(self.drone.NavData[_d_param][_important_elem])
                 #data[_d_param] = np.array(drone.NavData[_d_param][_important_elems])
 
