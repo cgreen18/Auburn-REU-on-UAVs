@@ -14,6 +14,7 @@ Version:
 
 #Standard lib imports
 import time
+import sys
 
 #Extended library
 import numpy as np
