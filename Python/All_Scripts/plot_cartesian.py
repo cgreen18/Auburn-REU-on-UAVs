@@ -66,10 +66,7 @@ def parse_flight_data(flight_data ):
 #return: positions
 def handle_vel_data(velocities , dt , guesstimate):
 
-    if guesstimate:
-        pos = np.array(calc_delta_pos(velocities[0] , dt)).reshape(3,1)
-    else:
-        pos = np.zeros((3,1))
+    pos = np.zeros((3,1))
 
     for vel in velocities:
 

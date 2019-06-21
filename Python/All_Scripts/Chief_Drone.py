@@ -416,22 +416,28 @@ class Chief:
 
         return data
 
-    def special_print(self , name):
+    '''
+    ----------- Exporting data section ----------
+    '''
+    def special_print_velocity(self , name):
+
+        vel_data = parse_flight_into_vel()
+        pos_data = handle_vel_data( vel_data )
 
         with open(name , "w") as file:
 
             num_pts = len(self.flight_data)
 
-            for i in range(0,num_pts):
-                dict = self.flight_data[i]
 
-                vel_t_slice = dict['demo'][4]
-                eul_t_slice = dict['demo'][2]
+            #skip i = 1 to skip pos_data[0] = np.zeros(3,1)
+            for i in range(1,num_pts):
+
+                pos_t_slice = pos_data[i]
 
                 t_stamp = self.parallel_time_stamp[i]
 
                 string = str(t_stamp) + ":"
-                for elem in eul_t_slice:
+                for elem in pos_t_slice:
                     string += str(elem) + ":"
 
                 string = string[:-1]
@@ -441,6 +447,42 @@ class Chief:
             file.close()
 
         return
+
+    #Parses flight_data into velocity and altitude data
+    #return: velocities and altitudes
+    def parse_flight_into_vel():
+
+        velocity_data = []
+
+        for dict in self.flight_data:
+
+            vel_data_t_slice = dict['demo'][4]
+
+            velocity_data.append(vel_data_t_slice)
+
+        return velocity_data
+
+    #Turns velocity data into position data. Adjusts for original position if guesstimate option is True.
+    #return: positions
+    def handle_vel_data( velocities ):
+
+        pos = np.zeros((3,1))
+
+        for vel in velocities:
+
+            delta_pos = calc_delta_pos(vel , self.dt)
+            indx_last_t_slice = pos.shape[1] -1
+
+            new_pos = pos[:,indx_last_t_slice].reshape(3,1) + delta_pos
+
+            pos = np.append( pos , new_pos , axis=1 )
+
+        return pos
+
+    def calc_delta_pos(vels , delta_t):
+        vels_np = np.array(vels).reshape((3,1))
+        return vels_np*delta_t
+
 
 if __name__ == '__main__':
     #pass
