@@ -93,15 +93,14 @@ class Chief:
 
         #self.gather_data_set_time(10)
 
-        #name = "attitude_2_data.txt"
-        #self.special_print(name)
+        name = "velocity_data.txt"
+        self.special_print_velocity(name)
 
-        plot_cartesian.main(self.flight_data , dt = self.delta_t)
+        #plot_cartesian.main(self.flight_data , dt = self.delta_t)
 
         #plot_euler_angles.main(self.flight_data)
 
         return
-
 
     # Configures the drone and Chief_Drone object
     # return: -
@@ -309,7 +308,7 @@ class Chief:
 
         return False
 
-    def emergency_landing():
+    def emergency_landing(self):
         self.drone.land()
 
         return
@@ -421,8 +420,8 @@ class Chief:
     '''
     def special_print_velocity(self , name):
 
-        vel_data = parse_flight_into_vel()
-        pos_data = handle_vel_data( vel_data )
+        vel_data = self.parse_flight_into_vel()
+        pos_data = self.handle_vel_data( vel_data )
 
         with open(name , "w") as file:
 
@@ -432,7 +431,7 @@ class Chief:
             #skip i = 1 to skip pos_data[0] = np.zeros(3,1)
             for i in range(1,num_pts):
 
-                pos_t_slice = pos_data[i]
+                pos_t_slice = pos_data[:,i]
 
                 t_stamp = self.parallel_time_stamp[i]
 
@@ -450,7 +449,7 @@ class Chief:
 
     #Parses flight_data into velocity and altitude data
     #return: velocities and altitudes
-    def parse_flight_into_vel():
+    def parse_flight_into_vel(self):
 
         velocity_data = []
 
@@ -464,13 +463,13 @@ class Chief:
 
     #Turns velocity data into position data. Adjusts for original position if guesstimate option is True.
     #return: positions
-    def handle_vel_data( velocities ):
+    def handle_vel_data( self, velocities ):
 
         pos = np.zeros((3,1))
 
         for vel in velocities:
 
-            delta_pos = calc_delta_pos(vel , self.dt)
+            delta_pos = self.calc_delta_pos(vel )
             indx_last_t_slice = pos.shape[1] -1
 
             new_pos = pos[:,indx_last_t_slice].reshape(3,1) + delta_pos
@@ -479,9 +478,11 @@ class Chief:
 
         return pos
 
-    def calc_delta_pos(vels , delta_t):
-        vels_np = np.array(vels).reshape((3,1))
-        return vels_np*delta_t
+    def calc_delta_pos(self, vel):
+        vel_np = np.array(vel)
+        delta_pos = vel_np * self.delta_t
+        delta_pos = delta_pos.reshape((3,1))
+        return delta_pos
 
 
 if __name__ == '__main__':
@@ -491,4 +492,4 @@ if __name__ == '__main__':
 
     drone_obj = Chief()
     print("Initialized")
-    drone_obj.run(time_lim = 10)
+    drone_obj.run(time_lim = 20)
