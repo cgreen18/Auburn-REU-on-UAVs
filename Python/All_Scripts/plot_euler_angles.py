@@ -33,7 +33,7 @@ def main(flight_data , **kwargs):
 #Parses flight_data into euler angle data. Adjusts for original orientation if guesstimate parameter is True
 #return: euler angles
 def parse_flight_data(flight_data , guesstimate):
-    euler_angles = []
+    euler_angles = [[0,0,0]]
 
     if guesstimate:
         _dict = flight_data[0]
@@ -110,9 +110,12 @@ if __name__ == '__main__':
     #Test data
     t_1 = {'demo' : [0 , 0 , [10,10,10] , 0 , [0,0,0] ]}
     t_2 = {'demo':[0 , 0 , [20,20,20] , 0 , [100 , 50 , 0]]}
-    t_3 = {'demo' :  [0 , 0 , [30,30,30] , 0 , [100 , 50 , 100]]}
-    flight_data = [t_1, t_2 , t_3]
+    t_3 = {'demo' :  [0 , 0 , [30,30,30] , 90 , [100 , 50 , 100]]}
+    t_4 = {'demo' :  [0 , 0 , [40,40,40] , 180 , [100 , 50 , 100]]}
+    t_5 = {'demo' :  [0 , 0 , [50,50,50] , 270 , [100 , 50 , 100]]}
+    t_6 = {'demo' :  [0 , 0 , [60,60,60] , 360 , [100 , 50 , 100]]}
+    flight_data = [t_1, t_2 , t_3 , t_4 , t_5, t_6]
 
-    main(flight_data , sleeptime = 3)
+    main(flight_data , sleeptime = .2)
 
     #pass

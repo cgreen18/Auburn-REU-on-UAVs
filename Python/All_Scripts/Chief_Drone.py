@@ -93,8 +93,14 @@ class Chief:
 
         #self.gather_data_set_time(10)
 
-        name = "velocity_data.txt"
-        self.special_print_velocity(name)
+        #name = "position_data.txt"
+        #self.special_print_position(name)
+
+        #name = "attitude_data.txt"
+        #self.special_print_euler(name)
+
+        name = "pos_and_eul_data.txt"
+        self.special_print_eul_and_pos(name)
 
         #plot_cartesian.main(self.flight_data , dt = self.delta_t)
 
@@ -418,7 +424,43 @@ class Chief:
     '''
     ----------- Exporting data section ----------
     '''
-    def special_print_velocity(self , name):
+    def special_print_eul_and_pos(self , name):
+        vel_data = self.parse_flight_into_vel()
+        pos_data = self.handle_vel_data( vel_data )
+
+        eul_data = self.parse_flight_into_eul_and_convert()
+
+        with open(name , "w") as file:
+
+            num_pts = len(self.flight_data)
+
+
+            #skip i = 1 to skip pos_data[0] = np.zeros(3,1)
+            for i in range(1,num_pts):
+
+                eul_t_slice = eul_data[:,i]
+                pos_t_slice = pos_data[:,i]
+
+                t_stamp = self.parallel_time_stamp[i]
+
+                string = str(t_stamp) + ":"
+
+                for elem in eul_t_slice:
+                    string += str(elem) + ":"
+
+                for elem in pos_t_slice:
+                    string += str(elem) + ":"
+
+                string = string[:-1]
+                string += "\n"
+                file.write(string)
+
+            file.close()
+
+        return
+
+    ##TODO: THIS IS COPY PASTE, DOESNT WORK
+    def special_print_euler(self , name):
 
         vel_data = self.parse_flight_into_vel()
         pos_data = self.handle_vel_data( vel_data )
@@ -447,8 +489,53 @@ class Chief:
 
         return
 
-    #Parses flight_data into velocity and altitude data
-    #return: velocities and altitudes
+    def special_print_position(self , name):
+
+        vel_data = self.parse_flight_into_vel()
+        pos_data = self.handle_vel_data( vel_data )
+
+        with open(name , "w") as file:
+
+            num_pts = len(self.flight_data)
+
+
+            #skip i = 1 to skip pos_data[0] = np.zeros(3,1)
+            for i in range(1,num_pts):
+
+                pos_t_slice = pos_data[:,i]
+
+                t_stamp = self.parallel_time_stamp[i]
+
+                string = str(t_stamp) + ":"
+                for elem in pos_t_slice:
+                    string += str(elem) + ":"
+
+                string = string[:-1]
+                string += "\n"
+                file.write(string)
+
+            file.close()
+
+        return
+
+    #Parses self.flight_data into euler angles
+    #return: euler angles
+    def parse_flight_into_eul_and_convert(self):
+        euler_angles = np.array([0,0,0]).reshape((3,1))
+
+        for dict in self.flight_data:
+
+            eul_data_t_slice = dict['demo'][2]
+
+            eul_data_t_slice = np.array(eul_data_t_slice).reshape((3,1))
+
+            euler_angles = np.append(euler_angles , eul_data_t_slice , axis=1)
+            #pos = np.append( pos , new_pos , axis=1 )
+
+        return euler_angles
+
+    #Parses self.flight_data into velocity
+    #return: velocities
     def parse_flight_into_vel(self):
 
         velocity_data = []
