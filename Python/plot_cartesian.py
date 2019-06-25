@@ -33,16 +33,6 @@ def main(flight_data , **kwargs):
 
     return
 
-def handle_alt_data(alt_list):
-
-    alt_data = np.array(alt_list)
-
-    _temp_alt = np.array(alt_list[0])
-
-    alt_data = np.append( _temp_alt , alt_data , axis=1 ).reshape(1,-1)
-
-    return alt_data
-
 #Parses flight_data into velocity and altitude data
 #return: velocities and altitudes
 def parse_flight_data(flight_data ):
@@ -61,6 +51,19 @@ def parse_flight_data(flight_data ):
 
     return (velocity_data , altitude_data)
 
+#Adds extra zero position to match size of velocity and turns centimeters into milimeters (like velocity)
+def handle_alt_data(alt_list):
+
+    alt_data = np.array(alt_list)
+    alt_data *= 10
+
+    _temp_alt = np.zeros(1)
+
+    alt_data = np.append( _temp_alt , alt_data)
+
+    print(alt_data)
+
+    return alt_data
 
 #Turns velocity data into position data. Adjusts for original position if guesstimate option is True.
 #return: positions
@@ -77,14 +80,17 @@ def handle_vel_data(velocities , dt):
 
         pos = np.append( pos , new_pos , axis=1 )
 
+
+    print(pos)
+
     return pos
 
 def average_z_height(vel_pos , alt):
 
-    num_pts = len(alt)
+    print(vel_pos)
+    print(alt)
 
-    # mm -> cm
-    vel_pos = vel_pos / 1000
+    num_pts = len(alt)
 
     pos_data = vel_pos[0:2 , :]
 
@@ -103,6 +109,8 @@ def plot_3D(positions):
     X = positions[0,:]
     Y = positions[1,:]
     Z = positions[2,:]
+
+    print(Z)
 
     ax.scatter(X,Y,Z,c='r',marker='o')
 
@@ -123,10 +131,10 @@ if __name__ == '__main__':
     #Test data
     t_1 = {'demo' : [0 , 0 , [10,10,10] , 0 , [0,0,0] ]}
     t_2 = {'demo':[0 , 0 , [20,20,20] , 0 , [100 , 50 , 0]]}
-    t_3 = {'demo' :  [0 , 0 , [30,30,30] , 90 , [100 , 50 , 100]]}
-    t_4 = {'demo' :  [0 , 0 , [40,40,40] , 180 , [100 , 50 , 100]]}
-    t_5 = {'demo' :  [0 , 0 , [50,50,50] , 270 , [100 , 50 , 100]]}
-    t_6 = {'demo' :  [0 , 0 , [60,60,60] , 360 , [100 , 50 , 100]]}
+    t_3 = {'demo' :  [0 , 0 , [30,30,30] , 9.0 , [100 , 50 , 100]]}
+    t_4 = {'demo' :  [0 , 0 , [40,40,40] , 18.0 , [100 , 50 , 100]]}
+    t_5 = {'demo' :  [0 , 0 , [50,50,50] , 27.0 , [100 , 50 , 100]]}
+    t_6 = {'demo' :  [0 , 0 , [60,60,60] , 36.0 , [100 , 50 , 100]]}
     flight_data = [t_1, t_2 , t_3 , t_4 , t_5, t_6]
 
     main(flight_data , sleeptime = 3 , dt = 1)
