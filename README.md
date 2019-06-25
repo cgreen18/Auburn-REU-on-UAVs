@@ -12,7 +12,7 @@ Repository for the 2019 Auburn REU Team 1 to map an environment using 3D ToF on 
 ## Team Member Biographies
 **Conor Green** (manager of this repository)\
 Email: cgreen18@lion.lmu.edu
-Website: greenpage.lmu.build
+[Website](greenpage.lmu.build)
 
 > Conor Green is a Computer Engineering major at Loyola Marymount University, enrolled in the Honors College and pursuing a minor in Applied Mathematics. Every semester he has made Dean’s list and recently got invited and accepted into the engineering honor’s fraternity, Tau Beta Pi. Through the Honors department, Conor proposed, managed, and presented a $5000 research project on modifying the torque-slip characteristics of an induction motor through electro-plating that found significant results. Additionally, he was part of a team led by professor Dr. Huang to use computer vision to identify potholes from dash cam pictures in the Los Angeles area. Conor recently presented the induction motor and pothole research projects at This Is Honors and Undergraduate Research Symposium, respectively, at his university. He plans on pursuing graduate school in Electrical Engineering with the intention of earning a PhD.
 
