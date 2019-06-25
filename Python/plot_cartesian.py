@@ -61,8 +61,6 @@ def handle_alt_data(alt_list):
 
     alt_data = np.append( _temp_alt , alt_data)
 
-    print(alt_data)
-
     return alt_data
 
 #Turns velocity data into position data. Adjusts for original position if guesstimate option is True.
@@ -81,14 +79,9 @@ def handle_vel_data(velocities , dt):
         pos = np.append( pos , new_pos , axis=1 )
 
 
-    print(pos)
-
     return pos
 
 def average_z_height(vel_pos , alt):
-
-    print(vel_pos)
-    print(alt)
 
     num_pts = len(alt)
 
@@ -107,10 +100,8 @@ def plot_3D(positions):
     ax = fig.gca(projection='3d')
 
     X = positions[0,:]
-    Y = positions[1,:]
+    Y = -positions[1,:]
     Z = positions[2,:]
-
-    print(Z)
 
     ax.scatter(X,Y,Z,c='r',marker='o')
 

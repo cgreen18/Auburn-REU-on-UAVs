@@ -89,9 +89,19 @@ class Chief:
     #Main functionality of Chief_Drone: to fly AND track the navdata of the drone. Can add plotting functions here
     def main(self):
 
-        self.thread_fly_and_track(self.options['time_lim'])
+        #self.thread_fly_and_track(self.options['time_lim'])
 
-        #self.gather_data_set_time(10)
+        self.drone.takeoff()
+        print("Taking Off")
+        time.sleep(2)
+
+        self.gather_data_set_time(10)
+
+        self.drone.land()
+        print("Landing")
+        time.sleep(4)
+
+        plot_cartesian.main(self.flight_data , dt = self.delta_t)
 
         #name = "position_data.txt"
         #self.special_print_position(name)
@@ -99,10 +109,8 @@ class Chief:
         #name = "attitude_data.txt"
         #self.special_print_euler(name)
 
-        name = "pos_and_eul_data.txt"
-        self.special_print_eul_and_pos(name)
-
-        #plot_cartesian.main(self.flight_data , dt = self.delta_t)
+        # name = "pos_and_eul_data.txt"
+        # self.special_print_eul_and_pos(name)
 
         #plot_euler_angles.main(self.flight_data)
 
