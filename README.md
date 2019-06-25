@@ -12,8 +12,7 @@ Repository for the 2019 Auburn REU Team 1 to map an environment using 3D ToF on 
 ## Team Member Biographies
 **Conor Green** (manager of this repository)\
 Email: cgreen18@lion.lmu.edu
-
-[Website](https://www.greenpage.lmu.build)
+[Portfolio/Personal Website](https://greenpage.lmu.build)
 
 > Conor Green is a Computer Engineering major at Loyola Marymount University, enrolled in the Honors College and pursuing a minor in Applied Mathematics. Every semester he has made Dean’s list and recently got invited and accepted into the engineering honor’s fraternity, Tau Beta Pi. Through the Honors department, Conor proposed, managed, and presented a $5000 research project on modifying the torque-slip characteristics of an induction motor through electro-plating that found significant results. Additionally, he was part of a team led by professor Dr. Huang to use computer vision to identify potholes from dash cam pictures in the Los Angeles area. Conor recently presented the induction motor and pothole research projects at This Is Honors and Undergraduate Research Symposium, respectively, at his university. He plans on pursuing graduate school in Electrical Engineering with the intention of earning a PhD.
 
@@ -22,6 +21,8 @@ Email: cgreen18@lion.lmu.edu
 
 **Brenden Stevens**
 Email: brenden728@ucla.edu
+[Portfolio/Personal Website](https://brenden728.wixsite.com/sbrenden)
+
 > Brenden Stevens is majoring in Electrical Engineering at the University of California, Los Angeles. Before transferring to UCLA from his community college in Visalia, CA, Brenden was the president in the leading science club involved with gathering speakers in STEM from around California to inspire young minds to continue pursuing science and engineering. He was also responsible for setting up weekly sports hang-outs where he and 20 others in the STEM department frequently played frisbee, basketball, and soccer. 
 
 > In research, his past work involved testing and monitoring motor endurance and longevity for NASA’s X-57 all electric aircraft as well as signal latency calculations for CAN buses on the same aircraft. Brenden plans on pursuing graduate work in dynamics and controls with hopes of using machine learning and AI to aid his research. 
