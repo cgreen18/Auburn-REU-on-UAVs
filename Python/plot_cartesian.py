@@ -18,12 +18,12 @@ import matplotlib.pyplot as plt
 #Handles kwargs and runs three main working functions: parse_flight_data , handle_vel_data, and plot_3D
 def main(flight_data , **kwargs):
 
-    options = {'sleeptime' : .5 , 'guess_reference' : False , 'real_time' : False , 'dt' :  1/200}
+    options = {'sleeptime' : .5 , 'real_time' : False , 'dt' :  1/200}
     options.update(kwargs)
 
     (vel_data , alt_data) = parse_flight_data(flight_data )
 
-    pos_vel_data = handle_vel_data(vel_data , options['dt'] , options['guess_reference'])
+    pos_vel_data = handle_vel_data(vel_data , options['dt'])
 
     pos_alt_data = handle_alt_data(alt_data)
 
@@ -64,7 +64,7 @@ def parse_flight_data(flight_data ):
 
 #Turns velocity data into position data. Adjusts for original position if guesstimate option is True.
 #return: positions
-def handle_vel_data(velocities , dt , guesstimate):
+def handle_vel_data(velocities , dt):
 
     pos = np.zeros((3,1))
 
