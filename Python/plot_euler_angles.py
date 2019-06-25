@@ -19,7 +19,7 @@ from transforms3d import taitbryan
 #Handles kwargs and runs three main working functions: parse_flight_data , handle_angle_data, and plot_3D
 def main(flight_data , **kwargs):
 
-    options = {'sleeptime' : .01 , 'guess_reference' : False , 'real_time' : False , 'dt' :  0.005 , 'num_repeats' : 3}
+    options = {'sleeptime' : 0.0001 , 'guess_reference' : False , 'real_time' : False , 'dt' :  0.005 , 'num_repeats' : 3}
     options.update(kwargs)
 
     euler_angles = parse_flight_data(flight_data , options['guess_reference'])
@@ -33,23 +33,8 @@ def main(flight_data , **kwargs):
 #Parses flight_data into euler angle data. Adjusts for original orientation if guesstimate parameter is True
 #return: euler angles
 def parse_flight_data(flight_data , guesstimate):
-    euler_angles = [[0,0,0]]
 
-    if guesstimate:
-        _dict = flight_data[0]
-        offset = _dict['demo'][2]
-    else:
-        offset = [0,0,0]
-
-    for dict in flight_data:
-        angle_data_t_slice = dict['demo'][2]
-
-        if not guesstimate:
-            euler_angles.append(angle_data_t_slice)
-        else:
-            for i in range(0,3):
-                angle_data_t_slice[i] = angle_data_t_slice[i] - offset[i]
-            euler_angles.append(angle_data_t_slice)
+    euler_angles = [ dict['demo'][2] for dict in flight_data]
 
     return euler_angles
 

@@ -25,6 +25,9 @@ import Drone_Thread
 import plot_cartesian
 import plot_euler_angles
 
+#Temporary imports
+import temp_print_flight_data
+
 
 ### TODOs: see __init__
 ###
@@ -80,39 +83,9 @@ class Chief:
 
 
         #Defaults
-        self.options = {'time_lim' : 15 , 'demo' : True , 'desired_data' : ['demo']}
+        self.options = {'time_lim' : 15 , 'demo_mode' : True , 'desired_data' : ['demo']}
 
         self.delta_t = 1/15
-
-        return
-
-    #Main functionality of Chief_Drone: to fly AND track the navdata of the drone. Can add plotting functions here
-    def main(self):
-
-        #self.thread_fly_and_track(self.options['time_lim'])
-
-        self.drone.takeoff()
-        print("Taking Off")
-        time.sleep(2)
-
-        self.gather_data_set_time(10)
-
-        self.drone.land()
-        print("Landing")
-        time.sleep(4)
-
-        plot_cartesian.main(self.flight_data , dt = self.delta_t)
-
-        #name = "position_data.txt"
-        #self.special_print_position(name)
-
-        #name = "attitude_data.txt"
-        #self.special_print_euler(name)
-
-        # name = "pos_and_eul_data.txt"
-        # self.special_print_eul_and_pos(name)
-
-        #plot_euler_angles.main(self.flight_data)
 
         return
 
@@ -124,18 +97,56 @@ class Chief:
         #Determines packet rate
         #True = 15packets/s
         #False = 200pk/s
-        self.drone.useDemoMode(self.options['demo'])
+        self.drone.useDemoMode(self.options['demo_mode'])
         #and use that to determine the delta time between each packet/frame
-        if self.options['demo']:
+        if self.options['demo_mode']:
             self.delta_t = 1/ 15
         else:
             self.delta_t = 1/200
 
 
+        print(self.options['desired_data'])
+
         #Determine which packets to recieve
         self.drone.getNDpackage(self.options['desired_data'])
 
         self.main()
+
+        return
+
+    #Main functionality of Chief_Drone: to fly AND track the navdata of the drone. Can add plotting functions here
+    def main(self):
+
+        #self.thread_fly_and_track(self.options['time_lim'])
+
+        self.drone.takeoff()
+        print("Taking Off")
+        time.sleep(1)
+
+        self.gather_data_set_time(self.options['time_lim'])
+
+        self.drone.land()
+        print("Landing")
+        time.sleep(2)
+
+        #print(self.flight_data)
+
+        temp_print_flight_data.main(self.flight_data)
+
+        #plot_cartesian.main(self.flight_data , dt = self.delta_t)
+
+        #plot_euler_angles.main(self.flight_data , sleeptime = 0.00001)
+
+        #name = "position_data.txt"
+        #self.special_print_position(name)
+
+        #name = "attitude_data.txt"
+        #self.special_print_euler(name)
+
+        # name = "pos_and_eul_data.txt"
+        # self.special_print_eul_and_pos(name)
+
+
 
         return
 
@@ -526,33 +537,20 @@ class Chief:
 
         return
 
-    #Parses self.flight_data into euler angles
+    #Parses self.flight_data into euler angles as np array
     #return: euler angles
     def parse_flight_into_eul_and_convert(self):
-        euler_angles = np.array([0,0,0]).reshape((3,1))
 
-        for dict in self.flight_data:
+        euler_angles = [ dict['demo'][2] for dict in flight_data]
+        euler_angles_numpy = np.array(euler_angles)
 
-            eul_data_t_slice = dict['demo'][2]
-
-            eul_data_t_slice = np.array(eul_data_t_slice).reshape((3,1))
-
-            euler_angles = np.append(euler_angles , eul_data_t_slice , axis=1)
-            #pos = np.append( pos , new_pos , axis=1 )
-
-        return euler_angles
+        return euler_angles_numpy
 
     #Parses self.flight_data into velocity
     #return: velocities
     def parse_flight_into_vel(self):
 
-        velocity_data = []
-
-        for dict in self.flight_data:
-
-            vel_data_t_slice = dict['demo'][4]
-
-            velocity_data.append(vel_data_t_slice)
+        velocity_data = [ dict['demo'][4] for dict in flight_data ]
 
         return velocity_data
 
@@ -587,4 +585,5 @@ if __name__ == '__main__':
 
     drone_obj = Chief()
     print("Initialized")
-    drone_obj.run(time_lim = 20)
+    #drone_obj.run(time_lim = 10 , desired_data = ['demo' ,'magneto','altitude', 'raw_measures' , 'references'] , demo_mode = False)
+    drone_obj.run(time_lim=3 , desired_data = ['demo'] , demo_mode = True)

@@ -27,7 +27,9 @@ def main(flight_data , **kwargs):
 
     pos_alt_data = handle_alt_data(alt_data)
 
-    pos_data = average_z_height(pos_vel_data , pos_alt_data)
+    #pos_data = average_z_height(pos_vel_data , pos_alt_data)
+
+    pos_data = pos_vel_data
 
     plot_3D(pos_data )
 
@@ -37,17 +39,9 @@ def main(flight_data , **kwargs):
 #return: velocities and altitudes
 def parse_flight_data(flight_data ):
 
-    velocity_data = []
-    altitude_data = []
+    velocity_data = [ dict['demo'][4] for dict in flight_data ]
 
-    for dict in flight_data:
-        alt_data_t_slice = dict['demo'][3]
-
-        altitude_data.append(alt_data_t_slice)
-
-        vel_data_t_slice = dict['demo'][4]
-
-        velocity_data.append(vel_data_t_slice)
+    altitude_data = [ dict['demo'][3] for dict in flight_data ]
 
     return (velocity_data , altitude_data)
 
