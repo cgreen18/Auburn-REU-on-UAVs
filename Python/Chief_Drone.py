@@ -8,6 +8,7 @@ Version:
 1.1 - June 18 2019 - Changed main
 1.2 - June 18 2019 - Commented
 1.3 - June 20 2019 - Added fly and track that utilizes threading (custom thread class - Drone_Thread)
+1.4 - June 26 2019 - Added various debugging methods
 '''
 
 #Standard lib imports
@@ -83,7 +84,7 @@ class Chief:
 
 
         #Defaults
-        self.options = {'time_lim' : 15 , 'demo_mode' : True , 'desired_data' : ['demo']}
+        self.options = {'time_lim' : 15 , 'demo_mode' : False , 'desired_data' : ['demo']}
 
         self.delta_t = 1/15
 
@@ -110,6 +111,8 @@ class Chief:
         #Determine which packets to recieve
         self.drone.getNDpackage(self.options['desired_data'])
 
+        print(self.drone.NavData)
+
         self.main()
 
         return
@@ -117,7 +120,17 @@ class Chief:
     #Main functionality of Chief_Drone: to fly AND track the navdata of the drone. Can add plotting functions here
     def main(self):
 
-        self.thread_fly_and_track(self.options['time_lim'])
+        self.drone.takeoff()
+        print("Taking Off")
+        time.sleep(1)
+
+        self.gather_data_set_time_and_print(self.options['time_lim'] , ['kalman_pressure'] , { 'kalman_pressure' : []})
+
+        self.drone.land()
+        print("Landing")
+        time.sleep(5)
+
+        #self.thread_fly_and_track(self.options['time_lim'])
 
         #self.drone.takeoff()
         #print("Taking Off")
@@ -133,7 +146,7 @@ class Chief:
 
         #temp_print_flight_data.main(self.flight_data)
 
-        plot_cartesian.main(self.flight_data , dt = self.delta_t)
+        #plot_cartesian.main(self.flight_data , dt = self.delta_t)
 
         #plot_euler_angles.main(self.flight_data , sleeptime = 0.00001)
 
@@ -412,13 +425,73 @@ class Chief:
             last_NDC = self.drone.NavDataCount
 
             data_slice = self.get_nav_frame()
+
             self.flight_data.append(data_slice)
             self.parallel_time_stamp.append(time.time())
+
+            #raw_list = ['accel' , 'gyros' , 'gyros_110']
+
+            print(data_slice)
+
             for type in print_what:
-                for item in print_which:
-                    print(data_slice[type][item])
+
+                print(data_slice[type])
+
+                list = print_which[type]
+
+                for item in list:
+                    print(str(type) + " : " + str(item) + " : " + str(data_slice[type][item]))
+                    #print(data_slice[type][item])
+
+            print("\n")
 
         return
+
+    def calibrate_and_write_to_file(time_lim , name):
+
+        t_end = time.time() + time_lim
+
+        with open(name , "w") as file:
+
+            while time.time() < t_end:
+
+                while self.drone.NavDataCount == last_NDC:
+                    time.sleep(.0001)
+
+                    last_NDC = self.drone.NavDataCount
+
+                    data_slice = self.get_nav_frame()
+
+
+
+            file.close()
+
+        return
+
+
+# with open(name , "w") as file:
+#
+#     num_pts = len(self.flight_data)
+#
+#
+#     #skip i = 1 to skip pos_data[0] = np.zeros(3,1)
+#     for i in range(1,num_pts):
+#
+#         pos_t_slice = pos_data[:,i]
+#
+#         t_stamp = self.parallel_time_stamp[i]
+#
+#         string = str(t_stamp) + ":"
+#         for elem in pos_t_slice:
+#             string += str(elem) + ":"
+#
+#         string = string[:-1]
+#         string += "\n"
+#         file.write(string)
+#
+#     file.close()
+
+
 
     #TODO: Finish list of VISION later
 
@@ -447,6 +520,13 @@ class Chief:
                 #data[_d_param] = np.array(drone.NavData[_d_param])
 
         return data
+
+    def get_nav_frame_simple(self):
+
+        data = self.drone.NavData[_d_param]
+
+        return data
+
 
     '''
     ----------- Exporting data section ----------
@@ -593,5 +673,5 @@ if __name__ == '__main__':
 
     drone_obj = Chief()
     print("Initialized")
-    drone_obj.run(time_lim = 45  , desired_data = ['demo' ,'magneto','altitude', 'raw_measures' , 'references'] , demo_mode = False)
+    drone_obj.run(time_lim = 10  , desired_data = ['demo' , 'magneto' , 'altitude', 'kalman_pressure', 'raw_measures' , 'references'] , demo_mode = False)
     #drone_obj.run(time_lim=3 , desired_data = ['demo'] , demo_mode = True)
