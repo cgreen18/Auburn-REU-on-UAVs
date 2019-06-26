@@ -9,3 +9,5 @@ The post-processing portion of the project will be done on MATLAB considering th
 
 ![Environment Stitching](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/MATLAB/office_stitch1.gif)
 ##### Bird's eye view of the local area as captured from the ground
+
+![Another Stitch](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/MATLAB/hand_heatmap3d_2.gif)
