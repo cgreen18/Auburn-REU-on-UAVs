@@ -398,8 +398,8 @@ class Chief:
 
         return
 
-    #Gathers data as specified by the arguments in main for a specified amount of time. Updates self.flight_data to the flight data and prints certain data per gather as specified in args
-    def gather_data_set_time_and_print(self , time_lim , print_what):
+    #Gathers data as specified by the arguments in main for a specified amount of time. Updates self.flight_data to the flight data and prints certain data per gather as specified in args print what and which
+    def gather_data_set_time_and_print(self , time_lim , print_what , print_which):
         t_end = time.time() + time_lim
 
         last_NDC = self.drone.NavDataCount -1
@@ -411,10 +411,13 @@ class Chief:
 
             last_NDC = self.drone.NavDataCount
 
-            _data_slice = self.get_nav_frame()
-            self.flight_data.append(_data_slice)
+            data_slice = self.get_nav_frame()
+            self.flight_data.append(data_slice)
             self.parallel_time_stamp.append(time.time())
-            
+            for type in print_what:
+                for item in print_which:
+                    print(data_slice[type][item])
+
         return
 
     #TODO: Finish list of VISION later
