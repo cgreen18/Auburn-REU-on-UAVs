@@ -117,23 +117,23 @@ class Chief:
     #Main functionality of Chief_Drone: to fly AND track the navdata of the drone. Can add plotting functions here
     def main(self):
 
-        #self.thread_fly_and_track(self.options['time_lim'])
+        self.thread_fly_and_track(self.options['time_lim'])
 
-        self.drone.takeoff()
-        print("Taking Off")
-        time.sleep(1)
+        #self.drone.takeoff()
+        #print("Taking Off")
+        #time.sleep(1)
 
-        self.gather_data_set_time(self.options['time_lim'])
+        #self.gather_data_set_time(self.options['time_lim'])
 
-        self.drone.land()
-        print("Landing")
-        time.sleep(2)
+        #self.drone.land()
+        #print("Landing")
+        #time.sleep(5)
 
         #print(self.flight_data)
 
-        temp_print_flight_data.main(self.flight_data)
+        #temp_print_flight_data.main(self.flight_data)
 
-        #plot_cartesian.main(self.flight_data , dt = self.delta_t)
+        plot_cartesian.main(self.flight_data , dt = self.delta_t)
 
         #plot_euler_angles.main(self.flight_data , sleeptime = 0.00001)
 
@@ -383,33 +383,38 @@ class Chief:
     def gather_data_set_time(self , time_lim):
         t_end = time.time() + time_lim
 
-        #print(t_end)
-
         last_NDC = self.drone.NavDataCount -1
 
-        skip = False
-
         while time.time() < t_end:
-            #print(time.time())
-
-
 
             while self.drone.NavDataCount == last_NDC:
-                #print(self.drone.NavDataCount)
-                #if drone.getKey():
-                #	end = True
-                time.sleep(.00045)
+                time.sleep(.0004)
 
             last_NDC = self.drone.NavDataCount
 
-            if not skip:
-                _data_slice = self.get_nav_frame()
-                self.flight_data.append(_data_slice)
-                self.parallel_time_stamp.append(time.time())
-                skip = not skip
-            if skip:
-                skip = not skip
+            _data_slice = self.get_nav_frame()
+            self.flight_data.append(_data_slice)
+            self.parallel_time_stamp.append(time.time())
 
+        return
+
+    #Gathers data as specified by the arguments in main for a specified amount of time. Updates self.flight_data to the flight data and prints certain data per gather as specified in args
+    def gather_data_set_time_and_print(self , time_lim , print_what):
+        t_end = time.time() + time_lim
+
+        last_NDC = self.drone.NavDataCount -1
+
+        while time.time() < t_end:
+
+            while self.drone.NavDataCount == last_NDC:
+                time.sleep(.0004)
+
+            last_NDC = self.drone.NavDataCount
+
+            _data_slice = self.get_nav_frame()
+            self.flight_data.append(_data_slice)
+            self.parallel_time_stamp.append(time.time())
+            
         return
 
     #TODO: Finish list of VISION later
@@ -585,5 +590,5 @@ if __name__ == '__main__':
 
     drone_obj = Chief()
     print("Initialized")
-    #drone_obj.run(time_lim = 10 , desired_data = ['demo' ,'magneto','altitude', 'raw_measures' , 'references'] , demo_mode = False)
-    drone_obj.run(time_lim=3 , desired_data = ['demo'] , demo_mode = True)
+    drone_obj.run(time_lim = 45  , desired_data = ['demo' ,'magneto','altitude', 'raw_measures' , 'references'] , demo_mode = False)
+    #drone_obj.run(time_lim=3 , desired_data = ['demo'] , demo_mode = True)

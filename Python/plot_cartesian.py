@@ -27,9 +27,7 @@ def main(flight_data , **kwargs):
 
     pos_alt_data = handle_alt_data(alt_data)
 
-    #pos_data = average_z_height(pos_vel_data , pos_alt_data)
-
-    pos_data = pos_vel_data
+    pos_data = average_z_height(pos_vel_data , pos_alt_data)
 
     plot_3D(pos_data )
 
@@ -108,8 +106,12 @@ def plot_3D(positions):
 
 # Converts velocity list to numpy arr and does simple math. Uses dead reckoning logic
 # Return: change in XYZ positions
+
+# QUICK FIX OF
+
 def calc_delta_pos(vels , delta_t):
-    vels_np = np.array(vels).reshape((3,1))
+    print(vels)
+    vels_np = np.array(vels).reshape((3,1)) #- np.array([60 , 30 , 0]).reshape((3,1))
     return vels_np*delta_t
 
 if __name__ == '__main__':
