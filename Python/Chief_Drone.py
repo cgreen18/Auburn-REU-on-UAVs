@@ -27,7 +27,7 @@ import plot_cartesian
 import plot_euler_angles
 
 #Temporary imports
-import temp_print_flight_data
+#import temp_print_flight_data
 
 
 ### TODOs: see __init__
@@ -124,7 +124,9 @@ class Chief:
         print("Taking Off")
         time.sleep(1)
 
-        self.gather_data_set_time_and_print(self.options['time_lim'] , ['demo'] , { 'demo' : [1 ,2 , 3]})
+        #self.gather_data_set_time_and_print(self.options['time_lim'] , ['demo'] , { 'demo' : [1 ,2 , 3]})
+
+        self.calibrate_and_write_to_file(5 , "first_calibration_data.txt")
 
         self.drone.land()
         print("Landing")
@@ -447,51 +449,6 @@ class Chief:
 
         return
 
-    def calibrate_and_write_to_file(time_lim , name):
-
-        t_end = time.time() + time_lim
-
-        with open(name , "w") as file:
-
-            while time.time() < t_end:
-
-                while self.drone.NavDataCount == last_NDC:
-                    time.sleep(.0001)
-
-                    last_NDC = self.drone.NavDataCount
-
-                    data_slice = self.get_nav_frame()
-
-
-
-            file.close()
-
-        return
-
-
-# with open(name , "w") as file:
-#
-#     num_pts = len(self.flight_data)
-#
-#
-#     #skip i = 1 to skip pos_data[0] = np.zeros(3,1)
-#     for i in range(1,num_pts):
-#
-#         pos_t_slice = pos_data[:,i]
-#
-#         t_stamp = self.parallel_time_stamp[i]
-#
-#         string = str(t_stamp) + ":"
-#         for elem in pos_t_slice:
-#             string += str(elem) + ":"
-#
-#         string = string[:-1]
-#         string += "\n"
-#         file.write(string)
-#
-#     file.close()
-
-
 
     #TODO: Finish list of VISION later
 
@@ -523,7 +480,7 @@ class Chief:
 
     def get_nav_frame_simple(self):
 
-        data = self.drone.NavData[_d_param]
+        data = self.drone.NavData
 
         return data
 
@@ -531,6 +488,54 @@ class Chief:
     '''
     ----------- Exporting data section ----------
     '''
+    def calibrate_and_write_to_file(self , time_lim , name):
+
+        t_end = time.time() + time_lim
+
+        with open(name , "w") as file:
+
+            file.write("time:pitch:roll:yaw:demo_alt:Vx:Vy:Vz:Mx:My:Mz:alt_vision:alt_raw:Ax:Ay:Az:Wx:Wy:Wz\n")
+
+            while time.time() < t_end:
+
+                while self.drone.NavDataCount == self.last_NDC:
+                    time.sleep(.0001)
+
+                self.last_NDC = self.drone.NavDataCount
+
+                data_slice = self.get_nav_frame_simple()
+
+                string = str(data_slice['time'][0]) + ":"
+
+                for angle in data_slice['demo'][2]:
+                    string += str(angle) + ":"
+
+                string += str(data_slice['demo'][3]) + ":"
+
+                for velocity in data_slice['demo'][4]:
+                    string += str(velocity) + ":"
+
+                for magnet in data_slice['magneto'][0]:
+                    string += str(magnet) + ":"
+
+                string += str(data_slice['altitude'][0]) + ":"
+
+                string += str(data_slice['altitude'][3]) + ":"
+
+                for acceleration in data_slice['raw_measures'][0]:
+                    string += str(acceleration) + ":"
+
+                for omega in data_slice['raw_measures'][1]:
+                    string += str(omega) + ":"
+
+                string += "\n"
+
+                file.write(string)
+
+            file.close()
+
+        return
+
     def special_print_eul_and_pos(self , name):
         vel_data = self.parse_flight_into_vel()
         pos_data = self.handle_vel_data( vel_data )
@@ -670,8 +675,10 @@ if __name__ == '__main__':
     #pass
 
     #Temporary testing
+    calibration_pkts = ['demo' , 'time' , 'magneto' , 'altitude', 'raw_measures']
+
 
     drone_obj = Chief()
     print("Initialized")
-    drone_obj.run(time_lim = 10  , desired_data = ['demo' , 'magneto' , 'altitude', 'kalman_pressure', 'raw_measures' , 'references'] , demo_mode = False)
+    drone_obj.run(time_lim = 1  , desired_data = calibration_pkts , demo_mode = False)
     #drone_obj.run(time_lim=3 , desired_data = ['demo'] , demo_mode = True)
