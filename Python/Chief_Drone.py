@@ -124,7 +124,7 @@ class Chief:
         print("Taking Off")
         time.sleep(1)
 
-        self.gather_data_set_time_and_print(self.options['time_lim'] , ['kalman_pressure'] , { 'kalman_pressure' : []})
+        self.gather_data_set_time_and_print(self.options['time_lim'] , ['demo'] , { 'demo' : [1 ,2 , 3]})
 
         self.drone.land()
         print("Landing")
