@@ -40,13 +40,13 @@ plot(dummy_x , total(:,2));
 title("Pitch");
 xlabel("Time [samples]");
 ylabel("Estimated Pitch [deg.]");
-xlim([0 , num_pts])
+xlim([0 , num_pts]);
 
 subplot(2,3,4);
 histogram(total(:,2),100000,'Normalization','probability','FaceColor',[0 0.4470 0.7410],'EdgeColor',[0 0.4470 0.7410]);
 xlabel("Estimated Pitch [deg.]");
 ylabel("Relative Frequency");
-xlim([-.2 , .1])
+xlim([-.2 , .1]);
 
 %Roll
 subplot(2,3,2);
@@ -54,13 +54,13 @@ plot(dummy_x , total(:,3));
 title("Roll");
 xlabel("Time [samples]");
 ylabel("Estimated Roll [deg.]");
-xlim([0 , num_pts])
+xlim([0 , num_pts]);
 
 subplot(2,3,5);
 histogram(total(:,3),100000,'Normalization','probability','FaceColor',[0 0.4470 0.7410],'EdgeColor',[0 0.4470 0.7410]);
 xlabel("Estimated Roll [deg.]");
 ylabel("Relative Frequency");
-xlim([-.1 , .1])
+xlim([-.1 , .1]);
 
 %Yaw
 subplot(2,3,3);
@@ -68,14 +68,14 @@ plot(dummy_x , total(:,4));
 title("Yaw");
 xlabel("Time [samples]");
 ylabel("Estimated Yaw [deg.]");
-xlim([0 , num_pts])
+xlim([0 , num_pts]);
 ylim([173.5 , 174.4]);
 
 subplot(2,3,6);
 histogram(total(:,4),100000,'Normalization','probability','FaceColor',[0 0.4470 0.7410],'EdgeColor',[0 0.4470 0.7410]);
 xlabel("Estimated Yaw [deg.]");
 ylabel("Relative Frequency");
-xlim([ 173.6 , 174.3])
+xlim([ 173.6 , 174.3]);
 
 
 %% Velocities
@@ -91,13 +91,13 @@ plot(dummy_x , total(:,6));
 title("V_x");
 xlabel("Time [samples]");
 ylabel("Estimated Velocity (mm/s)");
-xlim([0 , num_pts])
+xlim([0 , num_pts]);
 
 subplot(2,3,4);
 histogram(total(:,6),100000,'Normalization','probability','FaceColor',[0 0.4470 0.7410],'EdgeColor',[0 0.4470 0.7410]);
 xlabel("Estimated Velocity (mm/s)");
 ylabel("Frequency");
-xlim([5, 20])
+xlim([5, 20]);
 
 %Vy
 subplot(2,3,2);
@@ -105,13 +105,13 @@ plot(dummy_x , total(:,7));
 title("V_y");
 xlabel("Time [samples]");
 ylabel("Estimated Velocity (mm/s)");
-xlim([0 , num_pts])
+xlim([0 , num_pts]);
 
 subplot(2,3,5);
 histogram(total(:,7),100000,'Normalization','probability','FaceColor',[0 0.4470 0.7410],'EdgeColor',[0 0.4470 0.7410]);
 xlabel("Estimated Velocity (mm/s)");
 ylabel("Frequency");
-xlim([-10, 10])
+xlim([-10, 10]);
 
 %Vz
 subplot(2,3,3);
@@ -119,14 +119,14 @@ plot(dummy_x , total(:,8));
 title("V_z (Broken)");
 xlabel("Time [samples]");
 ylabel("Estimated Velocity (mm/s)");
-xlim([0 , num_pts])
-ylim([-.6 , .6])
+xlim([0 , num_pts]);
+ylim([-.6 , .6]);
 
 subplot(2,3,6);
 histogram(total(:,8),100000,'Normalization','probability','FaceColor',[0 0.4470 0.7410],'EdgeColor',[0 0.4470 0.7410]);
 xlabel("Estimated Velocity (mm/s)");
 ylabel("Frequency");
-xlim([-.1,.1])
+xlim([-.1,.1]);
 
 
 %% Magnetometer Readings
@@ -142,7 +142,8 @@ plot(dummy_x , total(:,9));
 title("M_x");
 xlabel("Time [samples]");
 ylabel("Magnetic Induction [mT]");
-xlim([0 , num_pts])
+xlim([0 , num_pts]);
+ylim([-40 60]);
 
 subplot(2,3,4);
 histogram(total(:,9),100000,'Normalization','probability','FaceColor',[0 0.4470 0.7410],'EdgeColor',[0 0.4470 0.7410]);
@@ -156,7 +157,8 @@ plot(dummy_x , total(:,10));
 title("M_y");
 xlabel("Time [samples]");
 ylabel("Magnetic Induction [mT]");
-xlim([0 , num_pts])
+xlim([0 , num_pts]);
+ylim([10 , 110]);
 
 subplot(2,3,5);
 histogram(total(:,10),100000,'Normalization','probability','FaceColor',[0 0.4470 0.7410],'EdgeColor',[0 0.4470 0.7410]);
@@ -170,7 +172,8 @@ plot(dummy_x , total(:,11));
 title("M_z");
 xlabel("Time [samples]");
 ylabel("Magnetic Induction [mT]");
-xlim([0 , num_pts])
+xlim([0 , num_pts]);
+ylim([180 , 280]);
 
 subplot(2,3,6);
 histogram(total(:,11),100000,'Normalization','probability','FaceColor',[0 0.4470 0.7410],'EdgeColor',[0 0.4470 0.7410]);
@@ -191,7 +194,7 @@ plot(dummy_x , alt1);
 title("Alt (demo)");
 xlabel("Time [samples]");
 ylabel("Estimated Altitude [mm]");
-xlim([0 , num_pts])
+xlim([0 , num_pts]);
 
 subplot(2,3,4);
 histogram(alt1,100000,'Normalization','probability','FaceColor',[0 0.4470 0.7410],'EdgeColor',[0 0.4470 0.7410]);
@@ -205,7 +208,7 @@ plot(dummy_x , total(:,12));
 title("Alt (Vision)");
 xlabel("Time [samples]");
 ylabel("Estimated Altitude [mm]");
-xlim([0 , num_pts])
+xlim([0 , num_pts]);
 
 subplot(2,3,5);
 histogram(total(:,12),100000,'Normalization','probability','FaceColor',[0 0.4470 0.7410],'EdgeColor',[0 0.4470 0.7410]);
@@ -220,7 +223,7 @@ plot(dummy_x , total(:,13));
 title("Alt (Raw)");
 xlabel("Time [samples]");
 ylabel("Measured Altitude [mm]");
-xlim([0 , num_pts])
+xlim([0 , num_pts]);
 
 subplot(2,3,6);
 histogram(total(:,13),100000,'Normalization','probability','FaceColor',[0 0.4470 0.7410],'EdgeColor',[0 0.4470 0.7410]);
@@ -242,7 +245,7 @@ plot(dummy_x , Ax);
 title("a_x");
 xlabel("Time [samples]");
 ylabel("Acceleration [mG]");
-xlim([0 , num_pts])
+xlim([0 , num_pts]);
 
 subplot(2,3,4);
 histogram(Ax,100000,'Normalization','probability','FaceColor',[0 0.4470 0.7410],'EdgeColor',[0 0.4470 0.7410]);
@@ -257,7 +260,7 @@ plot(dummy_x , Ay);
 title("a_y");
 xlabel("Time [samples]");
 ylabel("Acceleration [mG]");
-xlim([0 , num_pts])
+xlim([0 , num_pts]);
 
 subplot(2,3,5);
 histogram(Ay,100000,'Normalization','probability','FaceColor',[0 0.4470 0.7410],'EdgeColor',[0 0.4470 0.7410]);
@@ -272,7 +275,7 @@ plot(dummy_x ,Az);
 title("a_z");
 xlabel("Time [samples]");
 ylabel("Acceleration [mG]");
-xlim([0 , num_pts])
+xlim([0 , num_pts]);
 
 
 subplot(2,3,6);
@@ -295,7 +298,7 @@ plot(dummy_x , total(:,17));
 title("\omega_x (Roll)");
 xlabel("Time [samples]");
 ylabel("Angular Velocity [deg/s]");
-xlim([0 , num_pts])
+xlim([0 , num_pts]);
 
 subplot(2,3,4);
 histogram(total(:,17),1000,'Normalization','probability','FaceColor',[0 0.4470 0.7410],'EdgeColor',[0 0.4470 0.7410]);
@@ -309,13 +312,13 @@ plot(dummy_x , total(:,18));
 title("\omega_y (Pitch)");
 xlabel("Time [samples]");
 ylabel("Angular Velocity [deg/s]");
-xlim([0 , num_pts])
+xlim([0 , num_pts]);
 
 subplot(2,3,5);
 histogram(total(:,18),1000,'Normalization','probability','FaceColor',[0 0.4470 0.7410],'EdgeColor',[0 0.4470 0.7410]);
 xlabel("Angular Velocity [deg/s]");
 ylabel("Relative Frequency");
-xlim([44 , 78])
+xlim([44 , 78]);
 
 %Wz
 subplot(2,3,3);
@@ -323,12 +326,12 @@ plot(dummy_x ,total(:,19));
 title("\omega_z (Yaw)");
 xlabel("Time [samples]");
 ylabel("Angular Velocity [deg/s]");
-xlim([0 , num_pts])
+xlim([0 , num_pts]);
 
 
 subplot(2,3,6);
 histogram(total(:,19),1000,'Normalization','probability','FaceColor',[0 0.4470 0.7410],'EdgeColor',[0 0.4470 0.7410]);
 xlabel("Angular Velocity [deg/s]");
 ylabel("Relative Frequency");
-xlim([-22 , -8])
+xlim([-22 , -8]);
 
