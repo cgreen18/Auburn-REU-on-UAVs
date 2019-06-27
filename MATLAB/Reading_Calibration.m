@@ -21,14 +21,16 @@ total = [ file_1_data ; file_2_data ];
 
 dummy_x = 1:num_pts;
 
+% % % % % % % % Plotting % % % % % % % %
 %% Time
-close all;
+%close all;
 time_fig = figure('NumberTitle', 'off', 'Name', 'Time');
 plot(dummy_x , total(:,1));
 
 %% Attitude
 % pitch[2] : roll[3] : yaw[4]
-close all;
+%close all;
+
 att_fig = figure('NumberTitle', 'off', 'Name', 'Attitude Estimation Line Graphs and Histograms');
 set(att_fig,'Color','w');
 
@@ -76,10 +78,10 @@ ylabel("Relative Frequency");
 xlim([ 173.6 , 174.3])
 
 
-
 %% Velocities
 % Vx[6] : Vy[7] :Vz[8]
-close all;
+%close all;
+
 vel_fig = figure('NumberTitle', 'off', 'Name', 'Velocity Estimation in XYZ Line Graphs and Histograms');
 set(vel_fig,'Color','w');
 
@@ -87,7 +89,7 @@ set(vel_fig,'Color','w');
 subplot(2,3,1);
 plot(dummy_x , total(:,6));
 title("V_x");
-xlabel("Data Points");
+xlabel("Time [samples]");
 ylabel("Estimated Velocity (mm/s)");
 xlim([0 , num_pts])
 
@@ -101,7 +103,7 @@ xlim([5, 20])
 subplot(2,3,2);
 plot(dummy_x , total(:,7));
 title("V_y");
-xlabel("Data Points");
+xlabel("Time [samples]");
 ylabel("Estimated Velocity (mm/s)");
 xlim([0 , num_pts])
 
@@ -115,7 +117,7 @@ xlim([-10, 10])
 subplot(2,3,3);
 plot(dummy_x , total(:,8));
 title("V_z (Broken)");
-xlabel("Data Points");
+xlabel("Time [samples]");
 ylabel("Estimated Velocity (mm/s)");
 xlim([0 , num_pts])
 ylim([-.6 , .6])
@@ -129,7 +131,7 @@ xlim([-.1,.1])
 
 %% Magnetometer Readings
 % Mx[9] : My[10] : Mz[11]
-close all;
+%close all;
 
 mag_fig = figure('NumberTitle', 'off', 'Name', 'Magnetometer Sensor Line Graphs and Histograms');
 set(mag_fig,'Color','w');
@@ -138,7 +140,7 @@ set(mag_fig,'Color','w');
 subplot(2,3,1);
 plot(dummy_x , total(:,9));
 title("M_x");
-xlabel("Data Points");
+xlabel("Time [samples]");
 ylabel("Magnetic Induction [mT]");
 xlim([0 , num_pts])
 
@@ -152,7 +154,7 @@ ylabel("Frequency");
 subplot(2,3,2);
 plot(dummy_x , total(:,10));
 title("M_y");
-xlabel("Data Points");
+xlabel("Time [samples]");
 ylabel("Magnetic Induction [mT]");
 xlim([0 , num_pts])
 
@@ -166,7 +168,7 @@ ylabel("Frequency");
 subplot(2,3,3);
 plot(dummy_x , total(:,11));
 title("M_z");
-xlabel("Data Points");
+xlabel("Time [samples]");
 ylabel("Magnetic Induction [mT]");
 xlim([0 , num_pts])
 
@@ -176,64 +178,59 @@ xlabel("Magnetic Induction [mT]");
 ylabel("Frequency");
 
 %% Altitude Readings
-
-%%%%%%
-% Unfinished
-% 
-%%%%%%
-
 % alt(demo)[5] : alt(vision)[12] : alt(raw)[13]
-close all;
+%close all;
 
-alt_fig = figure('NumberTitle', 'off', 'Name', 'Megnetometer Sensor Line Graphs and Histograms');
+alt_fig = figure('NumberTitle', 'off', 'Name', 'Various Altitude Line Graphs and Histograms');
 set(alt_fig,'Color','w');
 
-%Pitch
+%alt1
 subplot(2,3,1);
-plot(dummy_x , total(:,2));
-title("Pitch");
+alt1 = total(:,5) * 10;
+plot(dummy_x , alt1);
+title("Alt (demo)");
 xlabel("Time [samples]");
-ylabel("Estimated Pitch [deg.]");
+ylabel("Estimated Altitude [mm]");
 xlim([0 , num_pts])
 
 subplot(2,3,4);
-histogram(total(:,11),100000,'Normalization','probability','FaceColor',[0 0.4470 0.7410],'EdgeColor',[0 0.4470 0.7410]);
-xlabel("Estimated Pitch (deg.)");
+histogram(alt1,100000,'Normalization','probability','FaceColor',[0 0.4470 0.7410],'EdgeColor',[0 0.4470 0.7410]);
+xlabel("Estimated Altitude [mm]");
 ylabel("Relative Frequency");
-xlim([-.2 , .1])
+xlim([550 , 700]);
 
-%Roll
+%alt2
 subplot(2,3,2);
-plot(dummy_x , total(:,3));
-title("Roll");
-xlabel("Data Points");
-ylabel("Estimated Roll (deg.)");
+plot(dummy_x , total(:,12));
+title("Alt (Vision)");
+xlabel("Time [samples]");
+ylabel("Estimated Altitude [mm]");
 xlim([0 , num_pts])
 
 subplot(2,3,5);
-histogram(total(:,11),100000,'Normalization','probability','FaceColor',[0 0.4470 0.7410],'EdgeColor',[0 0.4470 0.7410]);
-xlabel("Estimated Roll (deg.)");
+histogram(total(:,12),100000,'Normalization','probability','FaceColor',[0 0.4470 0.7410],'EdgeColor',[0 0.4470 0.7410]);
+xlabel("Estimated Altitude [mm]");
 ylabel("Relative Frequency");
-xlim([-.1 , .1])
+xlim([280 , 380]);
 
-%Yaw
+
+%alt3
 subplot(2,3,3);
-plot(dummy_x , total(:,4));
-title("Yaw");
-xlabel("Data Points");
-ylabel("Estimated Yaw (deg.)");
+plot(dummy_x , total(:,13));
+title("Alt (Raw)");
+xlabel("Time [samples]");
+ylabel("Measured Altitude [mm]");
 xlim([0 , num_pts])
-ylim([173.5 , 174.4]);
-
 
 subplot(2,3,6);
-histogram(total(:,11),100000,'Normalization','probability','FaceColor',[0 0.4470 0.7410],'EdgeColor',[0 0.4470 0.7410]);
-xlabel("Estimated Yaw (deg.)");
+histogram(total(:,13),100000,'Normalization','probability','FaceColor',[0 0.4470 0.7410],'EdgeColor',[0 0.4470 0.7410]);
+xlabel("Measured Altitude [mm]");
 ylabel("Relative Frequency");
+xlim([340 , 346]);
 
 %% Accelerometer Readings
 % Ax[14] : Ay[15] : Az[16]
-close all;
+%close all;
 
 acc_fig = figure('NumberTitle', 'off', 'Name', 'Accelerometer Sensor Line Graphs and Histograms');
 set(acc_fig,'Color','w');
@@ -287,7 +284,7 @@ xlim([980 , 1020]);
 
 %% Gyroscope Readings
 % Wx[17] : Wy[18] : Wz[19]
-close all;
+%close all;
 
 acc_fig = figure('NumberTitle', 'off', 'Name', 'Gyroscope Sensor Line Graphs and Histograms');
 set(acc_fig,'Color','w');
