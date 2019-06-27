@@ -9,7 +9,7 @@ fprintf('* royale version: %s\n',royaleVersion);
 
 %Change this to the file name of the .rrf file in your workspace that you
 %wish to read
-FileName = 'flexx_sync_2.rrf';
+FileName = 'smooth_data3.rrf';
 
 
 % open recorded file
@@ -93,7 +93,7 @@ figure('units','normalized','outerposition',[0 0 1 1]);
 
 %remember pcshow takes in a pointCloud type
 % ptCloudScene.Intensity = [];
-pcshow(ptCloudScene,'VerticalAxis','Y', 'VerticalAxisDir', 'Down')
+pcshow(cloud_array{20},'VerticalAxis','Y', 'VerticalAxisDir', 'Down')
     set(gcf, 'color', 'k')
     set(gca, 'color', 'k');
     xlabel('x');ylabel('y');zlabel('z')
@@ -103,18 +103,17 @@ pcshow(ptCloudScene,'VerticalAxis','Y', 'VerticalAxisDir', 'Down')
 %     view([0 0])
     
 %     campos('perspective')
-    camtarget([-.17 0.22 1.7])
-    campos([-.17 0.22 0])
-    camroll(-13)
+
     axis vis3d
     axis off
-    
+    tb = axtoolbar('default');
+    tb.Visible = 'off';
     %try semi-circle radius sweep
     r = 3; 
-for ii = -1200:1:2000
-    campos([1*cosd(ii/10) -0.42*cosd(ii/100) 1.3])
-    pause(.01)
-end 
+% for ii = -1200:1:2000
+%     campos([1*cosd(ii/10) -0.42*cosd(ii/100) 1.3])
+%     pause(.01)
+% end 
 %% play visualization of entire movie
 player = pcplayer([minX maxX],[minY maxY],[minZ maxZ],'VerticalAxis','Y', 'VerticalAxisDir', 'Down');
 clc
@@ -152,7 +151,7 @@ while ~0
         ii = 1;
     end 
     ii = ii +1; 
- 
+    pause(.01)
 %     
    
 end
@@ -164,15 +163,10 @@ end
 % rrf_output13_rotate90_5FPS.rrf for best results
 clc
 % THIS CODE IS FROM THE MATLAB DOCS, COMPUTER VISION: MERGE BY ICP REGISTER
-% This only stitches rotational translations, not linear 
-%initiate transform
 %this will perform one iteration here
 disp('Stitching point cloud...')
 tic
-cloud_array2 = cell(1,N_Frames); %making a new one so this can be used separatly of the movie 
-for ii = 1:N_Frames
-    cloud_array2{ii} = pointCloud(cloud_array{ii}.Location); 
-end 
+
 ptCloudRef = cloud_array{1};
 ptCloudCurrent = cloud_array{2};
 gridSize = 0.001; %IMPORTANT: this value is how many subgrids are compared when translating
