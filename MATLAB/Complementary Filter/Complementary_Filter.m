@@ -132,14 +132,26 @@ end
 %%%%% Broken at the moment
 
 %relative to center of drone,
-sensor_pos = [.1905 ; 0 ; 0]; %meters
+sensor_offset = [.1905 ; 0 ; 0]; %meters
 sensor_att = [0 ; 0 ; 0];
 
-for i = 1:num_to_filter
-   new_pos(: , i) = R_b_to_n( attitude(: , i) )*sensor_pos( :, i) + position( :, i);
-   sensor_pos = [sensor_pos , new_pos]; 
-   new_att(: ,i) = attitude(: , i);
-   sensor_att = [sensor_att , new_att];
+% Preallocating
+sensor_pos = zeros(3,num_to_filter);
+sensor_att = zeros(3,num_to_filter);
+
+% sensor_pos(: , 1) = [.1905 ; 0 ; 0];
+
+for i = 2:num_to_filter
+    if mod(i,100) == 0
+        fprintf('Processing point: %d\n',i)
+    end
+    
+    
+    sens_relative = position(: , i) + sensor_offset;
+    new_pos = R_b_to_n( attitude(: , i) )*sens_relative;%sensor_pos( :, i) + position( :, i);
+    sensor_pos( : , i) = new_pos;
+    new_att = attitude(: , i);
+    sensor_att( :, i ) = new_att;
     
 end
 
