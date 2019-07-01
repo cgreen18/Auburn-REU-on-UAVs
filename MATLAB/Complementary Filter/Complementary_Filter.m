@@ -35,7 +35,7 @@ attitude = [ 0 ; 0 ; 0 ];
 % Trust in: theta_sens , dead_reckoning , accel/mag
 weights_att = { .6*eye(3) ; .3*eye(3) ; .1*eye(3)};
 % trust in: sensor , dead_reckoning
-weights_vel = {[.7 ,0 , 0; 0 , .7,0;0,0,0] ; [.3,0,0;0,.3,0;0,0,1]};
+weights_vel = {[.3 ,0 , 0; 0 , .7,0;0,0,0] ; [.7,0,0;0,.3,0;0,0,1]};
 % trust in: alt sens , dead reckoning
 weights_pos = {[0,0,0;0,0,0;0,0,.9] ; [1,0,0;0,1,0;0,0,.1] };
 
@@ -46,30 +46,7 @@ weights_pos = {[0,0,0;0,0,0;0,0,.9] ; [1,0,0;0,1,0;0,0,.1] };
 num_to_filter = 100000
 
 for k = 2:num_to_filter
-    % delta_t, pos_km1 , vel_km1 , acc_km1 , att_km1
-    pos_dead = dead_reckoning_pos(delta_t , position(: , k-1) , velocity(: , k-1) , accel_no_grav(: , k-1) , attitude(: , k-1) );
-    
-    % weights , alt , pos_dead_wreck
-    pos_est = weight_position(weights_pos , [0;0;altitude( k-1 )] , pos_dead );
-    position = [position , pos_est];
-%     for p = 1:3
-%         subplot(3,3,p);
-%         plot(k,pos_est(p),'*');
-%         hold on;
-%     end
-
-    % delta_t , vel_km1 , acc_km1 , att_km1
-    vel_dead = dead_reckoning_vel(delta_t , velocity(: , k-1) , accel_no_grav(:,k-1) , attitude(: , k-1));
-    % weights , vel_sens, vel_dead_reck
-    vel_est = weight_velocity(weights_vel , velocity_sensor(: , k) , vel_dead );
-    velocity = [velocity , vel_est ];
-%     for p = 1:3
-%         subplot(3,3,p+3);
-%         plot(k,vel_est(p),'*');
-%         hold on;
-%     end
-
-    % delta_t , att_km1 , ang_vel_km1
+     % delta_t , att_km1 , ang_vel_km1
     att_dead = dead_reckoning_att( delta_t , attitude(: , k-1) , ang_velocity(:, k-1) );
 
     % mag , mag_initial
@@ -88,6 +65,31 @@ for k = 2:num_to_filter
      
     %drawnow;
     %pause(0.00001);
+    
+    
+    % delta_t, pos_km1 , vel_km1 , acc_km1 , att_km1
+    pos_dead = dead_reckoning_pos(delta_t , position(: , k-1) , velocity(: , k-1) , accel_no_grav(: , k-1) , attitude(: , k-1) );
+    
+    % weights , alt , pos_dead_wreck
+    pos_est = weight_position(weights_pos , [0;0;altitude( k-1 )] , pos_dead );
+    position = [position , pos_est];
+%     for p = 1:3
+%         subplot(3,3,p);
+%         plot(k,pos_est(p),'*');
+%         hold on;
+%     end
+
+    % delta_t , vel_km1 , acc_km1 , att_km1
+    vel_dead = dead_reckoning_vel(delta_t , velocity(: , k-1) , accel_no_grav(:,k-1) , attitude(: , k-1));
+    % weights , vel_sens, vel_dead_reck
+    vel_sens = sensor_velocity(velocity_sensor(: , k) , attitude(: , k) );
+    vel_est = weight_velocity(weights_vel , vel_sens , vel_dead );
+    velocity = [velocity , vel_est ];
+%     for p = 1:3
+%         subplot(3,3,p+3);
+%         plot(k,vel_est(p),'*');
+%         hold on;
+%     end
 end
 
 close all;
