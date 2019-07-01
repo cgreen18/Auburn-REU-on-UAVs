@@ -3,133 +3,28 @@ clear all;
 close all;
 clc;
 
-file_1 = 'calibration_ar174_flying_data.txt';
-file_2 = 'calibration_ar174_flying_2_data.txt';
+nav_data = read_navdata();
 
-file_1_table = readtable(file_1);
-file_2_table = readtable(file_2);
+%offset = 10000
 
-%time[1] : pitch[2] : roll[3] : yaw[4] : alt(demo)[5] : ...
-%   Vx[6] : Vy[7] :Vz[8] : Mx[9] : My[10] : Mz[11] : ...
-%   alt(vision)[12] : alt(raw)[13] : Ax[14] : Ay[15] : Az[16] ...
-%   Wx[17] : Wy[18] : Wz[19]
-file_1_data = table2array(file_1_table);
-[n , m] = size(file_1_data);
-file_1_data = file_1_data(10000:n , :);
-file_2_data = table2array(file_2_table);
-[n , m] = size(file_2_data);
-file_2_data = file_2_data(10000:n , :);
+% [ num_pts , num_sens ] = size(nav_data);
+% 
+% nav_data = nav_data(offset:num_pts , :);
 
-total = [ file_1_data ; file_2_data ];
+[ num_pts , num_sens ] = size(nav_data);
 
-[ num_pts , num_sens ] = size(total);
+delta_t = nav_data(2,1)-nav_data(1,1);
 
-delta_t = total(2,1)-total(1,1);
-
-%% Anonymous Functions
-
-R_1 = @(psi)[cos(psi) sin(psi) 0; -sin(psi) cos(psi) 0; 0 0 1];
-R_2 = @(theta) [cos(theta) 0 -sin(theta); 0 1 0; sin(theta) 0 cos(theta)];
-R_3 = @(phi) [1 0 0; 0 cos(phi) sin(phi); 0 -sin(phi) cos(phi)];
-%R_b__n = @(psi , theta , phi) R_1(psi)*R_2(theta)*R_3(phi);
-R_b__n = @(theta_vec) R_1(theta_vec(3))*R_2(theta_vec(1))*R_3(theta_vec(2));
-
-s = @(angle) (sin(deg2rad(angle)));
-c = @(angle) (cos(deg2rad(angle)));
-t = @(angle) (tan(deg2rad(angle)));
-C_b__n = @(theta) ([0 , c(theta(1)) , -s(theta(2)) ; 1 , s(theta(2))*t(theta(1)) , c(theta(2))*t(theta(1)) ; 0 , s(theta(2))/c(theta(1)) , c(theta(2))/c(theta(1)) ]);
-
-% zeroed out acceleration contribution
-pos_kp1 = @( delta_t , p_n , v , a , theta_vec ) (p_n + delta_t*R_b__n(theta_vec)*v + 0*.5*(delta_t^2)*R_b__n(theta_vec)*a);
-
-% zeroed out acceleration contribution
-vel_kp1 = @(delta_t , v_n , a , theta_vec) (v_n + 0*delta_t*R_b__n(theta_vec)*a);
-
-theta_vec_kp1_dead_reck = @(delta_t , theta_vec_n , omega ) (theta_vec_n + delta_t*C_b__n(theta_vec_n)*omega);
-
-theta_vec_k_acc = @(accel) ([ rad2deg( atan2(accel(3),accel(1)) ) ; rad2deg( atan2(accel(3),accel(2))) ; 0 ]);
-
-theta_vec_k_mag = @(magnet , orig_mag) ([ 0 ; 0 ; rad2deg( atan2(orig_mag(2),orig_mag(1)) - atan2(magnet(2) ,magnet(1) ) ) ]);
-
-% weights is (4x3)
-comp_filt_theta_vec_kp1 = @(mag_orig , weights , delta_t , theta_sens_kp1 , theta_vec_k , omega_k , accel_kp1 , mag_kp1 ) ...
-                        (weights{1}*theta_sens_kp1 + ...
-                        weights{2}*theta_vec_kp1_dead_reck(delta_t , theta_vec_k , omega_k) + ...
-                        weights{3}*theta_vec_k_acc(accel_kp1) + ...
-                        weights{4}*theta_vec_k_mag(mag_kp1 , mag_orig));
-
-% weights is (2x3)
-comp_filt_vel_kp1 = @(weights , vel_sens_kp1 , delta_t , vel_k , accel_k , theta_vec_k) ...
-                  (weights{1}*vel_sens_kp1 + ...
-                  weights{2}*vel_kp1(delta_t , vel_k , accel_k , theta_vec_k));
-                  
-comp_filt_pos_kp1 = @(weights , pos_alt , delta_t , pos_k , vel_sens_k , accel_sens_k , theta_vec_k) ...
-                    (weights{1}*pos_alt + ...
-                    weights{2}*pos_kp1( delta_t , pos_k , vel_sens_k , accel_sens_k , theta_vec_k ) );
-             
-                   %pos_est = pos_kp1( delta_t , position(:,i-1) , vel_sens(i-1,:)' , accel_sens(i-1,:)' , theta_vec(:,i-1) );
-%% Cleaning Data  
-%time[1] : pitch[2] : roll[3] : yaw[4] : alt(demo)[5] : ...
-%   Vx[6] : Vy[7] :Vz[8] : Mx[9] : My[10] : Mz[11] : ...
-%   alt(vision)[12] : alt(raw)[13] : Ax[14] : Ay[15] : Az[16] ...
-%   Wx[17] : Wy[18] : Wz[19]
-
-means = mean(total);
-stds = std(total);
-variances = var(total);
-
-% Attitude: Find mean of attitude (adjusted for >180 is negative)
-att_data =total( : , 2:4);
-att_data_adjusted = att_data.*(att_data >= 0) + (180-att_data.*(att_data < 0 ));
-att_mean = mean(att_data_adjusted);
-att_mean = att_mean.*(att_mean < 180) + (att_mean.*(att_mean > 180) - 180);
-means(2:4) = att_mean;
-
-maybe_cleaned_theta_sens = total(:,2:4) - att_mean;
-maybe_cleaned_theta_sens = maybe_cleaned_theta_sens.*(maybe_cleaned_theta_sens > -180) + ((360+ maybe_cleaned_theta_sens).*(maybe_cleaned_theta_sens<-180));
-
-
-% Acceleration: convert to G 
-acc_data = (total( : , 14:16 )-2048)/512;
-acc_data(:,3) = acc_data(:,3)*-1;
-
-% Acceleration: remove gravity
-%acc_data = acc_data - [zeros(num_pts,2) , -ones(num_pts,1)];
-
-%%%%% NORMALIZING IS SCREWING W DEAD RECKONING VELOCITY
-
-% Acceleration: and normalize
-for i =1:num_pts
-   acc_data(i,:) = acc_data(i,:)/norm(acc_data(i,:));
-end
-accel_sens = acc_data;
-
-% Velocity:
-vel_sens = total(: , 6:8) - means(6:8);
-
-
-% Magnetometer:
-mag_data = total(: ,9:11);
-mag_orig = mean(mag_data(1:1000 , :));
-mag_sens = total(:,9:11);
-
-% Gyroscope:
-gyro_data = total(:,17:19);
-gyro_sens = gyro_data - - means(17:19);
-
-% Altitude:
-alt_data = total(:,5);
-alt_sens = zeros(num_pts,3);
-alt_sens(:,3) = alt_data;
-
+% column vecs
+[attitude_sensor , yaw_initial , altitude , velocity_sensor , magneto , mag_init_angle , accel_no_grav , accel_normalized , ang_velocity] = clean_data(nav_data);
 
 %% Filtering Data
 
-% STATE VARIABLES
-%
+% STATE VARIABLES 
+% Initials
 position = [ 0 ; 0 ; 0 ];
 velocity = [ 0 ; 0 ; 0 ];
-theta_vec = [0;0;0];
+attitude = [ 0 ; 0 ; 0 ];
 %
 
 %time[1] : pitch[2] : roll[3] : yaw[4] : alt(demo)[5] : ...
@@ -138,58 +33,80 @@ theta_vec = [0;0;0];
 %   Wx[17] : Wy[18] : Wz[19]
 
 % Trust in: theta_sens , dead_reckoning , accel/mag
-weights_theta = { .5*eye(3) ; .1*eye(3) ; .4*[1 , 0 ,0 ;0,1,0;0,0,0] ; .4*[0,0,0;0,0,0;0,0,1]};
-weights_vel = {.8*eye(3) ; .2*eye(3)};
+weights_att = { .6*eye(3) ; .3*eye(3) ; .1*eye(3)};
+% trust in: sensor , dead_reckoning
+weights_vel = {[.5 ,0 , 0; 0 , .5,0;0,0,0] ; [.5,0,0;0,.5,0;0,0,1]};
+% trust in: alt sens , dead reckoning
 weights_pos = {[0,0,0;0,0,0;0,0,.9] ; [1,0,0;0,1,0;0,0,.1] };
 
-figure;
+%figure;
 
-for i = 2:num_pts
+%%% Preallocate for speed later
 
-    pos_est = comp_filt_pos_kp1( weights_pos , alt_sens(i,:)' , delta_t , position(:,i-1) , vel_sens(i-1,:)' , accel_sens(i-1,:)' , theta_vec(:,i-1) );
+num_to_filter = 100000
+
+for k = 2:num_to_filter
+    % delta_t, pos_km1 , vel_km1 , acc_km1 , att_km1
+    pos_dead = dead_reckoning_pos(delta_t , position(: , k-1) , velocity(: , k-1) , accel_no_grav(: , k-1) , attitude(: , k-1) );
+    
+    % weights , alt , pos_dead_wreck
+    pos_est = weight_position(weights_pos , [0;0;altitude( k-1 )] , pos_dead );
     position = [position , pos_est];
 %     for p = 1:3
 %         subplot(3,3,p);
-%         plot(i,pos_est(p),'*');
+%         plot(k,pos_est(p),'*');
 %         hold on;
 %     end
-        
-    vel_est = comp_filt_vel_kp1(weights_vel , vel_sens(i,:)' , delta_t , vel_sens(i-1,:)' , accel_sens(i,:)' , theta_vec(:,i-1) );
+
+    % delta_t , vel_km1 , acc_km1 , att_km1
+    vel_dead = dead_reckoning_vel(delta_t , velocity(: , k-1) , accel_no_grav(:,k-1) , attitude(: , k-1));
+    % weights , vel_sens, vel_dead_reck
+    vel_est = weight_velocity(weights_vel , velocity_sensor(: , k) , vel_dead );
     velocity = [velocity , vel_est ];
 %     for p = 1:3
 %         subplot(3,3,p+3);
-%         plot(i,vel_est(p),'*');
+%         plot(k,vel_est(p),'*');
 %         hold on;
 %     end
 
-    % @(mag_orig , weights , delta_t , theta_sens_kp1 , theta_vec_k , omega_k , accel_kp1 , mag_kp1 )
-    att_est = comp_filt_theta_vec_kp1(mag_orig , weights_theta , delta_t , maybe_cleaned_theta_sens(i ,:)' , theta_vec(: , i-1) , ...
-                gyro_sens(i,:)' , accel_sens(i ,:)' , mag_sens(i,:)');
-    theta_vec = [theta_vec , att_est ]; 
+    % delta_t , att_km1 , ang_vel_km1
+    att_dead = dead_reckoning_att( delta_t , attitude(: , k-1) , ang_velocity(:, k-1) );
+
+    % mag , mag_initial
+    att_mag = mag_attitude( magneto(: , k) , mag_init_angle );
+
+    att_acc = acc_attitude( accel_normalized( : , k ) );
+
+    % weights, att_dead , att_acc , att_mag , att_sens
+    att_est = weight_attitude( weights_att , att_dead , att_acc , att_mag , attitude_sensor( : , k ) );
+    attitude = [attitude , att_est ]; 
 %     for p = 1:3
 %         subplot(3,3,p+6);
-%         plot(i,att_est(p),'*');
+%         plot(k,att_est(p),'*');
 %         hold on;
 %     end
      
-    %pause(.001);
+    %drawnow;
+    %pause(0.00001);
 end
 
+close all;
+figure;
 
 for p = 1:3
          subplot(3,3,p);
-         plot(1:num_pts,position,'*');
+         plot(1:num_to_filter,position(p,:),'-');
          hold on;
 end
 
 for p = 1:3
          subplot(3,3,p+3);
-         plot(1:num_pts,velocity,'*');
+         plot(1:num_to_filter,velocity(p,:),'-');
          hold on;
 end
      
 for p = 1:3
          subplot(3,3,p+6);
-         plot(1:num_pts,theta_vec,'*');
+         plot(1:num_to_filter,attitude(p,:),'-');
          hold on;
 end
