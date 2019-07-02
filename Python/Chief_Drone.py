@@ -2,13 +2,7 @@
 Title: Chief_Drone.py
 Author: Conor Green and Brenden Stevens
 Description: Class to maintain the same drone object (from ps_drone). Holds methods to get navdata and fly
-Usage: Call from principal_drone (or main at the moment) to multiprocess navdata and flying
-Version:
-1.0 - June 17 2019 - Initial creation. Copy/pasted methods from previous scripts
-1.1 - June 18 2019 - Changed main
-1.2 - June 18 2019 - Commented
-1.3 - June 20 2019 - Added fly and track that utilizes threading (custom thread class - Drone_Thread)
-1.4 - June 26 2019 - Added various debugging methods
+Usage: Call from main (at the moment) to multiprocess navdata and flying
 '''
 
 #Standard lib imports
@@ -120,25 +114,31 @@ class Chief:
     #Main functionality of Chief_Drone: to fly AND track the navdata of the drone. Can add plotting functions here
     def main(self):
 
+        #self.thread_fly_and_track(5)
+
         self.drone.takeoff()
         print("Taking Off")
         time.sleep(1)
+        #
+        #
+        # #self.gather_data_set_time_and_print(self.options['time_lim'] , ['demo'] , { 'demo' : [4]})
+        #
+        # #self.calibrate_and_write_to_file(25 , "7_1_clean3_10fps_data.txt")
+        #
+        # #self.gather_data_set_time(self.options['time_lim'])
+        #
+        # self.drone.land()
+        # print("Landing")
+        # time.sleep(5)
 
-        #self.gather_data_set_time_and_print(self.options['time_lim'] , ['demo'] , { 'demo' : [1 ,2 , 3]})
+        self.thread_fly_and_track(20)
 
-        self.calibrate_and_write_to_file(5 , "first_calibration_data.txt")
-
-        self.drone.land()
-        print("Landing")
-        time.sleep(5)
-
-        #self.thread_fly_and_track(self.options['time_lim'])
+        self.special_print("7_2_verfiy_coordinates_data.txt")
 
         #self.drone.takeoff()
         #print("Taking Off")
         #time.sleep(1)
 
-        #self.gather_data_set_time(self.options['time_lim'])
 
         #self.drone.land()
         #print("Landing")
@@ -433,11 +433,11 @@ class Chief:
 
             #raw_list = ['accel' , 'gyros' , 'gyros_110']
 
-            print(data_slice)
+            #print(data_slice)
 
             for type in print_what:
 
-                print(data_slice[type])
+                #print(data_slice[type])
 
                 list = print_which[type]
 
@@ -492,9 +492,17 @@ class Chief:
 
         t_end = time.time() + time_lim
 
+        # with open("time_ref_4_data.txt" , "w") as file:
+        #     string = time.strftime("%a, %d %b %Y %H:%M:%S +0000")
+        #     string += " converts to "
+        #     string += str(time.time())
+        #     file.write(string)
+        #
+        #     file.close()
+
         with open(name , "w") as file:
 
-            file.write("time:pitch:roll:yaw:demo_alt:Vx:Vy:Vz:Mx:My:Mz:alt_vision:alt_raw:Ax:Ay:Az:Wx:Wy:Wz\n")
+            file.write("time(python):pitch:roll:yaw:demo_alt:Vx:Vy:Vz:Mx:My:Mz:alt_vision:alt_raw:Ax:Ay:Az:Wx:Wy:Wz\n")
 
             while time.time() < t_end:
 
@@ -505,7 +513,9 @@ class Chief:
 
                 data_slice = self.get_nav_frame_simple()
 
-                string = str(data_slice['time'][0]) + ":"
+                string = str(time.time()) + ":"
+
+                #string += str(data_slice['time'][0]) + ":"
 
                 for angle in data_slice['demo'][2]:
                     string += str(angle) + ":"
@@ -536,97 +546,55 @@ class Chief:
 
         return
 
-    def special_print_eul_and_pos(self , name):
-        vel_data = self.parse_flight_into_vel()
-        pos_data = self.handle_vel_data( vel_data )
-
-        eul_data = self.parse_flight_into_eul_and_convert()
-
+    def special_print(self , name):
         with open(name , "w") as file:
 
-            num_pts = len(self.flight_data)
+            file.write("time(python):pitch:roll:yaw:demo_alt:Vx:Vy:Vz:Mx:My:Mz:alt_vision:alt_raw:Ax:Ay:Az:Wx:Wy:Wz\n")
 
+            for data_slice in self.flight_data:
 
-            #skip i = 1 to skip pos_data[0] = np.zeros(3,1)
-            for i in range(1,num_pts):
+                #print(data_slice)
 
-                eul_t_slice = eul_data[:,i]
-                pos_t_slice = pos_data[:,i]
+                # while self.drone.NavDataCount == self.last_NDC:
+                #     time.sleep(.0001)
+                #
+                # self.last_NDC = self.drone.NavDataCount
+                #
+                # data_slice = self.get_nav_frame_simple()
 
-                t_stamp = self.parallel_time_stamp[i]
+                string = str(time.time()) + ":"
 
-                string = str(t_stamp) + ":"
+                #string += str(data_slice['time'][0]) + ":"
 
-                for elem in eul_t_slice:
-                    string += str(elem) + ":"
+                for angle in data_slice['demo'][2]:
+                    string += str(angle) + ":"
 
-                for elem in pos_t_slice:
-                    string += str(elem) + ":"
+                string += str(data_slice['demo'][3]) + ":"
+
+                for velocity in data_slice['demo'][4]:
+                    string += str(velocity) + ":"
+
+                for magnet in data_slice['magneto'][0]:
+                    string += str(magnet) + ":"
+
+                string += str(data_slice['altitude'][0]) + ":"
+
+                string += str(data_slice['altitude'][3]) + ":"
+
+                for acceleration in data_slice['raw_measures'][0]:
+                    string += str(acceleration) + ":"
+
+                for omega in data_slice['raw_measures'][1]:
+                    string += str(omega) + ":"
 
                 string = string[:-1]
+
                 string += "\n"
+
                 file.write(string)
 
             file.close()
 
-        return
-
-    ##TODO: THIS IS COPY PASTE, DOESNT WORK
-    def special_print_euler(self , name):
-
-        vel_data = self.parse_flight_into_vel()
-        pos_data = self.handle_vel_data( vel_data )
-
-        with open(name , "w") as file:
-
-            num_pts = len(self.flight_data)
-
-
-            #skip i = 1 to skip pos_data[0] = np.zeros(3,1)
-            for i in range(1,num_pts):
-
-                pos_t_slice = pos_data[:,i]
-
-                t_stamp = self.parallel_time_stamp[i]
-
-                string = str(t_stamp) + ":"
-                for elem in pos_t_slice:
-                    string += str(elem) + ":"
-
-                string = string[:-1]
-                string += "\n"
-                file.write(string)
-
-            file.close()
-
-        return
-
-    def special_print_position(self , name):
-
-        vel_data = self.parse_flight_into_vel()
-        pos_data = self.handle_vel_data( vel_data )
-
-        with open(name , "w") as file:
-
-            num_pts = len(self.flight_data)
-
-
-            #skip i = 1 to skip pos_data[0] = np.zeros(3,1)
-            for i in range(1,num_pts):
-
-                pos_t_slice = pos_data[:,i]
-
-                t_stamp = self.parallel_time_stamp[i]
-
-                string = str(t_stamp) + ":"
-                for elem in pos_t_slice:
-                    string += str(elem) + ":"
-
-                string = string[:-1]
-                string += "\n"
-                file.write(string)
-
-            file.close()
 
         return
 
@@ -680,5 +648,5 @@ if __name__ == '__main__':
 
     drone_obj = Chief()
     print("Initialized")
-    drone_obj.run(time_lim = 1  , desired_data = calibration_pkts , demo_mode = False)
+    drone_obj.run(time_lim = 35  , desired_data = calibration_pkts , demo_mode = False)
     #drone_obj.run(time_lim=3 , desired_data = ['demo'] , demo_mode = True)
