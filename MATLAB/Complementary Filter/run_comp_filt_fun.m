@@ -4,12 +4,17 @@ clc;
 
 filename = '7_1_clean10_5fps_reformatted.txt'
 
-[d_pos , d_vel , d_att , s_pos , s_att] = comp_filt_fun(filename);
-
-close all;
-figure;
+[time , d_pos , d_vel , d_att , s_pos , s_att] = comp_filt_fun(filename);
 
 num_pts = length(d_pos);
+
+close all;
+
+figure;
+plot(1:num_pts,time);
+
+figure;
+
 
 pos_plot_names = {'X pos' , 'Y pos' , 'Z pos'};
 vel_plot_names = {'V_x' , 'V_y' , 'V_z'};
