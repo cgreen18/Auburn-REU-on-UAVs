@@ -14,11 +14,12 @@ import Chief_Drone
 
 class Drone_Thread(threading.Thread):
 
-    def __init__(self , chief_drone , which , time_lim , *args , **kwargs):
+    def __init__(self , chief_drone , which , time_lim , time_calib ,*args , **kwargs):
         super(Drone_Thread , self).__init__(*args , **kwargs)
         self.chief = chief_drone
         self.which = which
         self.time_lim = time_lim
+        self.time_calib = time_calib
 
     #overriding default function for threads. Splits each worker to do their function according to their 'which' tag
     def run(self):
@@ -26,7 +27,7 @@ class Drone_Thread(threading.Thread):
             self.fly(self.time_lim)
         else:
             #self.which == 'navdata':
-            self.get_navdata(self.time_lim)
+            self.get_navdata(self.time_lim , self.time_calib)
 
         return
 
@@ -46,9 +47,9 @@ class Drone_Thread(threading.Thread):
 
         return
 
-    def get_navdata(self, time_lim):
+    def get_navdata(self, time_lim , time_calib):
 
-        self.chief.gather_data_set_time(time_lim)
+        self.chief.gather_data_set_time(time_lim , time_calib)
 
         return
 

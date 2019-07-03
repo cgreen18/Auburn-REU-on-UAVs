@@ -116,9 +116,9 @@ class Chief:
 
         #self.thread_fly_and_track(5)
 
-        self.drone.takeoff()
-        print("Taking Off")
-        time.sleep(1)
+        # self.drone.takeoff()
+        # print("Taking Off")
+        # time.sleep(1)
         #
         #
         # #self.gather_data_set_time_and_print(self.options['time_lim'] , ['demo'] , { 'demo' : [4]})
@@ -131,9 +131,15 @@ class Chief:
         # print("Landing")
         # time.sleep(5)
 
-        self.thread_fly_and_track(20)
+        # print(time.time())
 
-        self.special_print("7_2_verfiy_coordinates_data.txt")
+        self.thread_fly_and_track(60 , 30)
+
+        # print(time.time())
+
+        self.special_print("7_3_tune_smoothing_data.txt")
+
+        # print(time.time())
 
         #self.drone.takeoff()
         #print("Taking Off")
@@ -165,12 +171,12 @@ class Chief:
 
         return
 
-    def thread_fly_and_track(self , time_lim):
+    def thread_fly_and_track(self , time_lim , time_calib):
 
         #Initialize threads
-        flight_thread = Drone_Thread.Drone_Thread(self , 'fly' , time_lim , name='flight_thread')
+        flight_thread = Drone_Thread.Drone_Thread(self , 'fly' , time_lim , time_calib , name='flight_thread')
 
-        navdata_thread = Drone_Thread.Drone_Thread(self , 'navdata' , time_lim , name='navdata_thread')
+        navdata_thread = Drone_Thread.Drone_Thread(self , 'navdata' , time_lim , time_calib, name='navdata_thread')
 
         threads = [flight_thread , navdata_thread]
 
@@ -395,8 +401,12 @@ class Chief:
 
 
     #Gathers data as specified by the arguments in main for a specified amount of time. Updates self.flight_data to the flight data!
-    def gather_data_set_time(self , time_lim):
+    def gather_data_set_time(self , time_lim , time_calib):
         t_end = time.time() + time_lim
+
+        t_ready = time.time() + time_calib
+
+        has_printed = False
 
         last_NDC = self.drone.NavDataCount -1
 
@@ -410,6 +420,10 @@ class Chief:
             _data_slice = self.get_nav_frame()
             self.flight_data.append(_data_slice)
             self.parallel_time_stamp.append(time.time())
+
+            if time.time() > t_ready and not has_printed:
+                print("Calibrated. Ready to fly!")
+                has_printed = True
 
         return
 
@@ -551,7 +565,11 @@ class Chief:
 
             file.write("time(python):pitch:roll:yaw:demo_alt:Vx:Vy:Vz:Mx:My:Mz:alt_vision:alt_raw:Ax:Ay:Az:Wx:Wy:Wz\n")
 
-            for data_slice in self.flight_data:
+            num_pts = len(self.flight_data)
+
+            for i in range(0,num_pts):
+
+                data_slice = self.flight_data[i]
 
                 #print(data_slice)
 
@@ -562,7 +580,7 @@ class Chief:
                 #
                 # data_slice = self.get_nav_frame_simple()
 
-                string = str(time.time()) + ":"
+                string = str(self.parallel_time_stamp[i]) + ":"
 
                 #string += str(data_slice['time'][0]) + ":"
 
@@ -574,18 +592,36 @@ class Chief:
                 for velocity in data_slice['demo'][4]:
                     string += str(velocity) + ":"
 
-                for magnet in data_slice['magneto'][0]:
-                    string += str(magnet) + ":"
+                #Allow for missing keys during "landed"
 
-                string += str(data_slice['altitude'][0]) + ":"
+                _mag_slice = data_slice.get('magneto')
+                if _mag_slice:
+                    for magnet in _mag_slice[0]:
+                        string += str(magnet) + ":"
+                else:
+                    for i in range (0,3):
+                        string += "0" + ":"
 
-                string += str(data_slice['altitude'][3]) + ":"
 
-                for acceleration in data_slice['raw_measures'][0]:
-                    string += str(acceleration) + ":"
+                _alt_slice = data_slice.get('altitude')
+                if _alt_slice:
+                    string += str(_alt_slice[0]) + ":"
 
-                for omega in data_slice['raw_measures'][1]:
-                    string += str(omega) + ":"
+                    string += str(_alt_slice[3]) + ":"
+                else:
+                    for i in range (0,2):
+                        string += "0:"
+
+                _raw_slice = data_slice.get('raw_measures')
+                if _raw_slice:
+                    for acceleration in _raw_slice[0]:
+                        string += str(acceleration) + ":"
+
+                    for omega in _raw_slice[1]:
+                        string += str(omega) + ":"
+                else:
+                    for i in range(0,6):
+                        string += "0:"
 
                 string = string[:-1]
 
