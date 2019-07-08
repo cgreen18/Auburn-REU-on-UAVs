@@ -15,7 +15,7 @@ function [time , d_pos , d_vel , d_att , s_pos , s_att] = comp_filt_fun(filename
     [time , attitude_sensor , yaw_initial , altitude , velocity_sensor , magneto ,...
         mag_init_angle , accel , accel_normalized , ang_velocity] = clean_data(nav_data , calib_time);
     
-    plot_3_plots_row(accel);
+    
    
 
     %% Move mean
@@ -26,7 +26,7 @@ function [time , d_pos , d_vel , d_att , s_pos , s_att] = comp_filt_fun(filename
     magneto = movmean(magneto,41,2);
     
 
-    plot_3_plots_row(accel);
+   
     
     %% Filter Drone Pose
     
@@ -120,7 +120,6 @@ function [time , d_pos , d_vel , d_att , s_pos , s_att] = comp_filt_fun(filename
 
     end   
     
-    plot_3_plots_row(accel);
     
     %% Calculate Sensor Pose
 
