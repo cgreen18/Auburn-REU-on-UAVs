@@ -15,18 +15,18 @@ function [time , d_pos , d_vel , d_att , s_pos , s_att] = comp_filt_fun(filename
     [time , attitude_sensor , yaw_initial , altitude , velocity_sensor , magneto ,...
         mag_init_angle , accel , accel_normalized , ang_velocity] = clean_data(nav_data , calib_time);
     
-    
+%     plot_3_plots_row(accel);
    
 
     %% Move mean
     
     
     accel = movmean(accel, 41 , 2);
-    %attitude_sensor = movmean(attitude_sensor,41,2);
+    attitude_sensor = movmean(attitude_sensor,41,2);
     magneto = movmean(magneto,41,2);
     
 
-   
+%     plot_3_plots_row(accel);
     
     %% Filter Drone Pose
     
@@ -50,7 +50,7 @@ function [time , d_pos , d_vel , d_att , s_pos , s_att] = comp_filt_fun(filename
 
     % Trust in: theta_sens , dead_reckoning , accel , mag
     % Yaw , pitch , roll
-    weights_att = { [1,0,0 ; 0,1,0 ; 0,0,1] ; 0*eye(3) ; [0,0,0; 0,0,0 ; 0,0,0] };
+    weights_att = { [1,0,0 ; 0,.6,0 ; 0,0,.6] ; 0*eye(3) ; [0,0,0; 0,.3,0 ; 0,0,.3] };
     % weights_att = { [0,0,0 ; 0,0,0 ; 0,0,0] ; 1*eye(3) ; [0,0,0; 0,0,0 ; 0,0,0] };
     
     % trust in: sensor , dead_reckoning
@@ -62,7 +62,7 @@ function [time , d_pos , d_vel , d_att , s_pos , s_att] = comp_filt_fun(filename
     smooth_pos = .5
     smooth_vel = .2
     smooth_acc = .99
-    smooth_att = 0
+    smooth_att = .3
 
     for k = 2:num_to_filter
 
@@ -120,6 +120,7 @@ function [time , d_pos , d_vel , d_att , s_pos , s_att] = comp_filt_fun(filename
 
     end   
     
+%     plot_3_plots_row(accel);
     
     %% Calculate Sensor Pose
 
