@@ -2,7 +2,7 @@ close all;
 clear all;
 clc;
 
-filename = '7_8_clean1_5fps_data.txt'
+filename = '7_8_clean4_5fps_data.txt'
 
 calibration_period = 30; % sec
 
@@ -35,7 +35,7 @@ function [time , d_pos , d_vel , d_att , s_pos , s_att] = comp_filt_fun(filename
     %% Read in file
     nav_data = read_navdata(filename);
    
-    nav_data = nav_data(2:end,:);
+    nav_data = nav_data(3:end,:);
     
     [ num_pts , num_sens ] = size(nav_data);
     delta_t = .005;
@@ -43,7 +43,7 @@ function [time , d_pos , d_vel , d_att , s_pos , s_att] = comp_filt_fun(filename
     [time , attitude_sensor , yaw_initial , altitude , velocity_sensor , magneto ,...
         mag_init_angle , accel , accel_normalized , ang_velocity] = clean_data(nav_data , calib_time);
     
-%     plot_3_plots_row(accel);
+    plot_3_plots_row(accel);
    
 
     accel = movmean(accel, 101 , 2);
@@ -51,7 +51,7 @@ function [time , d_pos , d_vel , d_att , s_pos , s_att] = comp_filt_fun(filename
     %accel = movmean(accel, 301 , 2);
     
 
-%     plot_3_plots_row(accel);
+    plot_3_plots_row(accel);
     
     %% Filter Drone Pose
     
@@ -75,8 +75,9 @@ function [time , d_pos , d_vel , d_att , s_pos , s_att] = comp_filt_fun(filename
 
     % Trust in: theta_sens , dead_reckoning , accel , mag
     % Yaw , pitch , roll
-     weights_att = { [.9,0,0 ; 0,.6,0 ; 0,0,.6] ; .05*eye(3) ; [0,0,0; 0,.3,0 ; 0,0,.3] ; [.05 , 0 , 0 ; 0,0,0 ; 0,0,0]};
+     weights_att = { [.7,0,0 ; 0,.6,0 ; 0,0,.6] ; .05*eye(3) ; [0,0,0; 0,.3,0 ; 0,0,.3] ; [.25 , 0 , 0 ; 0,0,0 ; 0,0,0]};
     %weights_att = { [.8,0,0 ; 0,.85,0 ; 0,0,.85] ; 0*eye(3) ; [0,0,0; 0,.15,0 ; 0,0,.15] ; [.2 , 0 , 0 ; 0,0,0 ; 0,0,0]};
+    weights_att = { [0,0,0 ; 0,.6,0 ; 0,0,.6] ; 0*eye(3) ; [1,0,0; 0,.3,0 ; 0,0,.3] };
     
     % trust in: sensor , dead_reckoning
     weights_vel = {[0 ,0 , 0; 0 , 0,0;0,0,0] ; [1,0,0;0,1,0;0,0,1]};
@@ -87,7 +88,7 @@ function [time , d_pos , d_vel , d_att , s_pos , s_att] = comp_filt_fun(filename
     smooth_pos = .5
     smooth_vel = .2
     smooth_acc = .99
-    smooth_att = .2
+    smooth_att = 0
 
     for k = 2:num_to_filter
 
@@ -145,7 +146,7 @@ function [time , d_pos , d_vel , d_att , s_pos , s_att] = comp_filt_fun(filename
 
     end   
     
-%     plot_3_plots_row(accel);
+    plot_3_plots_row(accel);
     
     %% Calculate Sensor Pose
 
@@ -334,10 +335,14 @@ end
 velocity = velocity - vel_bias;
 
 % normalize magneto by row
-% magneto = normr(magneto);
-for ii = 1:size(magneto,1)
-    magneto(ii,:) = magneto(ii,:)/norm(magneto(ii,:));
-end 
+magneto = normr(magneto);
+
+% 
+% for ii = 1:size(magneto,1)
+%     magneto(ii,:) = magneto(ii,:)/norm(magneto(ii,:));
+% end
+
+
 % determined initial heading
 mag_initial = rad2deg(atan2(mag_means(2),mag_means(1)));
 
@@ -350,11 +355,11 @@ accel = accel - acc_bias;
 
 % for direction calcs
 
-% accel_normalized = normr(accel);
-% magneto = normr(magneto);
-for ii = 1:size(accel,1)
-    accel_normalized(ii,:) = accel(ii,:)/norm(accel(ii,:));
-end 
+accel_normalized = normr(accel);
+
+% for ii = 1:size(accel,1)
+%     accel_normalized(ii,:) = accel(ii,:)/norm(accel(ii,:));
+% end 
 
 
 % subtract bias
