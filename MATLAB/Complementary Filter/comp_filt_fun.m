@@ -18,9 +18,12 @@ function [time , d_pos , d_vel , d_att , s_pos , s_att] = comp_filt_fun(filename
     plot_3_plots_row(accel);
    
 
-    accel = movmean(accel, 101 , 2);
-    accel = movmean(accel, 201 , 2);
-    %accel = movmean(accel, 301 , 2);
+    %% Move mean
+    
+    
+    accel = movmean(accel, 41 , 2);
+    attitude_sensor = movmean(attitude_sensor,41,2);
+    magneto = movmean(magneto,41,2);
     
 
     plot_3_plots_row(accel);
@@ -47,9 +50,8 @@ function [time , d_pos , d_vel , d_att , s_pos , s_att] = comp_filt_fun(filename
 
     % Trust in: theta_sens , dead_reckoning , accel , mag
     % Yaw , pitch , roll
-     weights_att = { [.7,0,0 ; 0,.6,0 ; 0,0,.6] ; .05*eye(3) ; [0,0,0; 0,.3,0 ; 0,0,.3] ; [.25 , 0 , 0 ; 0,0,0 ; 0,0,0]};
-    %weights_att = { [.8,0,0 ; 0,.85,0 ; 0,0,.85] ; 0*eye(3) ; [0,0,0; 0,.15,0 ; 0,0,.15] ; [.2 , 0 , 0 ; 0,0,0 ; 0,0,0]};
-    weights_att = { [0,0,0 ; 0,.6,0 ; 0,0,.6] ; 0*eye(3) ; [1,0,0; 0,.3,0 ; 0,0,.3] };
+    weights_att = { [1,0,0 ; 0,.6,0 ; 0,0,.6] ; 0*eye(3) ; [0,0,0; 0,.3,0 ; 0,0,.3] };
+    % weights_att = { [0,0,0 ; 0,0,0 ; 0,0,0] ; 1*eye(3) ; [0,0,0; 0,0,0 ; 0,0,0] };
     
     % trust in: sensor , dead_reckoning
     weights_vel = {[0 ,0 , 0; 0 , 0,0;0,0,0] ; [1,0,0;0,1,0;0,0,1]};
@@ -60,7 +62,7 @@ function [time , d_pos , d_vel , d_att , s_pos , s_att] = comp_filt_fun(filename
     smooth_pos = .5
     smooth_vel = .2
     smooth_acc = .99
-    smooth_att = 0
+    smooth_att = .3
 
     for k = 2:num_to_filter
 
@@ -272,16 +274,14 @@ end
 
 
 % Index of takeoff
-takeoff = 0;
+takeoff = 1;
 for k = 1:length(altitude)
     if altitude(k) > .2
        takeoff = k
        break;
     end
 end
-if takeoff == 0
-   takeoff = calibration_period*200;
-end
+
 
 
 % psi , theta , phi = yaw , pitch , roll
@@ -289,7 +289,7 @@ end
 yaw_data = nav_data(takeoff:800+takeoff , yaw);
 yaw_data_no_neg = yaw_data.*(yaw_data >= 0) + (360+yaw_data).*(yaw_data < 0);
 yaw_initial = mean(yaw_data_no_neg);
-yaw_initial = 0;
+%yaw_initial = 0;
 
 p_and_r = nav_data(pts_calib , pitch:roll);
 p_and_r_bias = mean(p_and_r);
@@ -307,12 +307,12 @@ end
 velocity = velocity - vel_bias;
 
 % normalize magneto by row
-magneto = normr(magneto);
+% magneto = normr(magneto);
 
-% 
-% for ii = 1:size(magneto,1)
-%     magneto(ii,:) = magneto(ii,:)/norm(magneto(ii,:));
-% end
+
+for ii = 1:size(magneto,1)
+    magneto(ii,:) = magneto(ii,:)/norm(magneto(ii,:));
+end
 
 
 % determined initial heading
@@ -327,11 +327,11 @@ accel = accel - acc_bias;
 
 % for direction calcs
 
-accel_normalized = normr(accel);
+% accel_normalized = normr(accel);
 
-% for ii = 1:size(accel,1)
-%     accel_normalized(ii,:) = accel(ii,:)/norm(accel(ii,:));
-% end 
+for ii = 1:size(accel,1)
+    accel_normalized(ii,:) = accel(ii,:)/norm(accel(ii,:));
+end 
 
 
 % subtract bias
@@ -398,6 +398,7 @@ function att_k = dead_reckoning_att(delta_t , att_km1 , ang_vel_km1)
     datt = [dpsi ; dtheta ; dphi];
     
     att_k = att_km1 + delta_t*datt;
+    att_k = mod(att_k,360);
 end
 
 function attitude = mag_attitude(mag , mag_initial)
