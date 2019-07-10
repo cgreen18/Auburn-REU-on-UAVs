@@ -1,4 +1,5 @@
 function ptCloudScene = process_scene_2(pico_FileName, time, sensor_pos,sensor_att,~,start_here,end_here,use_rotations,use_translations,refresh_data)
+tic
 % Lets stitch baby, this first block gathers and syncs data
     sensor_att = movmean(sensor_att, 41,1);
     % Grab necessary data from pico flexx
@@ -6,7 +7,7 @@ function ptCloudScene = process_scene_2(pico_FileName, time, sensor_pos,sensor_a
         [pt_cloud_data,N_Frames,pico_times] = grab_pico_data(pico_FileName);
         save('temp_stitch_variables.mat','pt_cloud_data','N_Frames','pico_times') %save these to workspace 
     else 
-        load('temp_stitch_variables.mat')
+        load('temp_stitch_variables.mat','pt_cloud_data','N_Frames','pico_times')
     end 
     % fix pico times here
     time_multiplier = 1; 
@@ -90,20 +91,13 @@ for ii = 16:N_Frames-1
     end
 end 
 
-    % Render Point Clouds In this Block
-    % create a cell array called cloud_array that will hold the point clouds 
-    % instantiate
-    cloud_array = cell(1,N_Frames); 
-    disp('rendering clouds')
-    for ii = 1:N_Frames
-        XI = reshape(pt_cloud_data{ii}.x, [1,38304]);
-        YI = reshape(pt_cloud_data{ii}.y, [1,38304]);
-        ZI = reshape(pt_cloud_data{ii}.z, [1,38304]);
-        temp_cloud = [XI; YI; ZI]';
-        cloud_array{ii} = pointCloud(temp_cloud);
-        cloud_array{ii}.Intensity = single(reshape(pt_cloud_data{ii}.grayValue,[1,38304]))';
-        cloud_array{ii} = pcdenoise(cloud_array{ii}, 'NumNeighbors', 3,'Threshold', 1); % de-noise, uncommenting this line will produce faster but messier clouds
-    end 
+%render the clouds in this function
+if refresh_data
+    cloud_array = render_clouds(pt_cloud_data,N_Frames);
+    save('temp_cloud_data.mat','cloud_array')
+else 
+    load('temp_cloud_data.mat','cloud_array')
+end 
 
 disp('transforming with navigation data')
     
@@ -128,7 +122,7 @@ for ii = start_frame:end_frame
     %rotations
     rotation_matrix = eye(4);
     if use_rotations
-        euler_angle=differenceFrames(ii,2:4).*nav_trust_weight;
+        euler_angle=differenceFrames(ii,2:4);
         rotation_matrix = euler2rot(euler_angle);
     end 
     %translations
@@ -214,4 +208,5 @@ disp('Stitch complete')
     end 
 
     disp('stitching finished')
+toc
 end 

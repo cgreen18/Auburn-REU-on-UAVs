@@ -1,12 +1,13 @@
 function ptCloudScene = process_scene(pico_FileName, time, sensor_pos,sensor_att,nav_data_trust,start_here,end_here,use_rotations,use_translations,refresh_data)
 % Lets stitch baby, this first block gathers and syncs data
+tic
     sensor_att = movmean(sensor_att, 41,1);
     % Grab necessary data from pico flexx
     if refresh_data
         [pt_cloud_data,N_Frames,pico_times] = grab_pico_data(pico_FileName);
         save('temp_stitch_variables.mat','pt_cloud_data','N_Frames','pico_times') %save these to workspace 
     else 
-        load('temp_stitch_variables.mat')
+        load('temp_stitch_variables.mat','pt_cloud_data','N_Frames','pico_times')
     end 
     % fix pico times here
     time_multiplier = 1; 
@@ -90,25 +91,17 @@ for ii = 16:N_Frames-1
        differenceFrames(ii+1,4) = running_average; 
     end
 end 
-
-    % Render Point Clouds In this Block
-    % create a cell array called cloud_array that will hold the point clouds 
-    % instantiate
-    cloud_array = cell(1,N_Frames); 
-    disp('rendering clouds')
-    for ii = 1:N_Frames
-        XI = reshape(pt_cloud_data{ii}.x, [1,38304]);
-        YI = reshape(pt_cloud_data{ii}.y, [1,38304]);
-        ZI = reshape(pt_cloud_data{ii}.z, [1,38304]);
-        temp_cloud = [XI; YI; ZI]';
-        cloud_array{ii} = pointCloud(temp_cloud);
-        cloud_array{ii}.Intensity = single(reshape(pt_cloud_data{ii}.grayValue,[1,38304]))';
-        cloud_array{ii} = pcdenoise(cloud_array{ii}, 'NumNeighbors', 3,'Threshold', 1); % de-noise, uncommenting this line will produce faster but messier clouds
-    end 
-
-    disp('transforming and stitching clouds')
-    mergeSize = 0.001;
-    gridSize = 0.001;
+%render the clouds in this function
+if refresh_data
+    cloud_array = render_clouds(pt_cloud_data,N_Frames);
+    save('temp_cloud_data.mat','cloud_array')
+else 
+    load('temp_cloud_data.mat','cloud_array')
+end 
+    
+disp('transforming and stitching clouds')
+mergeSize = 0.001;
+gridSize = 0.001;
     
 if end_here > N_Frames
     end_here=N_Frames;
@@ -149,10 +142,13 @@ jj=1;
         % form the total custom transform from the navigation data 
         custom_tform = affine3d(inv(rotation_matrix)*inv(translation_matrix'));
 
+        tform = affine3d(eye(4));
+        if ~(nav_trust_weight == 1)
         %%%%%%%%%%% ICP Portion
-        fixed = pcdownsample(cloud_array{ii-1}, 'gridAverage', gridSize);
-        moving = pcdownsample(ptCloudCurrent, 'gridAverage', gridSize);
-        tform = pcregistericp(moving, fixed,'Extrapolate',true, 'Metric','pointToPlane','Tolerance',[0.01, 0.05]);
+            fixed = pcdownsample(cloud_array{ii-1}, 'gridAverage', gridSize);
+            moving = pcdownsample(ptCloudCurrent, 'gridAverage', gridSize);
+            tform = pcregistericp(moving, fixed,'Extrapolate',true, 'Metric','pointToPlane','Tolerance',[0.01, 0.05]);
+        end 
         %%%%%%%%%% Merge all transforms
         accum_custom_tform = affine3d((custom_tform.T + tform.T.*icp_weight_matrix - eye(4)) * accum_custom_tform.T); %transformation accumulator
 %         isRigid(accum_custom_tform)
@@ -178,4 +174,5 @@ jj=1;
     end 
 
     disp('stitching finished')
+toc
 end 
