@@ -15,6 +15,24 @@ function [time , drone_pos , drone_att , lidar_pos , lidar_att] = navdata_filter
     navdata = remove_outliers(navdata , threshold_factor , calib_time);
     
     %% LPF
+        t = 1; %[s]
+    yaw = 2; %[deg]
+    pitch = 3;% ''
+    roll = 4; %''
+    alt = 5; %[m]
+    vx = 6; %[m/s]
+    vy = 7;% ''
+    vz = 8; %''
+    mx = 9;% [mT]
+    my = 10;% ''
+    mz = 11;% ''
+    ax = 14;% [m/s^2]
+    ay = 15;% ''
+    az = 16;% ''
+    wx = 17;% [deg/s]
+    wy = 28;% ''
+    wz = 19;% ''
+    
     navdata(:,ax:az) = movmean(navdata(:,ax:az),50,1);
     
     fc = cutoff_freq;
@@ -39,7 +57,9 @@ function [time , drone_pos , drone_att , lidar_pos , lidar_att] = navdata_filter
 end
 
 %% Complementary Filter
-function [time , d_pos , d_att] = complementary_filter(navdata , yaw_initial , mag_init_angle)
+function [time , position , attitude] = complementary_filter(navdata , yaw_initial , mag_init_angle)
+    delta_t = 1/200;
+
     %% Set weights
     % Trust in: theta_sens , dead_reckoning , accel , mag
     % Yaw , pitch , roll
@@ -82,7 +102,7 @@ function [time , d_pos , d_att] = complementary_filter(navdata , yaw_initial , m
     velocity_sensor = navdata(:,vx:vz);
     magneto = navdata(:,mx:mz);
     accel = navdata(:,ax:az);
-    ang_velocity(:,wx:wz);
+    ang_velocity = navdata(:,wx:wz);
 
     
     [ num_pts , num_sens ] = size(navdata);
