@@ -47,6 +47,7 @@ function [time , position , attitude] = complementary_filter(navdata , yaw_initi
     % Accel Second LPF
     acc_LPF_x = .9995;
     pos_LPF_x = .965;
+    att_LPF_x = .96;
     
     %% Set up variables
     % [time , attitude_sensor , yaw_initial , altitude , velocity_sensor , magneto ,...
@@ -135,6 +136,7 @@ function [time , position , attitude] = complementary_filter(navdata , yaw_initi
         % Single pole recursive
         accel(k,:) = acc_LPF_x*accel(k-1,:) + (1-acc_LPF_x)*accel(k,:);
         position(k,:) = pos_LPF_x*position(k-1,:) + (1-pos_LPF_x)*position(k,:);
+        attitude(k,:) = att_LPF_x*attitude(k-1,:)+(1-att_LPF_x)*attitude(k,:);
         
     end
     
