@@ -1,33 +1,13 @@
-function ptCloudScene = process_scene(pico_FileName, time, sensor_pos,sensor_att,nav_data_trust,start_here,end_here)
+function ptCloudScene = process_scene_2(pico_FileName, time, sensor_pos,sensor_att,~,start_here,end_here,use_rotations,use_translations,refresh_data)
 % Lets stitch baby, this first block gathers and syncs data
     sensor_att = movmean(sensor_att, 41,1);
-    disp('Init camera')
-    %%%%%%%%% First Initialize arrays
-    % open recorded camera file
-    manager = royale.CameraManager();
-    cameraDevice = manager.createCamera(pico_FileName);
-    delete(manager);
-    cameraDevice.initialize();
-    % configure playback
-    % cameraDevice.loop(false);
-     cameraDevice.useTimestamps(true);
-    N_Frames=cameraDevice.frameCount();
-    % start capture mode
-    cameraDevice.startCapture();
-    pt_cloud_data = cell(1,N_Frames); 
-    pico_times = zeros(N_Frames,2); 
-
-
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Gather and syncronize data
-    disp('Gathering data')
-    for ii = 1:N_Frames
-        % retrieve data from camera
-        pt_cloud_data{ii} = cameraDevice.getData();
-        % retrieve times
-        pico_times(ii,1) = pt_cloud_data{ii}.timeStamp/(10^6); 
+    % Grab necessary data from pico flexx
+    if refresh_data
+        [pt_cloud_data,N_Frames,pico_times] = grab_pico_data(pico_FileName);
+        save('temp_stitch_variables.mat','pt_cloud_data','N_Frames','pico_times') %save these to workspace 
+    else 
+        load('temp_stitch_variables.mat')
     end 
-%     plot(1:N_Frames, pico_times(:,1),'.','MarkerSize',9)
-% % % %     pico_times(:,1) = pico_times(:,1) - pico_times(1,1);
     % fix pico times here
     time_multiplier = 1; 
     fixed_times = zeros(N_Frames,1);
@@ -41,17 +21,7 @@ function ptCloudScene = process_scene(pico_FileName, time, sensor_pos,sensor_att
         end
     end
     pico_times(:,1) = fixed_times; 
-
-
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FIX YEEHAW
-% %     yaw = sensor_att(:,1);
-% %     for tt = 1:length(yaw)
-% %         if yaw(tt) < 0
-% %             yaw(tt) = 360+yaw(tt);     
-% %         end
-% %         
-% %     end
-
+    % Grab navigation data we will be using 
     filtered_nav_pos_data = zeros(size(sensor_pos,1),7);
     filtered_nav_pos_data(:,1) = time; % time
     filtered_nav_pos_data(:,2) = sensor_att(:,2); % pitch
@@ -70,8 +40,7 @@ function ptCloudScene = process_scene(pico_FileName, time, sensor_pos,sensor_att
     %init total navigation date columns are syncronized time, yaw, pitch, roll,
     %etc
     synced_navigation_data = zeros(N_Frames, size(filtered_nav_pos_data,2)); 
-% % % %     nav_times = filtered_nav_pos_data(:,1) - filtered_nav_pos_data(1,1);
-%     pico_times(1:1)
+
 % Sync Method 1
     for ii = 2:N_Frames 
         current_time = pico_times(ii,1); 
@@ -148,19 +117,28 @@ end
 start_frame = start_here; end_frame = end_here;
 nav_transformed_len = end_frame - start_frame;
 nav_transformed_frames=cell(1,(nav_transformed_len));
-ptCloudScene = cloud_array{start_frame-1};
+% ptCloudScene = cloud_array{start_frame-1};
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Loop will apply all transforms 
 accum_custom_tform = affine3d(eye(4));
 jj=1;
 for ii = start_frame:end_frame
 %     ptCloudRef = ptCloudScene; %legacy 
     ptCloudCurrent = cloud_array{ii};
-    %%%%%%%%%%%%%%%%%%%% Transform here
-    euler_angle=differenceFrames(ii,2:4);
+        %%%%%%%%%%%%%%%%%%%% Get Transforms here
+    %rotations
+    rotation_matrix = eye(4);
+    if use_rotations
+        euler_angle=differenceFrames(ii,2:4).*nav_trust_weight;
+        rotation_matrix = euler2rot(euler_angle);
+    end 
+    %translations
     translation_matrix = eye(4);
-    translation_matrix(1:3,4) = differenceFrames(ii,5:7);
-    custom_tform = affine3d(inv(euler2rot(euler_angle))*inv(translation_matrix'));
-    %first place every point in the drones axis 
+    if use_translations
+        translation_matrix(1:3,4) = differenceFrames(ii,5:7)';
+    end
+    % form the total custom transform from the navigation data 
+    custom_tform = affine3d(inv(rotation_matrix)*inv(translation_matrix'));
+    
     ptCloudAligned = pctransform(ptCloudCurrent,affine3d(eye(4))); %this is here because of legacy code and laziness to update
     accum_custom_tform = affine3d(custom_tform.T * accum_custom_tform.T); %transformation accumulator
     %then perform the transformation we want 
