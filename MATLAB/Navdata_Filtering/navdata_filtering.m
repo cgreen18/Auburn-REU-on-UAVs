@@ -42,8 +42,11 @@ function [time , position , attitude] = complementary_filter(navdata , yaw_initi
     % trust in: sensor , dead_reckoning
     weights_vel = {[0 ,0 , 0; 0 , 0,0;0,0,0] ; [1,0,0;0,1,0;0,0,1]};
     % trust in: altitude sensor , dead reckoning
-    weights_pos = {[0,0,0;0,0,0;0,0,.95] ; [1,0,0;0,1,0;0,0,.05] };
+    weights_pos = {[0,0,0;0,0,0;0,0,1] ; [1,0,0;0,1,0;0,0,0] };
     
+    % Accel Second LPF
+    acc_LPF_x = .9995;
+    pos_LPF_x = .965;
     
     %% Set up variables
     % [time , attitude_sensor , yaw_initial , altitude , velocity_sensor , magneto ,...
@@ -86,8 +89,6 @@ function [time , position , attitude] = complementary_filter(navdata , yaw_initi
     attitude = zeros(num_pts,3);
     
     %% Complementary Filter Loop
-    % All vectors are matrices of time slices down the rows and values down
-    % the columns. i.e. num_pts x num_senses
     
     
     for k = 2:num_pts
@@ -131,7 +132,14 @@ function [time , position , attitude] = complementary_filter(navdata , yaw_initi
             accel(k,1:2) = 0;
         end
         
+        % Single pole recursive
+        accel(k,:) = acc_LPF_x*accel(k-1,:) + (1-acc_LPF_x)*accel(k,:);
+        position(k,:) = pos_LPF_x*position(k-1,:) + (1-pos_LPF_x)*position(k,:);
+        
     end
+    
+    
+    
 end
 
 % Complementary Filter Helper Functions (mostly dynamics)
@@ -181,7 +189,7 @@ end
 function vel_k = dead_reckoning_vel(delta_t , vel_km1 , acc_km1 , att_km1)
     % where vel, att, and gravity in {n} frame and acc in {b} frame.
     g = [0 , 0 , -9.81];
-    vel_k = vel_km1' + delta_t*(R_b_to_n(att_km1)*acc_km1' - g');
+    vel_k = vel_km1' + delta_t*(R_b_to_n(att_km1)*acc_km1' + g');
     vel_k = vel_k';
 end
 
@@ -256,6 +264,7 @@ function vel_est = weight_velocity(weights , vel_sens, vel_dead_reck)
     vel_est = weights{1}*vel_sens' + weights{2}*vel_dead_reck';
     vel_est = vel_est';
 end
+
 
 %% Read navdata
 function navdata = read_navdata(file_name)
@@ -343,7 +352,7 @@ function navdata = remove_outliers(navdata , factor , calib)
      navdata(: , roll) = remove_outliers_vec(navdata(: , roll) , factor*temp_thresh , window, window_size );
      
      %altitude
-     temp_thresh = mean(navdata(:,alt));
+     temp_thresh = 2;
      navdata(:,alt) = remove_outliers_vec(navdata(: , alt) , factor*temp_thresh , window, window_size);
      
      %velocity
@@ -395,9 +404,9 @@ b_4 = -1*x^4;
 
 Y_n = X_n;
 
-% filter yaw->Mz (all but time)
+
 for n = 5:num_pts
-    Y_n(n,2:end) = a_0*X_n(n,2:end) + b_1*Y_n(n-1,2:end) + b_2*Y_n(n-2,2:end) + b_3*Y_n(n-3,2:end) +b_4*Y_n(n-4,2:end);
+    Y_n(n,1:end) = a_0*X_n(n,1:end) + b_1*Y_n(n-1,1:end) + b_2*Y_n(n-2,1:end) + b_3*Y_n(n-3,1:end) +b_4*Y_n(n-4,1:end);
 end
 
 end
@@ -430,7 +439,7 @@ function [navdata , yaw_init , mag_init] = remove_bias_and_initials(navdata , ca
     takeoff = 1;
     altitude = navdata(:,alt);
     for k = 1:length(altitude)
-        if altitude(k) > .1 % threshold
+        if altitude(k) > .005 % threshold
            takeoff = k
            break;
         end
