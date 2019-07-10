@@ -1,4 +1,4 @@
-function ptCloudScene = process_scene(pico_FileName, time, sensor_pos,sensor_att,nav_data_trust)
+function ptCloudScene = process_scene(pico_FileName, time, sensor_pos,sensor_att,nav_data_trust,start_here,end_here)
 % Lets stitch baby, this first block gathers and syncs data
     sensor_att = movmean(sensor_att, 41,1);
     disp('Init camera')
@@ -116,7 +116,7 @@ function ptCloudScene = process_scene(pico_FileName, time, sensor_pos,sensor_att
 running_average = sum(differenceFrames(10:15,4))/6; 
 for ii = 16:N_Frames-1
     running_average = ((double(ii)-1)/double(ii))*running_average + ((1/double(ii))*differenceFrames(ii,4));
-    if abs(differenceFrames(ii+1,4)) >= abs(running_average*5)
+    if abs(differenceFrames(ii+1,4)) >= abs(running_average*3)
        differenceFrames(ii+1,4) = running_average; 
     end
 end 
@@ -139,23 +139,27 @@ end
     disp('transforming and stitching clouds')
     mergeSize = 0.001;
     gridSize = 0.001;
+    
+if end_here > N_Frames
+    end_here=N_Frames;
+end 
 
-    start_frame = 15; end_frame = N_Frames;
-    nav_transformed_length = end_frame - start_frame; 
-    nav_transformed_frames=cell(1,(nav_transformed_length));
-    ptCloudScene = cloud_array{start_frame-1};
+start_frame = start_here; end_frame = end_here;
+nav_transformed_length = end_frame - start_frame; 
+nav_transformed_frames=cell(1,(nav_transformed_length));
+ptCloudScene = cloud_array{start_frame-1};
 
-    %%%%%%%% Experimental weights for transforms
-    nav_trust_weight = nav_data_trust; 
-    icp_weight = 1-nav_trust_weight; 
-    icp_weight_matrix = [1 icp_weight icp_weight icp_weight
-                         icp_weight 1 icp_weight icp_weight
-                         icp_weight icp_weight 1 icp_weight
-                         icp_weight icp_weight icp_weight 1];
+%%%%%%%% Experimental weights for transforms
+nav_trust_weight = nav_data_trust; 
+icp_weight = 1-nav_trust_weight; 
+icp_weight_matrix = [1 icp_weight icp_weight icp_weight
+                     icp_weight 1 icp_weight icp_weight
+                     icp_weight icp_weight 1 icp_weight
+                     icp_weight icp_weight icp_weight 1];
 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Loop will apply all transforms 
-    accum_custom_tform = affine3d(eye(4));
-    jj=1;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Loop will apply all transforms 
+accum_custom_tform = affine3d(eye(4));
+jj=1;
     
     for ii = start_frame:end_frame
         ptCloudRef = ptCloudScene;
@@ -172,7 +176,7 @@ end
         tform = pcregistericp(moving, fixed,'Extrapolate',true, 'Metric','pointToPlane','Tolerance',[0.01, 0.05]);
         %%%%%%%%%% Merge all transforms
         accum_custom_tform = affine3d((custom_tform.T + tform.T.*icp_weight_matrix - eye(4)) * accum_custom_tform.T); %transformation accumulator
-        isRigid(accum_custom_tform)
+%         isRigid(accum_custom_tform)
         %then perform the transformation we want 
         ptCloudAligned = pctransform(ptCloudCurrent,accum_custom_tform);
         nav_transformed_frames{jj} = ptCloudAligned;

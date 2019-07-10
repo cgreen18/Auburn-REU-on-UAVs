@@ -1,4 +1,4 @@
-function ptCloudScene = process_scene(pico_FileName, time, sensor_pos,sensor_att,nav_data_trust)
+function ptCloudScene = process_scene(pico_FileName, time, sensor_pos,sensor_att,nav_data_trust,start_here,end_here)
 % Lets stitch baby, this first block gathers and syncs data
     sensor_att = movmean(sensor_att, 41,1);
     disp('Init camera')
@@ -139,9 +139,13 @@ end
 disp('transforming with navigation data')
     
 
-mergeSize = 0.001;
- 
-start_frame = 15; end_frame = N_Frames;
+% mergeSize = 0.001; %legacy 
+
+if end_here > N_Frames
+    end_here=N_Frames;
+end 
+
+start_frame = start_here; end_frame = end_here;
 nav_transformed_len = end_frame - start_frame;
 nav_transformed_frames=cell(1,(nav_transformed_len));
 ptCloudScene = cloud_array{start_frame-1};
@@ -149,7 +153,7 @@ ptCloudScene = cloud_array{start_frame-1};
 accum_custom_tform = affine3d(eye(4));
 jj=1;
 for ii = start_frame:end_frame
-    ptCloudRef = ptCloudScene;
+%     ptCloudRef = ptCloudScene; %legacy 
     ptCloudCurrent = cloud_array{ii};
     %%%%%%%%%%%%%%%%%%%% Transform here
     euler_angle=differenceFrames(ii,2:4);
