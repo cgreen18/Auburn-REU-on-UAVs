@@ -1,4 +1,4 @@
-function [time , drone_pos , drone_att , lidar_pos , lidar_att] = navdata_filtering(filename , calib_time, threshold , cutoff_freq)
+function [time , drone_pos , drone_att , lidar_pos , lidar_att] = navdata_filtering(filename , calib_time, threshold_factor , cutoff_freq)
     %% Load navdata
     navdata = read_navdata(filename);
    
@@ -11,7 +11,7 @@ function [time , drone_pos , drone_att , lidar_pos , lidar_att] = navdata_filter
     navdata = unit_conversion_and_reordering(navdata);
 
     %% Remove outliers
-    threshold_factor = threshold;
+    threshold_factor = threshold_factor;
     navdata = remove_outliers(navdata , threshold_factor , calib_time);
     
     %% LPF
@@ -33,7 +33,7 @@ function [time , drone_pos , drone_att , lidar_pos , lidar_att] = navdata_filter
 end
 
 %% Complementary Filter
-function [time , d_pos , d_att] = complementary_filter(navdata , yaw_initial , mag_init_angle)
+function [time , position , attitude] = complementary_filter(navdata , yaw_initial , mag_init_angle)
     %% Set weights
     % Trust in: theta_sens , dead_reckoning , accel , mag
     % Yaw , pitch , roll
@@ -66,13 +66,16 @@ function [time , d_pos , d_att] = complementary_filter(navdata , yaw_initial , m
     wy = 28;% ''
     wz = 19;% ''
      
+    f_s = 200;
+    delta_t = 1/f_s;
+    
     time = navdata(:,t);
     attitude_sensor = navdata(:,yaw:roll);
     altitude = navdata(:,alt);
     velocity_sensor = navdata(:,vx:vz);
     magneto = navdata(:,mx:mz);
     accel = navdata(:,ax:az);
-    ang_velocity(:,wx:wz);
+    ang_velocity = navdata(:,wx:wz);
 
     
     [ num_pts , num_sens ] = size(navdata);
@@ -83,6 +86,8 @@ function [time , d_pos , d_att] = complementary_filter(navdata , yaw_initial , m
     attitude = zeros(num_pts,3);
     
     %% Complementary Filter Loop
+    % All vectors are matrices of time slices down the rows and values down
+    % the columns. i.e. num_pts x num_senses
     
     
     for k = 2:num_pts
@@ -135,7 +140,7 @@ function attitude = acc_attitude(acc)
     roll = rad2deg( atan2(acc(3),acc(2))) - 90;
     
     % psi , theta , phi
-    attitude = [0 ; pitch ; roll];
+    attitude = [0 , pitch , roll];
 end
 
 function att_k = dead_reckoning_att(delta_t , att_km1 , ang_vel_km1)
@@ -161,7 +166,7 @@ function att_k = dead_reckoning_att(delta_t , att_km1 , ang_vel_km1)
     dpsi = omega(2)*(s(phi)/c(theta)) + omega(3)*(c(phi)/c(theta));
     
     % psi , theta , phi
-    datt = [dpsi ; dtheta ; dphi];
+    datt = [dpsi , dtheta , dphi];
     
     att_k = att_km1 + delta_t*datt;
 end
@@ -169,20 +174,22 @@ end
 function pos_k = dead_reckoning_pos(delta_t , pos_km1 , vel_km1 , acc_km1 , att_km1)
     % pos , att, vel, and g in {n} frame of reference and acc in {b} frame
     g = [0 , 0 , -9.81];
-    pos_k = pos_km1 + delta_t*vel_km1 + .5*(delta_t^2)*(R_b_to_n(att_km1)*acc_km1 - g);
+    pos_k = pos_km1' + delta_t*vel_km1' + .5*(delta_t^2)*(R_b_to_n(att_km1)*acc_km1' - g');
+    pos_k = pos_k';
 end
 
 function vel_k = dead_reckoning_vel(delta_t , vel_km1 , acc_km1 , att_km1)
     % where vel, att, and gravity in {n} frame and acc in {b} frame.
     g = [0 , 0 , -9.81];
-    vel_k = vel_km1 + delta_t*(R_b_to_n(att_km1)*acc_km1 - g);
+    vel_k = vel_km1' + delta_t*(R_b_to_n(att_km1)*acc_km1' - g');
+    vel_k = vel_k';
 end
 
 function attitude = mag_attitude(mag , mag_initial)
     yaw = rad2deg( atan2(mag(2), mag(1) )) - mag_initial;
     
     % psi , theta , phi
-    attitude = [yaw ; 0 ; 0];
+    attitude = [yaw , 0 , 0];
 end
 
 function Rmat = R_b_to_n(euler_vec)
@@ -226,25 +233,28 @@ function Rmat = R_n_to_b(euler_vec)
 end
 
 function vel_sens = sensor_velocity(vel_raw , att)
-    vel_sens = R_b_to_n(att)*vel_raw;
+    vel_sens = R_b_to_n(att)*vel_raw';
+    vel_sens = vel_sens';
 end
 
 function att_est = weight_attitude(weights, att_dead , att_acc , att_mag , att_sens)
     % combine non-interfering elements
     att_mag_acc = att_mag + att_acc;
     
-    att_est = weights{1}*att_sens + weights{2}*att_dead + weights{3}*att_mag_acc;
+    att_est = weights{1}*att_sens' + weights{2}*att_dead' + weights{3}*att_mag_acc';
+    att_est = att_est';
 end
 
 function pos_est = weight_position(weights , alt , pos_dead_wreck)
     % weights is cell array of 3x3 matricies {w1 , w2}
-    pos_est = weights{1}*alt + weights{2}*pos_dead_wreck;
+    pos_est = weights{1}*alt' + weights{2}*pos_dead_wreck';
+    pos_est = pos_est';
 end
 
 function vel_est = weight_velocity(weights , vel_sens, vel_dead_reck)
 
-    vel_est = weights{1}*vel_sens + weights{2}*vel_dead_reck;
-
+    vel_est = weights{1}*vel_sens' + weights{2}*vel_dead_reck';
+    vel_est = vel_est';
 end
 
 %% Read navdata
@@ -304,7 +314,7 @@ navdata(: , wy:wz) = -navdata(: , wy:wz);
 end
 
 %% Remove outliers
-function y = remove_outliers(navdata , factor , calib)
+function navdata = remove_outliers(navdata , factor , calib)
      t = 1; %[s]
      yaw = 2; %[deg]
      pitch = 3;% ''
@@ -393,7 +403,7 @@ end
 end
 
 %% Remove bias and calculate initials
-function [navdata , yaw_init , mag_init] = remove_bias_and_initials(navdata , calib_time)
+function [navdata , yaw_init , mag_init] = remove_bias_and_initials(navdata , calibration_period)
      t = 1; %[s]
      yaw = 2; %[deg]
      pitch = 3;% ''
@@ -429,14 +439,14 @@ function [navdata , yaw_init , mag_init] = remove_bias_and_initials(navdata , ca
     % psi , theta , phi = yaw , pitch , roll
     % yaw = 0 until flying. Take yaw initial as first 400 (2sec)
     yaw_init = 0;
-    yaw_data = nav_data(takeoff:400+takeoff , yaw);
+    yaw_data = navdata(takeoff:400+takeoff , yaw);
     yaw_data_no_neg = yaw_data.*(yaw_data >= 0) + (360+yaw_data).*(yaw_data < 0);
     yaw_init = mean(yaw_data_no_neg);
 
-    p_and_r = nav_data(pts_calib , pitch:roll);
+    p_and_r = navdata(pts_calib , pitch:roll);
     p_and_r_bias = mean(p_and_r);
 
-    att_bias = [yaw_initial , p_and_r_bias(1) , p_and_r_bias(2)];   
+    att_bias = [yaw_init , p_and_r_bias(1) , p_and_r_bias(2)];   
     
     navdata(:,yaw:roll) = navdata(:,yaw:roll) - att_bias;
     
@@ -447,13 +457,13 @@ function [navdata , yaw_init , mag_init] = remove_bias_and_initials(navdata , ca
     %% Velocity
     % Vx Vy Vz
     % Useless since vel is zeroed
-    vels = nav_data(pts_calib , vx:vz);
+    vels = navdata(pts_calib , vx:vz);
     vel_bias = mean(vels);
      
     
     %% Acceleration
     % Ax Ay Az
-    accels = nav_data(pts_calib, ax:az);%m/s^2
+    accels = navdata(pts_calib, ax:az);%m/s^2
     acc_bias = mean(accels) - [0 , 0 , 9.81 ]; %get bias as mean except not including gravity
 
     navdata(:,ax:az) = navdata(:,ax:az) - acc_bias;
@@ -461,14 +471,14 @@ function [navdata , yaw_init , mag_init] = remove_bias_and_initials(navdata , ca
     %% Magnetometer
     % Mx My Mz
     % Dynamic, depends on initial calibration
-    magnetos = nav_data(pts_calib , mx:mz);
+    magnetos = navdata(pts_calib , mx:mz);
     mag_means = mean(magnetos);
     % determined initial heading
     mag_init = rad2deg(atan2(mag_means(2),mag_means(1)));
     
-    
+    %% Gyroscope
     % Wx Wy Wz
-    gyros = nav_data(pts_calib,wx:wz);
+    gyros = navdata(pts_calib,wx:wz);
     gyro_bias = mean(gyros);
     
     navdata(:,wx:wz) = navdata(:,wx:wz) - gyro_bias;
@@ -500,20 +510,20 @@ function [s_pos , s_att_offset] = drone_to_lidar(d_pos , d_att)
     s_att_offset = zeros(num_pts , 3);
 
 
-    for i = 2:num_to_filter
+    for i = 2:num_pts
         
         if mod(i,100) == 0
             fprintf('Processing sensor point: %d\n',i)
         end
 
         %% Processing Position
-        sens_relative = d_pos(: , i) + s_pos_offset;
-        new_pos = R_b_to_n( d_att(: , i) )*sens_relative;
-        s_pos( : , i) = new_pos;
+        sens_relative = d_pos( i ,:) + s_pos_offset;
+        new_pos = R_b_to_n( d_att(i ,:) )*sens_relative';
+        s_pos( i ,:) = new_pos;
         
         %% Processing Attitude
-        new_att = d_att(: , i);
-        s_att_offset( :, i ) = new_att;
+        new_att = d_att(i ,:);
+        s_att_offset( i ,: ) = new_att;
 
     end
 
