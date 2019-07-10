@@ -1,4 +1,4 @@
-function [time , drone_pos , drone_att , lidar_pos , lidar_att] = navdata_filtering(filename , calib_time, threshold_factor , cutoff_freq)
+function [time , drone_pos , drone_att , lidar_pos , lidar_att] = navdata_filtering(filename , calib_time, threshold , cutoff_freq)
     %% Load navdata
     navdata = read_navdata(filename);
    
@@ -11,12 +11,18 @@ function [time , drone_pos , drone_att , lidar_pos , lidar_att] = navdata_filter
     navdata = unit_conversion_and_reordering(navdata);
 
     %% Remove outliers
-    threshold_factor = threshold_factor;
+    threshold_factor = threshold;
     navdata = remove_outliers(navdata , threshold_factor , calib_time);
     
     %% LPF
+    navdata(:,ax:az) = movmean(navdata(:,ax:az),50,1);
+    
     fc = cutoff_freq;
-    navdata = four_pole_LPF_column_matrix(navdata , fc);
+    navdata(:,2:end) = four_pole_LPF_column_matrix(navdata(:,2:end) , fc);
+    
+    navdata(:,ax:az) = movmean(navdata(:,ax:az),100,1);
+
+    navdata(:,ax:az) = movmean(navdata(:,ax:az),50,1);
     
     %% Bias removal and initial calculation
     [navdata , yaw_initial , mag_init_angle] = remove_bias_and_initials(navdata , calib_time);
@@ -33,7 +39,7 @@ function [time , drone_pos , drone_att , lidar_pos , lidar_att] = navdata_filter
 end
 
 %% Complementary Filter
-function [time , position , attitude] = complementary_filter(navdata , yaw_initial , mag_init_angle)
+function [time , d_pos , d_att] = complementary_filter(navdata , yaw_initial , mag_init_angle)
     %% Set weights
     % Trust in: theta_sens , dead_reckoning , accel , mag
     % Yaw , pitch , roll
@@ -45,9 +51,9 @@ function [time , position , attitude] = complementary_filter(navdata , yaw_initi
     weights_pos = {[0,0,0;0,0,0;0,0,1] ; [1,0,0;0,1,0;0,0,0] };
     
     % Accel Second LPF
-    acc_LPF_x = .9995;
-    pos_LPF_x = .965;
-    att_LPF_x = .96;
+    acc_LPF_x = .98;
+    pos_LPF_x = .8;
+    att_LPF_x = .92;
     
     %% Set up variables
     % [time , attitude_sensor , yaw_initial , altitude , velocity_sensor , magneto ,...
@@ -70,16 +76,13 @@ function [time , position , attitude] = complementary_filter(navdata , yaw_initi
     wy = 28;% ''
     wz = 19;% ''
      
-    f_s = 200;
-    delta_t = 1/f_s;
-    
     time = navdata(:,t);
     attitude_sensor = navdata(:,yaw:roll);
     altitude = navdata(:,alt);
     velocity_sensor = navdata(:,vx:vz);
     magneto = navdata(:,mx:mz);
     accel = navdata(:,ax:az);
-    ang_velocity = navdata(:,wx:wz);
+    ang_velocity(:,wx:wz);
 
     
     [ num_pts , num_sens ] = size(navdata);
@@ -128,20 +131,19 @@ function [time , position , attitude] = complementary_filter(navdata , yaw_initi
         
         
         %% Heuristics
-        if position( k , 3) <= 0.2 %current altitude [m]
-            velocity(k ,:) = 0;
-            accel(k,1:2) = 0;
-        end
+% % %         if position( k , 3) <= 0.2 %current altitude [m]
+% % %             velocity(k ,:) = 0;
+% % %             accel(k,1:2) = 0;
+% % %         end
         
         % Single pole recursive
-        accel(k,:) = acc_LPF_x*accel(k-1,:) + (1-acc_LPF_x)*accel(k,:);
+        %accel(k,:) = acc_LPF_x*accel(k-1,:) + (1-acc_LPF_x)*accel(k,:);
         position(k,:) = pos_LPF_x*position(k-1,:) + (1-pos_LPF_x)*position(k,:);
         attitude(k,:) = att_LPF_x*attitude(k-1,:)+(1-att_LPF_x)*attitude(k,:);
         
+        %accel(k,:) = .05*accel(k,:);
+        
     end
-    
-    
-    
 end
 
 % Complementary Filter Helper Functions (mostly dynamics)
@@ -478,6 +480,9 @@ function [navdata , yaw_init , mag_init] = remove_bias_and_initials(navdata , ca
     acc_bias = mean(accels) - [0 , 0 , 9.81 ]; %get bias as mean except not including gravity
 
     navdata(:,ax:az) = navdata(:,ax:az) - acc_bias;
+%     accels = navdata(pts_calib, ay:az);%m/s^2
+%     acc_bias = mean(accels) - [ 0 , 9.81 ]; %get bias as mean except not including gravity 
+%     navdata(:,ay:az) = navdata(:,ay:az) - acc_bias;
        
     %% Magnetometer
     % Mx My Mz
@@ -518,9 +523,7 @@ function [s_pos , s_att_offset] = drone_to_lidar(d_pos , d_att)
 
     % Preallocating
     s_pos = zeros(num_pts , 3);
-    s_pos(1,:) = s_pos_offset;
     s_att_offset = zeros(num_pts , 3);
-    s_att_offset(1,:) = s_att_offset;
 
 
     for i = 2:num_pts
