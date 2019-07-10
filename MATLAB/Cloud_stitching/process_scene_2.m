@@ -171,15 +171,13 @@ for ii = 3:length(nav_transformed_frames)
 % % % %     ptCloudCurrent = nav_transformed_frames{ii};
     ptCloudCurrent = nav_transformed_frames{ii};
     euler_angle=differenceFrames(ii,2:4);
-%     euler_angle(1:2) = [0 0];
-%     euler_angle
     custom_tform = affine3d(inv(euler2rot(euler_angle)));
     % Use previous moving point cloud as reference.
     fixed = moving;
     moving = pcdownsample(ptCloudCurrent, 'gridAverage', gridSize);
     
     % Apply ICP registration.
-    tform = pcregistericp(moving, fixed, 'Metric','pointToPlane','Tolerance',[0.001, 0.005],'InitialTransform',custom_tform);
+    tform = pcregistericp(moving, fixed, 'Metric','pointToPlane','Tolerance',[0.001, 0.005]);
 
     % Transform the current point cloud to the reference coordinate system
     % defined by the first point cloud.

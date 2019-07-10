@@ -115,10 +115,10 @@ ptCloudScene = cloud_array{start_frame-1};
 %%%%%%%% Experimental weights for transforms
 nav_trust_weight = nav_data_trust; 
 icp_weight = 1-nav_trust_weight; 
-icp_weight_matrix = [1 icp_weight icp_weight icp_weight
-                     icp_weight 1 icp_weight icp_weight
-                     icp_weight icp_weight 1 icp_weight
-                     icp_weight icp_weight icp_weight 1];
+% % % icp_weight_matrix = [1 icp_weight icp_weight icp_weight
+% % %                      icp_weight 1 icp_weight icp_weight
+% % %                      icp_weight icp_weight 1 icp_weight
+% % %                      icp_weight icp_weight icp_weight 1]; % legacy 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Loop will apply all transforms 
 accum_custom_tform = affine3d(eye(4));
@@ -148,9 +148,14 @@ jj=1;
             fixed = pcdownsample(cloud_array{ii-1}, 'gridAverage', gridSize);
             moving = pcdownsample(ptCloudCurrent, 'gridAverage', gridSize);
             tform = pcregistericp(moving, fixed,'Extrapolate',true, 'Metric','pointToPlane','Tolerance',[0.01, 0.05]);
+            %apply weighting 
+            tform.T = tform.T*icp_weight + nav_data_trust*eye(4);
+            for kk = 1:4
+               tform.T(kk,kk) = 1.0;
+            end
         end 
         %%%%%%%%%% Merge all transforms
-        accum_custom_tform = affine3d((custom_tform.T + tform.T.*icp_weight_matrix - eye(4)) * accum_custom_tform.T); %transformation accumulator
+        accum_custom_tform = affine3d((custom_tform.T + tform.T - eye(4)) * accum_custom_tform.T); %transformation accumulator
 %         isRigid(accum_custom_tform)
         %then perform the transformation we want 
         ptCloudAligned = pctransform(ptCloudCurrent,accum_custom_tform);
