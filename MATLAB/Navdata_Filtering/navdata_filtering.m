@@ -518,7 +518,9 @@ function [s_pos , s_att_offset] = drone_to_lidar(d_pos , d_att)
 
     % Preallocating
     s_pos = zeros(num_pts , 3);
+    s_pos(1,:) = s_pos_offset;
     s_att_offset = zeros(num_pts , 3);
+    s_att_offset(1,:) = s_att_offset;
 
 
     for i = 2:num_pts
