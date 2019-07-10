@@ -157,10 +157,9 @@ for ii = start_frame:end_frame
     ptCloudCurrent = cloud_array{ii};
     %%%%%%%%%%%%%%%%%%%% Transform here
     euler_angle=differenceFrames(ii,2:4);
-% %     euler_angle(1:3) = [1 0 1];
-% %     euler_angle
-
-    custom_tform = affine3d(inv(euler2rot(euler_angle)));
+    translation_matrix = eye(4);
+    translation_matrix(1:3,4) = differenceFrames(ii,5:7);
+    custom_tform = affine3d(inv(euler2rot(euler_angle))*inv(translation_matrix'));
     %first place every point in the drones axis 
     ptCloudAligned = pctransform(ptCloudCurrent,affine3d(eye(4))); %this is here because of legacy code and laziness to update
     accum_custom_tform = affine3d(custom_tform.T * accum_custom_tform.T); %transformation accumulator

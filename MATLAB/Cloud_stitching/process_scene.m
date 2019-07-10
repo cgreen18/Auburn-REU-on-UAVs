@@ -164,12 +164,17 @@ jj=1;
     for ii = start_frame:end_frame
         ptCloudRef = ptCloudScene;
         ptCloudCurrent = cloud_array{ii};
-        %%%%%%%%%%%%%%%%%%%% Get Transform here, %currently pitch roll yaw only
+        %%%%%%%%%%%%%%%%%%%% Get Transforms here, %currently pitch roll yaw only
         euler_angle=differenceFrames(ii,2:4).*nav_trust_weight;
-    % %     euler_angle(1:3) = [1 0 1];
-    % %     euler_angle
+        %Translations Here
+        translation_matrix = eye(4);
+%         translation_matrix(1:3,4) = differenceFrames(ii,5:7); %%%%%%%%
+%         Uncomment this line to incorporate translation
+        
+        %Not entirely sure if there should be a transpose in the
+        %translation matrix part 
+        custom_tform = affine3d(inv(euler2rot(euler_angle))*inv(translation_matrix'));
 
-        custom_tform = affine3d(inv(euler2rot(euler_angle)));
         %%%%%%%%%%% ICP Portion
         fixed = pcdownsample(cloud_array{ii-1}, 'gridAverage', gridSize);
         moving = pcdownsample(ptCloudCurrent, 'gridAverage', gridSize);
