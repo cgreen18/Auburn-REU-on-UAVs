@@ -115,8 +115,8 @@ function ptCloudScene = process_scene(pico_FileName, time, sensor_pos,sensor_att
 %%% outlier prevention
 running_average = sum(differenceFrames(10:15,4))/6; 
 for ii = 16:N_Frames-1
-    running_average = ((double(ii)-1)/double(ii))*running_average + ((1/double(ii))*differenceFrames(ii,4));
-    if abs(differenceFrames(ii+1,4)) >= abs(running_average*5)
+    running_average = ((ii-1)/ii)*running_average + (1/ii)*differenceFrames(ii,4);
+    if abs(differenceFrames(ii+1,4)) >= running_average*3
        differenceFrames(ii+1,4) = running_average; 
     end
 end 
@@ -136,52 +136,90 @@ end
         cloud_array{ii} = pcdenoise(cloud_array{ii}, 'NumNeighbors', 3,'Threshold', 1); % de-noise, uncommenting this line will produce faster but messier clouds
     end 
 
-    disp('transforming and stitching clouds')
-    mergeSize = 0.001;
-    gridSize = 0.001;
-
-    start_frame = 15; end_frame = N_Frames;
-    nav_transformed_length = end_frame - start_frame; 
-    nav_transformed_frames=cell(1,(nav_transformed_length));
-    ptCloudScene = cloud_array{start_frame-1};
-
-    %%%%%%%% Experimental weights for transforms
-    nav_trust_weight = nav_data_trust; 
-    icp_weight = 1-nav_trust_weight; 
-    icp_weight_matrix = [1 icp_weight icp_weight icp_weight
-                         icp_weight 1 icp_weight icp_weight
-                         icp_weight icp_weight 1 icp_weight
-                         icp_weight icp_weight icp_weight 1];
-
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Loop will apply all transforms 
-    accum_custom_tform = affine3d(eye(4));
-    jj=1;
+disp('transforming with navigation data')
     
-    for ii = start_frame:end_frame
-        ptCloudRef = ptCloudScene;
-        ptCloudCurrent = cloud_array{ii};
-        %%%%%%%%%%%%%%%%%%%% Get Transform here, %currently pitch roll yaw only
-        euler_angle=differenceFrames(ii,2:4).*nav_trust_weight;
-    % %     euler_angle(1:3) = [1 0 1];
-    % %     euler_angle
 
-        custom_tform = affine3d(inv(euler2rot(euler_angle)));
-        %%%%%%%%%%% ICP Portion
-        fixed = pcdownsample(cloud_array{ii-1}, 'gridAverage', gridSize);
-        moving = pcdownsample(ptCloudCurrent, 'gridAverage', gridSize);
-        tform = pcregistericp(moving, fixed,'Extrapolate',true, 'Metric','pointToPlane','Tolerance',[0.01, 0.05]);
-        %%%%%%%%%% Merge all transforms
-        accum_custom_tform = affine3d((custom_tform.T + tform.T.*icp_weight_matrix - eye(4)) * accum_custom_tform.T); %transformation accumulator
-        isRigid(accum_custom_tform)
-        %then perform the transformation we want 
-        ptCloudAligned = pctransform(ptCloudCurrent,accum_custom_tform);
-        nav_transformed_frames{jj} = ptCloudAligned;
-        %%%%%%%%%%%%%%%%%%%% Merge here 
+mergeSize = 0.001;
+ 
+start_frame = 15; end_frame = N_Frames;
+nav_transformed_len = end_frame - start_frame;
+nav_transformed_frames=cell(1,(nav_transformed_len));
+ptCloudScene = cloud_array{start_frame-1};
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Loop will apply all transforms 
+accum_custom_tform = affine3d(eye(4));
+jj=1;
+for ii = start_frame:end_frame
+    ptCloudRef = ptCloudScene;
+    ptCloudCurrent = cloud_array{ii};
+    %%%%%%%%%%%%%%%%%%%% Transform here
+    euler_angle=differenceFrames(ii,2:4);
+% %     euler_angle(1:3) = [1 0 1];
+% %     euler_angle
 
-        ptCloudScene = pcmerge(ptCloudRef,ptCloudAligned,mergeSize);
-        jj = jj+1;
-    end
+    custom_tform = affine3d(inv(euler2rot(euler_angle)));
+    %first place every point in the drones axis 
+    ptCloudAligned = pctransform(ptCloudCurrent,affine3d(eye(4))); %this is here because of legacy code and laziness to update
+    accum_custom_tform = affine3d(custom_tform.T * accum_custom_tform.T); %transformation accumulator
+    %then perform the transformation we want 
+    ptCloudAligned = pctransform(ptCloudAligned,accum_custom_tform);
+    nav_transformed_frames{jj} = ptCloudAligned;
+    %%%%%%%%%%%%%%%%%%%% Merge here 
+    
+%     ptCloudScene = pcmerge(ptCloudRef,ptCloudAligned,mergeSize);
+    jj = jj+1;
+end
 
+% ICP Register Merge Full (Not working properly yet)
+% this will perform one iteration here
+disp('merging with ICP registration')
+tic
+% Init transform
+ptCloudRef = nav_transformed_frames{1};
+ptCloudCurrent = nav_transformed_frames{2};
+% % % % ptCloudRef = cloud_array{1};
+% % % % ptCloudCurrent = cloud_array{2};
+
+gridSize = 0.001; %IMPORTANT: this value is how many subgrids are compared when translating
+fixed = pcdownsample(ptCloudRef, 'gridAverage', gridSize);
+moving = pcdownsample(ptCloudCurrent, 'gridAverage', gridSize);
+% % % % tform = pcregistericp(moving, fixed, 'Metric','pointToPlane','Extrapolate', true,'InitialTransform',init_transform);
+tform = pcregistericp(moving, fixed, 'Metric','pointToPlane','Extrapolate', true);
+
+ptCloudAligned = pctransform(ptCloudCurrent,tform);
+% Note that the downsampling step does not only speed up the registration,
+% but can also improve the accuracy.
+
+mergeSize = .01; %determines how much of every frame is kept after merge, smaller = more iterations = more points
+ptCloudScene = pcmerge(ptCloudRef, ptCloudAligned, mergeSize);
+accumTform = tform; 
+for ii = 3:length(nav_transformed_frames)
+% % % %     ptCloudCurrent = nav_transformed_frames{ii};
+    ptCloudCurrent = nav_transformed_frames{ii};
+    euler_angle=differenceFrames(ii,2:4);
+%     euler_angle(1:2) = [0 0];
+%     euler_angle
+    custom_tform = affine3d(inv(euler2rot(euler_angle)));
+    % Use previous moving point cloud as reference.
+    fixed = moving;
+    moving = pcdownsample(ptCloudCurrent, 'gridAverage', gridSize);
+    
+    % Apply ICP registration.
+    tform = pcregistericp(moving, fixed, 'Metric','pointToPlane','Tolerance',[0.001, 0.005],'InitialTransform',custom_tform);
+
+    % Transform the current point cloud to the reference coordinate system
+    % defined by the first point cloud.
+    accumTform = affine3d(tform.T * accumTform.T);
+% % % %     accumTform = affine3d(init_transform.T * accumTform.T);
+    ptCloudAligned = pctransform(ptCloudCurrent, accumTform);
+    
+    % Update the world scene.
+    ptCloudScene = pcmerge(ptCloudScene, ptCloudAligned, mergeSize);
+end
+% ptCloudScene = pcdenoise(ptCloudScene);
+toc
+disp('Stitch complete')
+    
+    
 
     % Euler to rotation matri, specialized for ARDrone to Pico Flexx
     % coordinate system conversion
