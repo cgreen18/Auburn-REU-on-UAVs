@@ -134,11 +134,11 @@ class Chief:
         # print(time.time())
 
         # Total and calibration time
-        self.thread_fly_and_track(52 , 2)
+        self.thread_fly_and_track(87 , 30)
 
         # print(time.time())
 
-        self.special_print("7_10_2calib_hallway_roll_data.txt")
+        self.special_print("7_10_30calib_hallway_roll3_data.txt")
 
         # print(time.time())
 

@@ -3,9 +3,9 @@ clc;
 close all;
 
 
-filename = '7_3_hallway_walk_data.txt'
+filename = '7_10_2calib_hallway_roll2_data.txt'
 
-calib_time = 60;
+calib_time = 2;
 threshold_factor = 3;
 cutoff_freq = .01;
 

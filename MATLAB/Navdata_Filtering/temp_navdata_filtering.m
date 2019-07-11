@@ -106,9 +106,9 @@ function [time , position , velocity , attitude] = complementary_filter(navdata 
     % trust in: altitude sensor , dead reckoning
     weights_pos = {[0,0,0;0,0,0;0,0,1] ; [1,0,0;0,1,0;0,0,0] };
     
-    % Accel Second LPF
-    acc_LPF_x = .9995;
-    pos_LPF_x = .965;
+    % Second LPF
+    acc_LPF_x = .999;
+    pos_LPF_x = .99;
     att_LPF_x = .96;
     
     %% Set up variables
@@ -191,12 +191,13 @@ function [time , position , velocity , attitude] = complementary_filter(navdata 
         
         %% Heuristics
         if position( k , 3) <= 0.2 %current altitude [m]
-            velocity(k ,:) = 0;
-            accel(k,1:2) = 0;
+            % velocity(k ,:) = 0;
+            % accel(k,1:2) = 0;
         end
         
         % Single pole recursive
         accel(k,:) = acc_LPF_x*accel(k-1,:) + (1-acc_LPF_x)*accel(k,:);
+        %accel(k,:) = .5*accel(k,:);
         position(k,:) = pos_LPF_x*position(k-1,:) + (1-pos_LPF_x)*position(k,:);
         attitude(k,:) = att_LPF_x*attitude(k-1,:)+(1-att_LPF_x)*attitude(k,:);
         
@@ -495,7 +496,7 @@ function [navdata , yaw_init , mag_init] = remove_bias_and_initials(navdata , ca
      wy = 28;% ''
      wz = 19;% ''
     %%
-    pts_calib = 1:200*calibration_period;
+    pts_calib = 1:200*calibration_period*14;
     [ num_pts , num_sens ] = size(navdata);
     
     %% Attitude
