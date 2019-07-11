@@ -2,10 +2,12 @@ function [time , drone_pos , drone_vel , drone_att , lidar_pos , lidar_att] = te
     %% Load navdata
     navdata = read_navdata(filename);
    
-    navdata = navdata(3:end,:);
+    navdata = navdata(3:end-4000,:);
     
     [ num_pts , num_sens ] = size(navdata);
     delta_t = .005;
+    
+    
     
     %% Reformat to desired
     navdata = unit_conversion_and_reordering(navdata);
@@ -28,26 +30,37 @@ function [time , drone_pos , drone_vel , drone_att , lidar_pos , lidar_att] = te
     wy = 28;% ''
     wz = 19;% ''
     
-    plot_3_plots_col(navdata(:,ax:az));
     %pause(1);
 
+    plot_3_plots_col(navdata(:,ax:az));
+    
     %% Remove outliers
     threshold_factor = threshold_factor;
     navdata = remove_outliers(navdata , threshold_factor , calib_time);
     
+    
     %% LPF
+    
+    navdata(:,ax:az) = movmean(navdata(:,ax:az),50,1);
+    
     fc = cutoff_freq;
     % filter yaw->Mz (all but time)
     navdata(:,2:end) = four_pole_LPF_column_matrix(navdata(:,2:end) , fc);
 %     
 %     fc = .001;
 %     navdata(:,ax:az) = four_pole_LPF_column_matrix(navdata(:,ax:az),fc);
+    plot_3_plots_col(navdata(:,ax:az));
+    navdata(:,ax:az) = movmean(navdata(:,ax:az),100,1);
+
+    navdata(:,ax:az) = movmean(navdata(:,ax:az),50,1);
+    
+    plot_3_plots_col(navdata(:,ax:az));
     
     %% Bias removal and initial calculation
     [navdata , yaw_initial , mag_init_angle] = remove_bias_and_initials(navdata , calib_time);
     
     plot_3_plots_col(navdata(:,ax:az));
-    plot_3_plots_col(navdata(:,vx:vz));
+    %plot_3_plots_col(navdata(:,vx:vz));
     
     %% Complementary Filter
     
@@ -100,16 +113,18 @@ function [time , position , velocity , attitude] = complementary_filter(navdata 
     % Trust in: theta_sens , dead_reckoning , accel , mag
     % Yaw , pitch , roll
     weights_att = { [.98,0,0 ; 0,.98,0 ; 0,0,.98] ; .01*eye(3) ; [.01,0,0; 0,.01,0 ; 0,0,.01] };
+    % weights_att = { [0,0,0 ; 0,.98,0 ; 0,0,.98] ; .0*eye(3) ; [1,0,0; 0,.02,0 ; 0,0,.02] };
+    % weights_att = { [0,0,0 ; 0,0,0 ; 0,0,0] ; 1*eye(3) ; [0,0,0; 0,0,0 ; 0,0,0] };
     
     % trust in: sensor , dead_reckoning
-    weights_vel = {[0 ,0 , 0; 0 , 0,0;0,0,0] ; [1,0,0;0,1,0;0,0,1]};
+    weights_vel = {[.7 ,0 , 0; 0 , .7,0;0,0,.7] ; [.3,0,0;0,.3,0;0,0,.3]};
     % trust in: altitude sensor , dead reckoning
     weights_pos = {[0,0,0;0,0,0;0,0,1] ; [1,0,0;0,1,0;0,0,0] };
     
-    % Second LPF
-    acc_LPF_x = .999;
-    pos_LPF_x = .99;
-    att_LPF_x = .96;
+    % Accel Second LPF
+    acc_LPF_x = .98;
+    pos_LPF_x = 0;
+    att_LPF_x = 0;
     
     %% Set up variables
     % [time , attitude_sensor , yaw_initial , altitude , velocity_sensor , magneto ,...
@@ -190,16 +205,19 @@ function [time , position , velocity , attitude] = complementary_filter(navdata 
         
         
         %% Heuristics
-        if position( k , 3) <= 0.2 %current altitude [m]
-            % velocity(k ,:) = 0;
-            % accel(k,1:2) = 0;
-        end
+%         if position( k , 3) <= 0.2 %current altitude [m]
+%             velocity(k ,:) = 0;
+%             accel(k,1:2) = 0;
+%         end
+%         
         
+    
         % Single pole recursive
         accel(k,:) = acc_LPF_x*accel(k-1,:) + (1-acc_LPF_x)*accel(k,:);
-        %accel(k,:) = .5*accel(k,:);
         position(k,:) = pos_LPF_x*position(k-1,:) + (1-pos_LPF_x)*position(k,:);
         attitude(k,:) = att_LPF_x*attitude(k-1,:)+(1-att_LPF_x)*attitude(k,:);
+        
+        %accel(k,:) = .05*accel(k,:);
         
     end
     
@@ -496,7 +514,7 @@ function [navdata , yaw_init , mag_init] = remove_bias_and_initials(navdata , ca
      wy = 28;% ''
      wz = 19;% ''
     %%
-    pts_calib = 1:200*calibration_period*14;
+    pts_calib = 1:200*calibration_period;
     [ num_pts , num_sens ] = size(navdata);
     
     %% Attitude
@@ -541,6 +559,9 @@ function [navdata , yaw_init , mag_init] = remove_bias_and_initials(navdata , ca
     acc_bias = mean(accels) - [0 , 0 , 9.81 ]; %get bias as mean except not including gravity
 
     navdata(:,ax:az) = navdata(:,ax:az) - acc_bias;
+%     accels = navdata(pts_calib, ay:az);%m/s^2
+%     acc_bias = mean(accels) - [ 0 , 9.81 ]; %get bias as mean except not including gravity 
+%     navdata(:,ay:az) = navdata(:,ay:az) - acc_bias;
        
     %% Magnetometer
     % Mx My Mz
