@@ -3,11 +3,11 @@ clc;
 close all;
 
 
-filename = '7_10_2calib_hallway_roll2_data.txt'
+filename = '7_6_unmanned_flight_3_data.txt'
 
-calib_time = 2;
+calib_time =30;
 threshold_factor = 3;
-cutoff_freq = .01;
+cutoff_freq = .03;
 
 [time , drone_pos , drone_vel , drone_att , lidar_pos , lidar_att] = temp_navdata_filtering(filename , calib_time, threshold_factor , cutoff_freq);
 
