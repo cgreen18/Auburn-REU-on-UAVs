@@ -16,6 +16,8 @@ https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/LiDAR%20Mapping%20Pos
 
 [embed]https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/LiDAR%20Mapping%20Poster.pdf[/embed]
 
+[Poster](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/LiDAR%20Mapping%20Poster.jpg)
+
 ## Team Member Biographies
 **Conor Green** (manager of this repository)\
 Email: cgreen18@lion.lmu.edu\
