@@ -2,7 +2,7 @@
 Repository for the 2019 Auburn REU Team 1 to map an environment using 3D ToF on a quadcopter without GNSS
 
 ## Title of Project
-> UAV SLAM and Interior Modeling with LiDAR in GNSS-Denied Environments
+> UAV SLAM and Interior Modeling with 3D LiDAR in GNSS-Denied Environments
 
 ## Abstract
 >   Small, quadrotor helicopter, or quadcopter, unmanned aerial vehicles (**UAV**s) have unique abilities to map environments, particularly utilizing 3D flash light detection and radar (**LiDAR**) technologies, which yield point cloud data sets. However, the majority of applications to date use global navigation satellite systems (**GNSS**) to determine location in order to stitch together LiDAR frames, which excludes mapping in environments without readily available or reliable GNSS (e.g. inside concrete buildings or underground.) In the context of search and rescue, providing an accurate and extensive model through a UAV could provide emergency personnel critical information on the interior of the structure without risking human lives. Previous projects have been able to confirm the viability of autonomous flight through LiDAR and achieve simultaneous localization and mapping (**SLAM**) without GNSS. The project presented will equip a quadcopter UAV with a LiDAR sensor and manually navigate through an interior environment to provide navigation and point cloud data to be processed in post for pose estimates. With pose estimates, a virtual mock-up will be generated from the point cloud data to provide a comprehensive, 3D representation of the interior.
