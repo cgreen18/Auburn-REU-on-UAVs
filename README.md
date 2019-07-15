@@ -12,7 +12,9 @@ Repository for the 2019 Auburn REU Team 1 to map an environment using 3D ToF on 
 
 >   After achieving accurate location and attitude estimation for the entirety of the flight path, the collected point cloud data needs to be stitched together frame by frame. To mesh together numerous frames of 3D data points, with a large amount of redundancy, poses a significant data processing problem. There are libraries that utilize iterative closest point algorithms; however, they still require that all the frames are referenced against an absolute frame of reference. Therefore, each successive frame must be transformed to be referenced from that absolute reference based on the location and attitude estimations. Furthermore, the localization and LiDAR data need to be precisely synchronized in time for accurate frame stitching, which poses issues in implementation because each is run separately.
 
-[Poster](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/LiDAR%20Mapping%20Poster.pdf)
+https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/LiDAR%20Mapping%20Poster.pdf
+
+[embed]https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/LiDAR%20Mapping%20Poster.pdf[/embed]
 
 ## Team Member Biographies
 **Conor Green** (manager of this repository)\
