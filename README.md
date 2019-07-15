@@ -24,7 +24,6 @@ Email: cgreen18@lion.lmu.edu\
 
 > Conor has consistently worked various jobs since he turned sixteen, including multiple summers of full time work and private and volunteer tutoring (mainly mathematics.) He has worked at his university’s bike shop, the Cycling Lion, since its inception and is starting his second year as a manager. Outside of academics and work, Conor is the Vice-President of his university’s D2 rugby team and has participated in the UAV national competition SAE Aero West. He speaks Spanish fluently, through classes and learning through close friends, and studied abroad in Madrid, Spain, for a semester his sophomore year. For enjoyment, he reads fiction novels, particularly science fiction, and rides his longboard or skateboard.
 
-
 **Brenden Stevens**\
 Email: brenden728@ucla.edu\
 [Portfolio/Personal Website](https://brenden728.wixsite.com/sbrenden)
