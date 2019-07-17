@@ -18,6 +18,9 @@ In situations when the navigation data is very well processed and filtered (in o
 
 If you want to reply completely on the computer, check the Nav_ICP Simultaneous check box, and set the slider to 0% nav trust. 
 
+## Note: navdata_filtering 
+The navdata file is also located in the navdata filtering folder in this same git, it may be more up to date there so it may be best to grab that file of the same name and replace the file in this directory, all inside of your workspace. 
+
 ## Processing 
 Before clicking the Process button, make sure Refesh Data is checked only if you are gathering the data for the first time. Else, if you just want to change the start and stop frames, uncheck refresh data. 
 
