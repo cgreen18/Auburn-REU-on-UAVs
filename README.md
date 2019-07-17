@@ -5,7 +5,7 @@ Repository for the 2019 Auburn REU Team 1 to map an environment using 3D ToF on 
 > UAV SLAM and Interior Modeling with 3D LiDAR in GNSS-Denied Environments
 
 ## Final Product Example
-![Final Hallway Stitch]( img src="https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/MATLAB/Final%20Hallway%20Stitch.gif" width="720")
+![Final Hallway Stitch]( <img src="https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/MATLAB/Final%20Hallway%20Stitch.gif" width="720">)
 
 #### Reference Photo
 ![Reference](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/MATLAB/Hallway_Panorama.jpg)
