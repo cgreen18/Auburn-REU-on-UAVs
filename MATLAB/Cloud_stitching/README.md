@@ -1,1 +1,2 @@
-How to use the Flexx_Point_Cloud stitch app
+How to use the flexx_point_cloud_stitch_app: 
+
