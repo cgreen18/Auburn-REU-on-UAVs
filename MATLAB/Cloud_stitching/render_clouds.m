@@ -5,6 +5,9 @@ function cloud_array = render_clouds(pt_cloud_data,N_Frames)
     cloud_array = cell(1,N_Frames); 
     disp('rendering clouds')
     for ii = 1:N_Frames
+        if isempty(pt_cloud_data{ii})
+            continue
+        end 
         XI = reshape(pt_cloud_data{ii}.x, [1,38304]);
         YI = reshape(pt_cloud_data{ii}.y, [1,38304]);
         ZI = reshape(pt_cloud_data{ii}.z, [1,38304]);

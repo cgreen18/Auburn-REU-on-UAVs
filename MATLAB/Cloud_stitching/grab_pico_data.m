@@ -16,9 +16,13 @@ function [pt_cloud_data,N_Frames,pico_times] = grab_pico_data(filename)
     
     for ii = 1:N_Frames
         % retrieve data from camera
-        pt_cloud_data{ii} = cameraDevice.getData();
-        % retrieve times
-        pico_times(ii,1) = pt_cloud_data{ii}.timeStamp/(10^6); 
+        try 
+            pt_cloud_data{ii} = cameraDevice.getData();
+            pico_times(ii,1) = pt_cloud_data{ii}.timeStamp/(10^6); 
+        catch
+            warning(strcat('Dataframe timeout, index :', num2str(ii)))
+        end
+
     end 
     
     
