@@ -3,7 +3,7 @@ The post-processing portion of the project will be done on MATLAB considering th
 
 ## Best Visualization
 
-![Final Hallway Stitch](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/MATLAB/Final%20Hallway%20Stitch.gif)
+![Final Hallway Stitch](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/MATLAB/Final%20Hallway%20Stitch%202.gif)
 
 #### Reference
 ![Reference](https://github.com/cgreen18/Auburn-REU-on-UAVs/blob/master/MATLAB/Hallway_Panorama.jpg)
