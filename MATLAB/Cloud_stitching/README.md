@@ -21,3 +21,6 @@ Before clicking the Process button, make sure Refesh Data is checked only if you
 In the viewing section, this is all pretty self explanatory, Color lets you set the color of the point cloud. Plot Shift lets you shift the plot either rotationally (degrees) or translationally (meters). Viewer sets the camera position and is only effective when the movie box is checked. 
 
 Save cloud will save the current global variable ptCloudScene, which you can find inside the code view, to the workspace. This variable holds the actual point clouds scene. 
+
+### Movie
+Though not completely finished, the movie checkbox will allow a couple of options for creating a movie like feel for observing the point cloud. When checked, the movie will play the option specified by the radio button under the Viewer tab. 
